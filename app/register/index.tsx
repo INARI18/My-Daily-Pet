@@ -1,79 +1,258 @@
+import { Fonts } from "@/constants/fonts";
+import { Palette } from "@/constants/palette";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { Bone, Cat, Dog, PawPrint } from "lucide-react-native";
 import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { ThemedText } from "../../components/themed-text";
+import { ThemedView } from "../../components/themed-view";
+import { ThemedButton } from "../../components/ui/themed-button";
+import { ThemedInput } from "../../components/ui/themed-input";
 import { auth } from "../../firebase-config";
+import { getFirebaseErrorMessage } from "../../services/firebaseErrorHandler";
+import AuthLayout from "../auth-layout";
 
 type Props = NativeStackScreenProps<any, "Register">;
 
-export default function RegisterScreen({ navigation }: Props) {
+const RegisterScreen = ({}: Props) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
+    setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert("Usuário registrado com sucesso!");
-      router.replace("/(tabs)"); // Redireciona para a tela principal após o registro e login automático
+      router.replace("/(tabs)"); // redirects to home screen after registration and automatic login
     } catch (err: any) {
-      setError(err.message);
+      const userFriendlyMessage = getFirebaseErrorMessage(err.code);
+      setError(userFriendlyMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registrar</Text>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Registrar" onPress={handleRegister} />
-      <Button
-        title="Já tem uma conta? Faça login"
-        onPress={() => router.push("/login")}
-      />
-    </View>
+    <AuthLayout>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ThemedView style={styles.container}>
+        {/* Corners */}
+        <View style={styles.iconTopLeft}>
+          <Dog size={120} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+        <View style={styles.iconTopRight}>
+          <Cat size={100} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+        <View style={styles.iconBottomLeft}>
+          <Cat size={130} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+        <View style={styles.iconBottomRight}>
+          <Dog size={105} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+
+        {/* Sides */}
+        <View style={styles.iconLeftMiddle}>
+          <PawPrint size={70} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+        <View style={styles.iconRightMiddle}>
+          <Bone size={85} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+
+        {/* Top and bottom center */}
+        <View style={styles.iconTopCenter}>
+          <Bone size={65} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+        <View style={styles.iconBottomCenter}>
+          <Bone size={75} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+
+        <View style={styles.iconTopLeftInner}>
+          <PawPrint size={50} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+        <View style={styles.iconBottomRightInner}>
+          <PawPrint size={55} color={Palette.purple.darker} strokeWidth={1.5} />
+        </View>
+
+        <View style={styles.contentContainer}>
+          <View style={styles.headerContainer}>
+            <ThemedText style={styles.title}>Criar Conta</ThemedText>
+            <ThemedText style={styles.subtitle}>
+              Junte-se a nós e cuide do seu pet
+            </ThemedText>
+          </View>
+
+          <View style={styles.formContainer}>
+            {error && (
+              <View style={styles.errorContainer}>
+                <ThemedText style={styles.error}>{error}</ThemedText>
+              </View>
+            )}
+            <ThemedInput
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <ThemedInput
+              placeholder="Senha"
+              value={password}
+              onChangeText={setPassword}
+              isPassword
+            />
+            <ThemedButton
+              title="Registrar"
+              onPress={handleRegister}
+              loading={isLoading}
+              style={styles.primaryButton}
+            />
+            <ThemedButton
+              title="Já tem uma conta? Faça login"
+              onPress={() => router.push("/login")}
+              style={styles.secondaryButton}
+            />
+          </View>
+        </View>
+      </ThemedView>
+    </AuthLayout>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Palette.purple.main,
+    position: "relative",
+    overflow: "hidden",
+  },
+  // Main corners
+  iconTopLeft: {
+    position: "absolute",
+    top: -20,
+    left: -40,
+    opacity: 0.3,
+    transform: [{ rotate: "-20deg" }],
+  },
+  iconTopRight: {
+    position: "absolute",
+    top: 20,
+    right: -25,
+    opacity: 0.3,
+    transform: [{ rotate: "25deg" }],
+  },
+  iconBottomLeft: {
+    position: "absolute",
+    bottom: -45,
+    left: -50,
+    opacity: 0.3,
+    transform: [{ rotate: "15deg" }],
+  },
+  iconBottomRight: {
+    position: "absolute",
+    bottom: -30,
+    right: -35,
+    opacity: 0.3,
+    transform: [{ rotate: "-30deg" }],
+  },
+  // Sides
+  iconLeftMiddle: {
+    position: "absolute",
+    top: "40%",
+    left: -25,
+    opacity: 0.3,
+    transform: [{ rotate: "10deg" }],
+  },
+  iconRightMiddle: {
+    position: "absolute",
+    top: "50%",
+    right: -20,
+    opacity: 0.3,
+    transform: [{ rotate: "25deg" }],
+  },
+  // Top and bottom center
+  iconTopCenter: {
+    position: "absolute",
+    top: "12%",
+    left: "50%",
+    transform: [{ rotate: "30deg" }],
+    opacity: 0.3,
+  },
+  iconBottomCenter: {
+    position: "absolute",
+    bottom: "8%",
+    left: "50%",
+    transform: [{ translateX: -37.5 }, { rotate: "-18deg" }],
+    opacity: 0.3,
+  },
+  // Extra inner elements
+  iconTopLeftInner: {
+    position: "absolute",
+    top: "18%",
+    left: "15%",
+    opacity: 0.3,
+    transform: [{ rotate: "-70deg" }],
+  },
+  iconBottomRightInner: {
+    position: "absolute",
+    bottom: "15%",
+    right: "12%",
+    opacity: 0.3,
+    transform: [{ rotate: "-25deg" }],
+  },
+  contentContainer: {
+    flex: 1,
     justifyContent: "center",
-    padding: 16,
+    alignItems: "center",
+    padding: 24,
+    zIndex: 1,
+  },
+  headerContainer: {
+    alignItems: "center",
+    marginBottom: 48,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontSize: 42,
+    fontFamily: Fonts.fredoka.bold,
+    color: Palette.yellow.main,
+    marginBottom: 8,
+    lineHeight: 50,
     textAlign: "center",
   },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 4,
+  subtitle: {
+    fontSize: 16,
+    fontFamily: Fonts.fredoka.medium,
+    color: "rgba(255, 255, 255, 0.8)",
+    textAlign: "center",
+  },
+  formContainer: {
+    width: "100%",
+    maxWidth: 400,
+  },
+  errorContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
   },
   error: {
-    color: "red",
-    marginBottom: 12,
+    color: Palette.neutral.white,
     textAlign: "center",
+    fontFamily: Fonts.fredoka.medium,
+  },
+  primaryButton: {
+    marginTop: 8,
+  },
+  secondaryButton: {
+    marginTop: 12,
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: Palette.neutral.white,
   },
 });
+
+export default RegisterScreen;

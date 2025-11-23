@@ -4,7 +4,7 @@
     "slug": "my-daily-pet-v2",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/favicon.png",
     "scheme": "my-daily-pet-v2",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

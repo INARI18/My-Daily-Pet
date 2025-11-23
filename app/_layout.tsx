@@ -23,7 +23,11 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 
-import { Fredoka_700Bold } from "@expo-google-fonts/fredoka";
+import {
+  Fredoka_400Regular,
+  Fredoka_500Medium,
+  Fredoka_700Bold,
+} from "@expo-google-fonts/fredoka";
 import {
   Nunito_600SemiBold,
   Nunito_800ExtraBold,
@@ -53,6 +57,8 @@ const auth = initializeAuth(app, {
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Fredoka_700Bold,
+    Fredoka_500Medium,
+    Fredoka_400Regular,
     Nunito_800ExtraBold,
     Nunito_600SemiBold,
   });
