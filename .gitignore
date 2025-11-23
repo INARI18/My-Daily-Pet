@@ -41,3 +41,9 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Ignorar configurações sensíveis do Firebase
+firebase-config.ts
+
+# Ignorar arquivos de ambiente
+.env
