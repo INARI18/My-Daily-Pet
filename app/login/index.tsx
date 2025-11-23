@@ -1,9 +1,11 @@
+import { useRouter } from "expo-router";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { app } from "../../firebase-config";
 
 const LoginScreen = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -38,6 +40,7 @@ const LoginScreen = () => {
         secureTextEntry
       />
       <Button title="Entrar" onPress={handleLogin} />
+      <Button title="Registrar" onPress={() => router.push("/register")} />
     </View>
   );
 };

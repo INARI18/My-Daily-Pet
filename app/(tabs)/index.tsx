@@ -2,8 +2,9 @@ import { Fonts } from "@/constants/fonts";
 import { pawData } from "@/constants/homeAnimations";
 import { Palette } from "@/constants/palette";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Image,
   StyleSheet,
@@ -15,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   const pawAnimations = useRef(
     pawData.map(() => new Animated.Value(1))
@@ -41,6 +43,33 @@ export default function HomeScreen() {
     animations.forEach((animation) => animation.start());
     return () => animations.forEach((animation) => animation.stop());
   }, [pawAnimations]);
+
+  useEffect(() => {
+    // Simulate data loading
+    const loadData = async () => {
+      try {
+        // Simulate a delay for data fetching
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView
+        style={[
+          styles.safeArea,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color={Palette.yellow.main} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>

@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
@@ -7,6 +8,7 @@ import { auth } from "../../firebase-config";
 type Props = NativeStackScreenProps<any, "Register">;
 
 export default function RegisterScreen({ navigation }: Props) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +17,7 @@ export default function RegisterScreen({ navigation }: Props) {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert("Usuário registrado com sucesso!");
-      navigation.replace("(tabs)"); // Redireciona para a tela principal após o registro
+      router.replace("/(tabs)"); // Redireciona para a tela principal após o registro e login automático
     } catch (err: any) {
       setError(err.message);
     }
@@ -41,6 +43,10 @@ export default function RegisterScreen({ navigation }: Props) {
         secureTextEntry
       />
       <Button title="Registrar" onPress={handleRegister} />
+      <Button
+        title="Já tem uma conta? Faça login"
+        onPress={() => router.push("/login")}
+      />
     </View>
   );
 }
