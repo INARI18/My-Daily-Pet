@@ -1,5 +1,7 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -12,110 +14,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Navbar from "@/components/ui/navbar";
 import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
-import { Pet, calculateAge, getPetGenderSymbol, getPetIcon } from "@/types/pet";
-
-const mockProfiles: Pet[] = [
-  {
-    id: "1",
-    name: "Fluffy",
-    birthDate: new Date("2023-06-15"),
-    weight: 3,
-    gender: "male",
-    type: "cat",
-    castrated: true,
-    iconUrl: require("@/assets/icons/cats/1.png"),
-  },
-  {
-    id: "2",
-    name: "Thor",
-    birthDate: new Date("2019-04-20"),
-    weight: 4,
-    gender: "male",
-    type: "dog",
-    castrated: false,
-    iconUrl: require("@/assets/icons/dogs/2.png"),
-  },
-  {
-    id: "3",
-    name: "Snowball",
-    birthDate: new Date("2024-06-15"),
-    weight: 2,
-    gender: "female",
-    type: "cat",
-    castrated: true,
-    iconUrl: require("@/assets/icons/cats/11.png"),
-  },
-  {
-    id: "4",
-    name: "Luna",
-    birthDate: new Date("2022-03-10"),
-    weight: 3.5,
-    gender: "female",
-    type: "cat",
-    castrated: true,
-    iconUrl: require("@/assets/icons/cats/4.png"),
-  },
-  {
-    id: "5",
-    name: "Max",
-    birthDate: new Date("2020-08-25"),
-    weight: 8,
-    gender: "male",
-    type: "dog",
-    castrated: true,
-    iconUrl: require("@/assets/icons/dogs/7.png"),
-  },
-  {
-    id: "6",
-    name: "Mia",
-    birthDate: new Date("2023-11-05"),
-    weight: 2.5,
-    gender: "female",
-    type: "cat",
-    castrated: false,
-    iconUrl: require("@/assets/icons/cats/8.png"),
-  },
-  {
-    id: "7",
-    name: "Rex",
-    birthDate: new Date("2018-01-15"),
-    weight: 12,
-    gender: "male",
-    type: "dog",
-    castrated: true,
-    iconUrl: require("@/assets/icons/dogs/9.png"),
-  },
-  {
-    id: "8",
-    name: "Bella",
-    birthDate: new Date("2021-07-20"),
-    weight: 5,
-    gender: "female",
-    type: "dog",
-    castrated: true,
-    iconUrl: require("@/assets/icons/dogs/19.png"),
-  },
-  {
-    id: "9",
-    name: "Oliver",
-    birthDate: new Date("2024-02-14"),
-    weight: 1.5,
-    gender: "male",
-    type: "cat",
-    castrated: false,
-    iconUrl: require("@/assets/icons/cats/8.png"),
-  },
-  {
-    id: "10",
-    name: "Charlie",
-    birthDate: new Date("2019-09-30"),
-    weight: 7,
-    gender: "male",
-    type: "dog",
-    castrated: false,
-    iconUrl: require("@/assets/icons/dogs/10.png"),
-  },
-];
+import {
+  calculateAge,
+  getPetGenderSymbol,
+  getPetIcon,
+  getPets,
+} from "@/services/pets";
+import { Pet } from "@/types/pet";
 
 function ProfileCard({ pet }: { pet: Pet }) {
   const age = calculateAge(pet.birthDate);
@@ -178,20 +83,60 @@ function ProfileCard({ pet }: { pet: Pet }) {
 
 export default function Profiles() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const [pets, setPets] = useState<Pet[]>(
+    params.pets && typeof params.pets === "string"
+      ? JSON.parse(params.pets)
+      : []
+  );
+  const [loading, setLoading] = useState(true); // Estado para controlar o carregamento
+
+  useEffect(() => {
+    if (!params.pets) {
+      // Recarrega os dados se não foram passados pelo redirecionamento
+      const fetchPets = async () => {
+        try {
+          const fetchedPets = await getPets();
+          setPets(fetchedPets);
+        } catch (error) {
+          console.error("Erro ao buscar os pets:", error);
+        } finally {
+          setLoading(false); // Finaliza o carregamento
+        }
+      };
+
+      fetchPets();
+    } else {
+      setLoading(false); // Finaliza o carregamento se os dados já foram passados
+    }
+  }, [params]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <View style={styles.container}>
         <Navbar pageName="My Pets" />
-        <ScrollView
-          style={styles.profilesContainer}
-          contentContainerStyle={{ paddingBottom: 16 }}
-        >
-          {mockProfiles.map((profile) => (
-            <ProfileCard key={profile.id} pet={profile} />
-          ))}
-        </ScrollView>
-        <Pressable style={styles.fab} onPress={() => {}}>
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={Palette.purple.main}
+            style={{ marginTop: 20 }}
+          />
+        ) : (
+          <ScrollView
+            style={styles.profilesContainer}
+            contentContainerStyle={{ paddingBottom: 16 }}
+          >
+            {pets.length === 0 ? (
+              <Text style={styles.emptyText}>
+                You don’t have any pets registered yet. Add one by clicking the
+                button below!
+              </Text>
+            ) : (
+              pets.map((pet) => <ProfileCard key={pet.id} pet={pet} />)
+            )}
+          </ScrollView>
+        )}
+        <Pressable style={styles.fab} onPress={() => router.push("../addPet")}>
           <Image
             source={require("@/assets/images/profiles/add_pet_profile_button.png")}
             style={{ width: 65, height: 65 }}
@@ -235,5 +180,11 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
     opacity: 0.9,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: Palette.neutral.gray,
+    textAlign: "center",
+    marginTop: 20,
   },
 });

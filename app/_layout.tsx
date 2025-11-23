@@ -13,14 +13,8 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { getApps, initializeApp } from "firebase/app";
-import {
-  getReactNativePersistence, // just typescript being weird
-  initializeAuth,
-  onAuthStateChanged,
-  User,
-} from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 
 import {
@@ -32,6 +26,7 @@ import {
   Nunito_600SemiBold,
   Nunito_800ExtraBold,
 } from "@expo-google-fonts/nunito";
+import { auth } from "../firebase-config";
 
 export const unstable_settings = {
   anchor: null, // Desativa a tab bar
@@ -50,9 +45,6 @@ const firebaseConfig = {
 
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({

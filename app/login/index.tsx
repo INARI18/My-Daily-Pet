@@ -9,13 +9,13 @@ import {
   useFonts,
 } from "@expo-google-fonts/fredoka";
 import { Stack, useRouter } from "expo-router";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { Bone, Cat, Dog, PawPrint } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 import { ThemedButton } from "../../components/ui/themed-button";
 import { ThemedInput } from "../../components/ui/themed-input";
-import { app } from "../../firebase-config";
+import { auth } from "../../firebase-config";
 import { getFirebaseErrorMessage } from "../../services/firebaseErrorHandler";
 import AuthLayout from "../auth-layout";
 
@@ -40,13 +40,13 @@ const LoginScreen = () => {
   }, []);
 
   const handleLogin = async () => {
-    const auth = getAuth(app);
     setIsLoading(true);
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert("Login realizado com sucesso!");
     } catch (error: any) {
+      console.error("Erro completo ao tentar logar:", error); // Log completo do erro
       const userFriendlyMessage = getFirebaseErrorMessage(error.code);
       setError(userFriendlyMessage);
     } finally {
