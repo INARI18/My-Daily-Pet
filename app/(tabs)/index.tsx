@@ -1,98 +1,243 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Fonts } from "@/constants/fonts";
+import { pawData } from "@/constants/homeAnimations";
+import { Palette } from "@/constants/palette";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef } from "react";
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const pawAnimations = useRef(
+    pawData.map(() => new Animated.Value(1))
+  ).current;
+
+  useEffect(() => {
+    const animations = pawAnimations.map((scale, index) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scale, {
+            toValue: 1.2,
+            duration: 1000,
+            delay: index * 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ])
+      )
+    );
+    animations.forEach((animation) => animation.start());
+    return () => animations.forEach((animation) => animation.stop());
+  }, [pawAnimations]);
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+      <View style={styles.container}>
+        <Image
+          source={require("@/assets/images/homeScreen/cat_silhouette.png")}
+          style={styles.catSilhouette}
+          resizeMode="cover"
+        />
+        <View style={styles.pawContainer}>
+          {pawData.map((paw, index) => (
+            <Animated.Image
+              key={index}
+              source={require("@/assets/images/paw.png")}
+              style={{
+                position: "absolute",
+                top: paw.top,
+                left: paw.left,
+                width: paw.width,
+                height: paw.height,
+                transform: [{ scale: pawAnimations[index] }, ...paw.transform],
+              }}
+            />
+          ))}
+        </View>
+        <Image
+          source={require("@/assets/images/homeScreen/cat_snout.png")}
+          style={styles.catSnout}
+        />
+        <View style={styles.whisker1} />
+        <View style={styles.whisker2} />
+        <View style={styles.whisker3} />
+        <View style={styles.whisker4} />
+        <View style={styles.whisker5} />
+        <View style={styles.whisker6} />
+        <Text style={styles.title}>My Daily{"\n"}Pet</Text>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={() => {
+            router.push("/profiles");
+          }}
+        >
+          <View style={styles.buttonContent}>
+            <View style={styles.iconContainer}>
+              <Image
+                source={require("@/assets/images/homeScreen/startButtonIcon.png")}
+                style={styles.buttonIcon}
+                resizeMode="contain"
+              />
+            </View>
+            <Text style={styles.buttonText}>START</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  safeArea: {
+    flex: 1,
+    backgroundColor: Palette.purple.darker,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  container: {
+    flex: 1,
+    backgroundColor: Palette.purple.light,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  catSilhouette: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    zIndex: 10,
+  },
+  pawContainer: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    zIndex: 20,
+  },
+  catSnout: {
+    position: "absolute",
+    zIndex: 20,
+    width: 32,
+    height: 24,
+    top: "45%",
+    left: "60%",
+    transform: [{ translateX: -50 }, { translateY: -50 }],
+  },
+  whisker1: {
+    position: "absolute",
+    zIndex: 20,
+    backgroundColor: Palette.purple.darker,
+    borderRadius: 9999,
+    top: "38%",
+    left: "50%",
+    width: 50,
+    height: 1,
+    transform: [{ translateX: -80 }, { translateY: -5 }, { rotate: "30deg" }],
+  },
+  whisker2: {
+    position: "absolute",
+    zIndex: 20,
+    backgroundColor: Palette.purple.darker,
+    borderRadius: 9999,
+    top: "40%",
+    left: "48%",
+    width: 50,
+    height: 1,
+    transform: [{ translateX: -80 }, { translateY: 5 }, { rotate: "0deg" }],
+  },
+  whisker3: {
+    position: "absolute",
+    zIndex: 20,
+    backgroundColor: Palette.purple.darker,
+    borderRadius: 9999,
+    top: "43%",
+    left: "50%",
+    width: 50,
+    height: 1,
+    transform: [{ translateX: -80 }, { translateY: 5 }, { rotate: "-30deg" }],
+  },
+  whisker4: {
+    position: "absolute",
+    zIndex: 20,
+    backgroundColor: Palette.purple.darker,
+    borderRadius: 9999,
+    top: "38%",
+    left: "52%",
+    width: 50,
+    height: 1,
+    transform: [{ translateX: 30 }, { translateY: -5 }, { rotate: "-30deg" }],
+  },
+  whisker5: {
+    position: "absolute",
+    zIndex: 20,
+    backgroundColor: Palette.purple.darker,
+    borderRadius: 9999,
+    top: "40%",
+    left: "54%",
+    width: 50,
+    height: 1,
+    transform: [{ translateX: 30 }, { translateY: 5 }, { rotate: "0deg" }],
+  },
+  whisker6: {
+    position: "absolute",
+    zIndex: 20,
+    backgroundColor: Palette.purple.darker,
+    borderRadius: 9999,
+    top: "43%",
+    left: "52%",
+    width: 50,
+    height: 1,
+    transform: [{ translateX: 30 }, { translateY: 5 }, { rotate: "30deg" }],
+  },
+  title: {
+    position: "absolute",
+    color: Palette.yellow.main,
+    textAlign: "center",
+    fontSize: 68,
+    zIndex: 20,
+    fontFamily: Fonts.fredoka.bold,
+    textShadowColor: Palette.purple.darker,
+    textShadowOffset: { width: -5, height: 1 },
+    textShadowRadius: 15,
+    top: "53%",
+    left: "50%",
+    transform: [{ translateX: -135 }, { translateY: -25 }],
+  },
+  startButton: {
+    position: "absolute",
+    backgroundColor: Palette.purple.dark,
+    borderRadius: 9999,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    zIndex: 30,
+    top: "80%",
+    left: "50%",
+    transform: [{ translateX: -60 }, { translateY: -20 }],
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  iconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  buttonIcon: {
+    width: 20,
+    height: 20,
+  },
+  buttonText: {
+    color: Palette.neutral.white,
+    fontSize: 18,
+    fontFamily: Fonts.nunito.extraBold,
   },
 });
