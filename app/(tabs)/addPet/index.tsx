@@ -1,3 +1,4 @@
+import IconPickerModal from "@/components/icons-modal";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { ThemedButton } from "@/components/ui/themed-button";
@@ -8,8 +9,15 @@ import { addPet } from "@/services/pets";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { PawPrint, SquarePen } from "lucide-react-native";
-import React, { useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  ImageSourcePropType,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddPet() {
@@ -22,6 +30,10 @@ export default function AddPet() {
     weight: "",
     castrated: "no",
   });
+  const [isIconModalVisible, setIconModalVisible] = useState(false);
+  const [selectedIcon, setSelectedIcon] = useState<ImageSourcePropType | null>(
+    null
+  );
 
   const handleInputChange = (field: string, value: string) => {
     setPetData((prev) => ({ ...prev, [field]: value }));
@@ -51,6 +63,21 @@ export default function AddPet() {
     router.replace("/(tabs)/profiles");
   };
 
+  const handleIconSelect = (icon: ImageSourcePropType) => {
+    setSelectedIcon(icon); // Define o ícone selecionado diretamente
+    setPetData((prev) => ({
+      ...prev,
+      iconUrl: Image.resolveAssetSource(icon).uri,
+    })); // Garante que o iconUrl seja uma string válida
+    setIconModalVisible(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      setSelectedIcon(null); // Reseta o ícone ao sair da página
+    };
+  }, []);
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: Palette.neutral.offWhite }}
@@ -68,13 +95,25 @@ export default function AddPet() {
         >
           {/* Foto do Pet */}
           <View style={styles.imageSection}>
-            <TouchableOpacity style={styles.imageContainer} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.imageContainer}
+              activeOpacity={0.7}
+              onPress={() => setIconModalVisible(true)}
+            >
               <View style={styles.imagePlaceholder}>
-                <PawPrint
-                  size={32}
-                  color={Palette.neutral.gray}
-                  strokeWidth={2}
-                />
+                {selectedIcon ? (
+                  <Image
+                    source={selectedIcon}
+                    style={{ width: 64, height: 64 }}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <PawPrint
+                    size={32}
+                    color={Palette.neutral.gray}
+                    strokeWidth={2}
+                  />
+                )}
               </View>
               <View style={styles.editIconOverlay}>
                 <SquarePen
@@ -181,6 +220,12 @@ export default function AddPet() {
           <View style={styles.bottomSpacing} />
         </ScrollView>
       </ThemedView>
+
+      <IconPickerModal
+        visible={isIconModalVisible}
+        onClose={() => setIconModalVisible(false)}
+        onSelect={handleIconSelect}
+      />
     </SafeAreaView>
   );
 }
