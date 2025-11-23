@@ -2,6 +2,7 @@ import { Fonts } from "@/constants/fonts";
 import { pawData } from "@/constants/homeAnimations";
 import { Palette } from "@/constants/palette";
 import { useRouter } from "expo-router";
+import { PawPrint } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -45,6 +46,19 @@ export default function HomeScreen() {
   }, [pawAnimations]);
 
   useEffect(() => {
+    if (pawAnimations.length !== pawData.length) {
+      console.warn(
+        "pawAnimations and pawData are out of sync. Resynchronizing..."
+      );
+      pawAnimations.splice(
+        0,
+        pawAnimations.length,
+        ...pawData.map(() => new Animated.Value(1))
+      );
+    }
+  }, [pawData]);
+
+  useEffect(() => {
     // Simulate data loading
     const loadData = async () => {
       try {
@@ -81,18 +95,23 @@ export default function HomeScreen() {
         />
         <View style={styles.pawContainer}>
           {pawData.map((paw, index) => (
-            <Animated.Image
+            <Animated.View
               key={index}
-              source={require("@/assets/images/paw.png")}
               style={{
                 position: "absolute",
                 top: paw.top,
                 left: paw.left,
                 width: paw.width,
                 height: paw.height,
-                transform: [{ scale: pawAnimations[index] }, ...paw.transform],
+                transform: [...paw.transform, { scale: pawAnimations[index] }],
               }}
-            />
+            >
+              <PawPrint
+                size={paw.width}
+                color={Palette.purple.light}
+                strokeWidth={1.5}
+              />
+            </Animated.View>
           ))}
         </View>
         <Image
@@ -105,6 +124,9 @@ export default function HomeScreen() {
         <View style={styles.whisker4} />
         <View style={styles.whisker5} />
         <View style={styles.whisker6} />
+        <Text style={[styles.title, styles.titleOutline]}>
+          My Daily{"\n"}Pet
+        </Text>
         <Text style={styles.title}>My Daily{"\n"}Pet</Text>
         <TouchableOpacity
           style={styles.startButton}
@@ -113,11 +135,16 @@ export default function HomeScreen() {
           }}
         >
           <View style={styles.buttonContent}>
-            <View style={styles.iconContainer}>
-              <Image
-                source={require("@/assets/images/homeScreen/startButtonIcon.png")}
-                style={styles.buttonIcon}
-                resizeMode="contain"
+            <View
+              style={[
+                styles.iconContainer,
+                { transform: [{ rotate: "-48deg" }] },
+              ]}
+            >
+              <PawPrint
+                size={20} // Define o tamanho do ícone
+                color={Palette.purple.light} // Define a cor do ícone
+                strokeWidth={1.5} // Define a espessura do traço
               />
             </View>
             <Text style={styles.buttonText}>START</Text>
@@ -143,7 +170,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",
-    zIndex: 10,
+    zIndex: 5, // Ensure it is above the background but below all other elements
+    shadowColor: "#000", // Add shadow color
+    shadowOffset: { width: 0, height: 4 }, // Define shadow offset
+    shadowOpacity: 0.3, // Set shadow opacity
+    shadowRadius: 4, // Set shadow blur radius
+    elevation: 5, // Add elevation for Android
   },
   pawContainer: {
     position: "absolute",
@@ -233,16 +265,24 @@ const styles = StyleSheet.create({
     fontSize: 68,
     zIndex: 20,
     fontFamily: Fonts.fredoka.bold,
-    textShadowColor: Palette.purple.darker,
-    textShadowOffset: { width: -5, height: 1 },
-    textShadowRadius: 15,
     top: "53%",
     left: "50%",
     transform: [{ translateX: -135 }, { translateY: -25 }],
   },
+  titleOutline: {
+    position: "absolute",
+    color: Palette.purple.dark,
+    textAlign: "center",
+    fontSize: 68,
+    zIndex: 19, // Behind the main title
+    fontFamily: Fonts.fredoka.bold,
+    top: "53%",
+    left: "50%",
+    transform: [{ translateX: -138 }, { translateY: -27 }], // Slightly offset to create the outline effect
+  },
   startButton: {
     position: "absolute",
-    backgroundColor: Palette.purple.dark,
+    backgroundColor: Palette.purple.darker,
     borderRadius: 9999,
     paddingVertical: 8,
     paddingHorizontal: 20,
@@ -259,10 +299,6 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  buttonIcon: {
-    width: 20,
-    height: 20,
   },
   buttonText: {
     color: Palette.neutral.white,
