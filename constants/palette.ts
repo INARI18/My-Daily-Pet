@@ -22,6 +22,11 @@ export const Palette = {
     gray: "#6B7280",
     lightGray: "#EFEFEF",
   },
+
+  buttons: {
+    warning: "#8d0116ff", // Vermelho para botões de aviso/erro
+    success: "#004e17ff", // Verde para botões de sucesso
+  },
 } as const;
 
 export type PaletteColors = typeof Palette;

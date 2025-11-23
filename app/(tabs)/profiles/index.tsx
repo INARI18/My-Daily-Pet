@@ -123,7 +123,7 @@ function ProfileCard({ pet }: { pet: Pet }) {
   return (
     <View
       style={{
-        backgroundColor: Palette.neutral.lightGray,
+        backgroundColor: Palette.neutral.white,
         padding: 18,
         borderRadius: 8,
         marginBottom: 16,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   profilesContainer: {
     flex: 1,
     padding: 16,
-    backgroundColor: Palette.neutral.white,
+    backgroundColor: Palette.neutral.offWhite,
     borderRadius: 6,
     margin: 10,
     overflow: "hidden",

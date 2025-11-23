@@ -1,7 +1,7 @@
 import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
 import { useRouter } from "expo-router";
-import { Home, Undo2 } from "lucide-react-native";
+import { Home, Undo2, UserRound } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Navbar({ pageName }: { pageName: string }) {
@@ -13,6 +13,12 @@ export default function Navbar({ pageName }: { pageName: string }) {
         <Undo2 color={Palette.neutral.white} size={24} />
       </TouchableOpacity>
       <Text style={styles.text}>{pageName}</Text>
+      <TouchableOpacity
+        style={styles.homeButton}
+        onPress={() => router.push("/user")}
+      >
+        <UserRound color={Palette.neutral.white} size={24} />
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.homeButton}
         onPress={() => router.push("/")}
