@@ -2,17 +2,11 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
-import {
-  Fredoka_400Regular,
-  Fredoka_500Medium,
-  Fredoka_700Bold,
-  useFonts,
-} from "@expo-google-fonts/fredoka";
 import { Stack, useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Bone, Cat, Dog, PawPrint } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, StyleSheet, View } from "react-native";
 import { ThemedButton } from "../../components/ui/themed-button";
 import { ThemedInput } from "../../components/ui/themed-input";
 import { auth } from "../../firebase-config";
@@ -25,19 +19,6 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [layoutKey, setLayoutKey] = useState(0);
-
-  // fonts loading
-  const [fontsLoaded] = useFonts({
-    Fredoka_400Regular,
-    Fredoka_500Medium,
-    Fredoka_700Bold,
-  });
-
-  useEffect(() => {
-    // Forces layout recalculation after initial load
-    setLayoutKey(1);
-  }, []);
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -46,7 +27,7 @@ const LoginScreen = () => {
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert("Login realizado com sucesso!");
     } catch (error: any) {
-      console.error("Erro completo ao tentar logar:", error); // Log completo do erro
+      console.error("Erro completo ao tentar logar:", error);
       const userFriendlyMessage = getFirebaseErrorMessage(error.code);
       setError(userFriendlyMessage);
     } finally {
@@ -54,18 +35,10 @@ const LoginScreen = () => {
     }
   };
 
-  if (!fontsLoaded) {
-    return (
-      <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-      </ThemedView>
-    );
-  }
-
   return (
     <AuthLayout>
       <Stack.Screen options={{ headerShown: false }} />
-      <ThemedView key={layoutKey} style={styles.container}>
+      <ThemedView style={styles.container}>
         {/* Corners */}
         <View style={styles.iconTopLeft}>
           <Dog size={120} color={Palette.purple.darker} strokeWidth={1.5} />
@@ -277,12 +250,6 @@ const styles = StyleSheet.create({
     color: Palette.neutral.white,
     textAlign: "center",
     fontFamily: Fonts.fredoka.medium,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Palette.purple.main,
   },
 });
 

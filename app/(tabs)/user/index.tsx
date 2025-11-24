@@ -36,7 +36,6 @@ export default function UserPage() {
           setIsLoading(true);
           try {
             await signOut(auth);
-            router.replace("/login");
           } catch (error) {
             Alert.alert("Erro", "Não foi possível sair da conta");
           } finally {

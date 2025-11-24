@@ -21,6 +21,7 @@ import {
   getPets,
 } from "@/services/pets";
 import { Pet } from "@/types/pet";
+import { getAuth } from "firebase/auth";
 
 function ProfileCard({ pet }: { pet: Pet }) {
   const age = calculateAge(pet.birthDate);
@@ -84,32 +85,38 @@ function ProfileCard({ pet }: { pet: Pet }) {
 export default function Profiles() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const auth = getAuth();
   const [pets, setPets] = useState<Pet[]>(
     params.pets && typeof params.pets === "string"
       ? JSON.parse(params.pets)
       : []
   );
-  const [loading, setLoading] = useState(true); // Estado para controlar o carregamento
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // verify if the user is authenticated before fetching data
+    if (!auth.currentUser) {
+      setLoading(false);
+      return;
+    }
+
     if (!params.pets) {
-      // Recarrega os dados se não foram passados pelo redirecionamento
       const fetchPets = async () => {
         try {
           const fetchedPets = await getPets();
           setPets(fetchedPets);
         } catch (error) {
-          console.error("Erro ao buscar os pets:", error);
+          console.error("Erro ao buscar pets:", error);
         } finally {
-          setLoading(false); // Finaliza o carregamento
+          setLoading(false);
         }
       };
 
       fetchPets();
     } else {
-      setLoading(false); // Finaliza o carregamento se os dados já foram passados
+      setLoading(false);
     }
-  }, [params]);
+  }, [params, auth.currentUser]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
@@ -128,7 +135,7 @@ export default function Profiles() {
           >
             {pets.length === 0 ? (
               <Text style={styles.emptyText}>
-                You don’t have any pets registered yet. Add one by clicking the
+                You don't have any pets registered yet. Add one by clicking the
                 button below!
               </Text>
             ) : (
