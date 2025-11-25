@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "my-daily-pet-v2",
+    "name": "My-Daily-Pet",
     "slug": "my-daily-pet-v2",
+    "owner": "biam18",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
@@ -30,7 +31,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/favicon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -43,6 +44,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e07ee54e-a54d-4d57-9d58-25e333443a6e"
+      }
     }
   }
 }

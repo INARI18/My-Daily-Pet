@@ -7,9 +7,9 @@ import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
 import { addPet } from "@/services/pets";
 import { Picker } from "@react-native-picker/picker";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { PawPrint, SquarePen } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -30,24 +30,59 @@ export default function AddPet() {
     weight: "",
     castrated: "no",
   });
+
   const [isIconModalVisible, setIconModalVisible] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<ImageSourcePropType | null>(
     null
   );
 
+  // validation state
+  const [errors, setErrors] = useState<{ [k: string]: string }>({});
+  const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
+
   const handleInputChange = (field: string, value: string) => {
     setPetData((prev) => ({ ...prev, [field]: value }));
+
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
+    });
+  };
+
+  const validate = () => {
+    const newErrors: { [k: string]: string } = {};
+
+    if (!petData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
   };
 
   const handleSave = () => {
+    setTouched({ name: true });
+
+    if (!validate()) {
+      return;
+    }
+
     addPet({
       ...petData,
       type: petData.type as "dog" | "cat",
       gender: petData.gender as "male" | "female",
       castrated: petData.castrated === "yes",
-      birthDate: new Date(petData.birthDate),
+      birthDate: new Date(petData.birthDate.trim()), // remove blank spaces to avoid invalid date
       weight: parseFloat(petData.weight),
     });
+
     setPetData({
       name: "",
       type: "dog",
@@ -56,6 +91,10 @@ export default function AddPet() {
       weight: "",
       castrated: "no",
     });
+
+    setErrors({});
+    setTouched({});
+
     router.replace("/(tabs)/profiles");
   };
 
@@ -72,11 +111,24 @@ export default function AddPet() {
     setIconModalVisible(false);
   };
 
-  useEffect(() => {
-    return () => {
-      setSelectedIcon(null); // Reseta o ícone ao sair da página
-    };
-  }, []);
+  // reset form when leaving the screen
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setSelectedIcon(null);
+        setPetData({
+          name: "",
+          type: "dog",
+          gender: "male",
+          birthDate: "",
+          weight: "",
+          castrated: "no",
+        });
+        setErrors({});
+        setTouched({});
+      };
+    }, [])
+  );
 
   return (
     <SafeAreaView
@@ -125,7 +177,7 @@ export default function AddPet() {
             </TouchableOpacity>
           </View>
 
-          {/* Formulário */}
+          {/* form */}
           <View style={styles.formSection}>
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Name</ThemedText>
@@ -134,6 +186,8 @@ export default function AddPet() {
                 value={petData.name}
                 onChangeText={(text) => handleInputChange("name", text)}
                 style={styles.input}
+                error={touched.name ? errors.name : null}
+                onBlur={() => handleBlur("name")}
               />
             </View>
 
@@ -168,7 +222,7 @@ export default function AddPet() {
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Birthdate</ThemedText>
               <ThemedInput
-                placeholder="03/01/2016"
+                placeholder="YYYY-MM-DD"
                 value={petData.birthDate}
                 onChangeText={(text) => handleInputChange("birthDate", text)}
                 style={styles.input}
@@ -183,6 +237,7 @@ export default function AddPet() {
                 onChangeText={(text) => handleInputChange("weight", text)}
                 keyboardType="decimal-pad"
                 style={styles.input}
+                filter="numeric"
               />
             </View>
 
