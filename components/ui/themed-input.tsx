@@ -65,7 +65,7 @@ export function ThemedInput({
     <View style={[styles.container, containerStyle]}>
       <TextInput
         {...props}
-        value={value} // Garante que o valor controlado seja usado
+        value={value} // ensure value prop is passed to TextInput
         style={[styles.input, error && styles.inputError, style]}
         secureTextEntry={isPassword && !isPasswordVisible}
         onChangeText={handleChangeText}

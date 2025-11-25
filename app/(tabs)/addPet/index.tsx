@@ -2,6 +2,7 @@ import IconPickerModal from "@/components/icons-modal";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { ThemedButton } from "@/components/ui/themed-button";
+import { ThemedDatePicker } from "@/components/ui/themed-date-picker";
 import { ThemedInput } from "@/components/ui/themed-input";
 import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
@@ -103,11 +104,11 @@ export default function AddPet() {
   };
 
   const handleIconSelect = (icon: ImageSourcePropType) => {
-    setSelectedIcon(icon); // Define o ícone selecionado diretamente
+    setSelectedIcon(icon); // define the selected icon
     setPetData((prev) => ({
       ...prev,
       iconUrl: Image.resolveAssetSource(icon).uri,
-    })); // Garante que o iconUrl seja uma string válida
+    })); // ensures the iconUrl is a valid string
     setIconModalVisible(false);
   };
 
@@ -136,7 +137,7 @@ export default function AddPet() {
       edges={["top", "bottom"]}
     >
       <ThemedView style={styles.container}>
-        {/* Header */}
+        {/* header */}
         <View style={styles.header}>
           <ThemedText style={styles.title}>Edit Pet Details</ThemedText>
         </View>
@@ -145,7 +146,7 @@ export default function AddPet() {
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
-          {/* Foto do Pet */}
+          {/* pet icon */}
           <View style={styles.imageSection}>
             <TouchableOpacity
               style={styles.imageContainer}
@@ -177,7 +178,9 @@ export default function AddPet() {
             </TouchableOpacity>
           </View>
 
-          {/* form */}
+          {/* FORM */}
+
+          {/* name */}
           <View style={styles.formSection}>
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Name</ThemedText>
@@ -191,6 +194,7 @@ export default function AddPet() {
               />
             </View>
 
+            {/* type */}
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Type</ThemedText>
               <View style={styles.pickerContainer}>
@@ -205,6 +209,7 @@ export default function AddPet() {
               </View>
             </View>
 
+            {/* gender */}
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Gender</ThemedText>
               <View style={styles.pickerContainer}>
@@ -219,20 +224,22 @@ export default function AddPet() {
               </View>
             </View>
 
+            {/* birthdate */}
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Birthdate</ThemedText>
-              <ThemedInput
-                placeholder="YYYY-MM-DD"
+              <ThemedDatePicker
                 value={petData.birthDate}
-                onChangeText={(text) => handleInputChange("birthDate", text)}
+                onChangeDate={(date) => handleInputChange("birthDate", date)}
+                placeholder="Select date"
                 style={styles.input}
+                maximumDate={new Date()}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Weight</ThemedText>
               <ThemedInput
-                placeholder="9kg"
+                placeholder="9.5kg"
                 value={petData.weight}
                 onChangeText={(text) => handleInputChange("weight", text)}
                 keyboardType="decimal-pad"
@@ -258,7 +265,7 @@ export default function AddPet() {
             </View>
           </View>
 
-          {/* Botões */}
+          {/* buttons */}
           <View style={styles.buttonContainer}>
             <ThemedButton
               title="Cancel"
