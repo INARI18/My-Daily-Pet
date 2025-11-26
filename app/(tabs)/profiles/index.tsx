@@ -92,7 +92,7 @@ function ProfileCard({ pet }: { pet: Pet }) {
           </Text>
         </View>
         <Pressable style={styles.editButton} onPress={handlePressEditButton}>
-          <SquarePen color={Palette.neutral.white} size={20} />
+          <SquarePen color={Palette.purple.darker} size={22} />
         </Pressable>
       </View>
     </Pressable>
@@ -212,10 +212,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   editButton: {
-    padding: 12,
-    backgroundColor: Palette.buttons.other,
-    borderRadius: 100,
+    padding: 10,
+    backgroundColor: Palette.neutral.offWhite,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
 });
