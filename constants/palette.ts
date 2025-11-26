@@ -26,6 +26,7 @@ export const Palette = {
   buttons: {
     warning: "#8d0116ff", // Vermelho para botões de aviso/erro
     success: "#004e17ff", // Verde para botões de sucesso
+    other: "#b9b9b9ff", // Cinza para botões neutros
   },
 } as const;
 

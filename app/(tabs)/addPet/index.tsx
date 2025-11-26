@@ -139,7 +139,7 @@ export default function AddPet() {
       <ThemedView style={styles.container}>
         {/* header */}
         <View style={styles.header}>
-          <ThemedText style={styles.title}>Edit Pet Details</ThemedText>
+          <ThemedText style={styles.title}>Add New Pet</ThemedText>
         </View>
 
         <ScrollView
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: Palette.neutral.gray,
+    backgroundColor: Palette.buttons.other,
   },
   saveButton: {
     flex: 1,

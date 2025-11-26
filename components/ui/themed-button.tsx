@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
   ViewStyle,
 } from "react-native";
 
@@ -14,6 +15,7 @@ type ThemedButtonProps = {
   onPress: () => void;
   loading?: boolean;
   style?: ViewStyle;
+  icon?: React.ReactNode;
 };
 
 export function ThemedButton({
@@ -21,6 +23,7 @@ export function ThemedButton({
   onPress,
   loading,
   style,
+  icon,
 }: ThemedButtonProps) {
   return (
     <TouchableOpacity
@@ -31,7 +34,10 @@ export function ThemedButton({
       {loading ? (
         <ActivityIndicator color={Palette.neutral.white} />
       ) : (
-        <Text style={styles.text}>{title}</Text>
+        <>
+          {icon && <View style={styles.iconContainer}>{icon}</View>}
+          <Text style={styles.text}>{title}</Text>
+        </>
       )}
     </TouchableOpacity>
   );
@@ -43,6 +49,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -53,5 +60,8 @@ const styles = StyleSheet.create({
     color: Palette.neutral.white,
     fontFamily: Fonts.nunito.extraBold,
     fontSize: 16,
+  },
+  iconContainer: {
+    marginRight: 8,
   },
 });

@@ -1,10 +1,15 @@
-export interface Pet {
-  id?: string; // Tornado opcional
+export type PetInput = {
   name: string;
-  type: "cat" | "dog";
+  type: "dog" | "cat";
   gender: "male" | "female";
   birthDate: Date;
-  weight?: number;
-  iconUrl?: string;
+  weight: number;
   castrated: boolean;
-}
+  iconUrl?: string;
+  userId?: string;
+};
+
+// extends PetInput with an id field from Firestore document ID
+export type Pet = PetInput & {
+  id: string;
+};

@@ -1,16 +1,18 @@
 import { auth, db } from "@/firebase-config";
-import { Pet } from "@/types/pet";
+import { Pet, PetInput } from "@/types/pet";
 import {
   addDoc,
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { ImageSourcePropType } from "react-native";
 
-// add pet
-export const addPet = async (petData: Pet): Promise<Pet[]> => {
+// add new pet
+export const addPet = async (petData: PetInput): Promise<void> => {
   const user = auth.currentUser;
 
   if (!user) {
@@ -20,17 +22,60 @@ export const addPet = async (petData: Pet): Promise<Pet[]> => {
   try {
     const userRef = doc(db, "users", user.uid);
     const petsCollectionRef = collection(userRef, "pets");
-    const petRef = await addDoc(petsCollectionRef, petData);
-    console.log("Pet adicionado com ID:", petRef.id);
 
-    // Recarregar a lista de pets após adicionar
-    const petsSnapshot = await getDocs(petsCollectionRef);
-    return petsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Pet[];
+    await addDoc(petsCollectionRef, petData);
   } catch (error) {
     console.error("Erro ao adicionar pet:", error);
+    throw error;
+  }
+};
+
+// get pet by id
+export const getPetById = async (petId: string): Promise<Pet | null> => {
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  try {
+    const petRef = doc(db, "users", user.uid, "pets", petId);
+    const petDoc = await getDoc(petRef);
+
+    if (petDoc.exists()) {
+      const data = petDoc.data();
+
+      return {
+        id: petDoc.id,
+        name: data.name || "",
+        type: data.type || "dog",
+        gender: data.gender || "male",
+        birthDate: data.birthDate?.toDate
+          ? data.birthDate.toDate()
+          : new Date(),
+        weight: data.weight || 0,
+        castrated: data.castrated || false,
+        iconUrl: data.iconUrl || undefined,
+        userId: data.userId,
+      } as Pet;
+    }
+    return null;
+  } catch (error) {
+    console.error("Erro ao buscar pet:", error);
+    return null;
+  }
+};
+
+// update pet
+export const updatePet = async (
+  petId: string,
+  petData: Partial<PetInput>
+): Promise<void> => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Usuário não autenticado");
+
+  try {
+    const petRef = doc(db, "users", user.uid, "pets", petId);
+    await updateDoc(petRef, petData);
+  } catch (error) {
+    console.error("Erro ao atualizar pet:", error);
     throw error;
   }
 };
@@ -41,7 +86,7 @@ export const getPets = async (): Promise<Pet[]> => {
 
   if (!user) {
     console.log("Nenhum usuário autenticado, retornando lista vazia");
-    return []; // Retorna array vazio sem lançar erro
+    return [];
   }
 
   try {

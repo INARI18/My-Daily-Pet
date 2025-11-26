@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { SquarePen } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -25,60 +26,76 @@ import { getAuth } from "firebase/auth";
 
 function ProfileCard({ pet }: { pet: Pet }) {
   const age = calculateAge(pet.birthDate);
+  const router = useRouter();
+
+  const handlePressCard = () => {
+    if (!pet.id) return;
+    router.push(`/(tabs)/planner/${pet.id}` as any);
+  };
+
+  const handlePressEditButton = () => {
+    if (!pet.id) return;
+    router.push(`/(tabs)/editPet/${pet.id}` as any);
+  };
 
   return (
-    <View
-      style={{
-        backgroundColor: Palette.neutral.white,
-        padding: 18,
-        borderRadius: 8,
-        marginBottom: 16,
-        flexDirection: "row",
-        gap: 14,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-      }}
-    >
+    <Pressable onPress={handlePressCard}>
       <View
         style={{
-          width: 40,
-          height: 40,
+          backgroundColor: Palette.neutral.white,
+          padding: 18,
+          borderRadius: 8,
+          marginBottom: 16,
+          flexDirection: "row",
+          gap: 14,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 3,
         }}
       >
-        <Image
-          source={getPetIcon(pet)}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </View>
-      <View style={{ flexDirection: "column", gap: 5, flex: 1 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              fontFamily: Fonts.nunito.semiBold,
-              color: Palette.neutral.black,
-            }}
-          >
-            {pet.name}
-          </Text>
+        <View
+          style={{
+            width: 40,
+            height: 40,
+          }}
+        >
           <Image
-            source={getPetGenderSymbol(pet)}
-            style={{
-              width: pet.gender === "female" ? 16 : 14,
-              height: pet.gender === "female" ? 16 : 14,
-            }}
+            source={getPetIcon(pet)}
+            style={{ width: "100%", height: "100%" }}
           />
         </View>
-        <Text style={{ color: Palette.neutral.gray, fontSize: 12 }}>
-          {age} years | {pet.weight} kg |{" "}
-          {pet.castrated ? "Castrated" : "Not Castrated"}
-        </Text>
+        <View style={{ flexDirection: "column", gap: 5, flex: 1 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                fontFamily: Fonts.nunito.semiBold,
+                color: Palette.neutral.black,
+              }}
+            >
+              {pet.name}
+            </Text>
+            <Image
+              source={getPetGenderSymbol(pet)}
+              style={{
+                width: pet.gender === "female" ? 16 : 14,
+                height: pet.gender === "female" ? 16 : 14,
+              }}
+            />
+          </View>
+          <Text style={{ color: Palette.neutral.gray, fontSize: 12 }}>
+            {age} years | {pet.weight} kg |{" "}
+            {pet.castrated ? "Castrated" : "Not Castrated"}
+          </Text>
+        </View>
+        <Pressable style={styles.editButton} onPress={handlePressEditButton}>
+          <SquarePen color={Palette.neutral.white} size={20} />
+        </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -193,5 +210,12 @@ const styles = StyleSheet.create({
     color: Palette.neutral.gray,
     textAlign: "center",
     marginTop: 20,
+  },
+  editButton: {
+    padding: 12,
+    backgroundColor: Palette.buttons.other,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
