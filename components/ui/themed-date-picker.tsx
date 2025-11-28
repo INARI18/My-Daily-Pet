@@ -43,7 +43,13 @@ export function ThemedDatePicker({
     pickerEvent: DateTimePickerEvent,
     selectedDate?: Date
   ) => {
-    const currentDate = selectedDate || (value ? new Date(value) : new Date());
+    const parseYMD = (s: string) => {
+      const parts = s.split("-").map(Number);
+      if (parts.length !== 3 || parts.some(isNaN)) return new Date();
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    };
+
+    const currentDate = selectedDate || (value ? parseYMD(value) : new Date());
 
     // on Android, always hide the picker after selection
     if (Platform.OS === "android") {
@@ -52,13 +58,24 @@ export function ThemedDatePicker({
 
     // only update date if user confirmed the selection
     if (pickerEvent.type === "set") {
-      const formattedDate = currentDate.toISOString().split("T")[0];
+      const formatYMD = (d: Date) =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}-${String(d.getDate()).padStart(2, "0")}`;
+
+      const formattedDate = formatYMD(currentDate);
       onChangeDate(formattedDate);
     }
   };
 
   // Determine the date value for the picker
-  const dateValue = value ? new Date(value) : new Date();
+  const dateValue = (() => {
+    if (!value) return new Date();
+    const parts = value.split("-").map(Number);
+    if (parts.length !== 3 || parts.some(isNaN)) return new Date();
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  })();
 
   return (
     <View style={[styles.container, containerStyle]}>

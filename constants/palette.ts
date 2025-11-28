@@ -28,6 +28,14 @@ export const Palette = {
     success: "#004e17ff", // Verde para botões de sucesso
     other: "#b9b9b9ff", // Cinza para botões neutros
   },
+
+  badge: {
+    red: "#ff4d6dff",
+    green: "#4cd137ff",
+    blue: "#3498dbff",
+    yellow: "#f1c40fff",
+    purple: "#912391",
+  },
 } as const;
 
 export type PaletteColors = typeof Palette;

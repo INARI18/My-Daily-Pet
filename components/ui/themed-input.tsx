@@ -66,7 +66,12 @@ export function ThemedInput({
       <TextInput
         {...props}
         value={value} // ensure value prop is passed to TextInput
-        style={[styles.input, error && styles.inputError, style]}
+        style={[
+          styles.input,
+          error && styles.inputError,
+          props.multiline && styles.multilineInput,
+          style,
+        ]}
         secureTextEntry={isPassword && !isPasswordVisible}
         onChangeText={handleChangeText}
         keyboardType={resolvedKeyboardType}
@@ -95,13 +100,17 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   input: {
-    height: 48,
+    minHeight: 48,
     borderWidth: 1,
     borderColor: Palette.neutral.lightGray,
     borderRadius: 8,
     paddingHorizontal: 12,
+    paddingVertical: 12,
     backgroundColor: Palette.neutral.white,
     fontSize: 16,
+  },
+  multilineInput: {
+    textAlignVertical: "top",
   },
   inputError: {
     borderColor: Palette.buttons.warning,
