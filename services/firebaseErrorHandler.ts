@@ -10,6 +10,8 @@ export const getFirebaseErrorMessage = (errorCode: string): string => {
       return "Email ou senha incorretos.";
     case "auth/too-many-requests":
       return "Muitas tentativas. Aguarde um pouco e tente de novo.";
+    case "auth/requires-recent-login":
+      return "Por segurança, saia e entre de novo antes de excluir a conta.";
     case "auth/email-already-in-use":
       return "Este email já está em uso.";
     case "auth/weak-password":
