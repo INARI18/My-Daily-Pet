@@ -6,12 +6,16 @@ import { ThemedDatePicker } from "@/components/ui/themed-date-picker";
 import { ThemedInput } from "@/components/ui/themed-input";
 import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
-import { addPet } from "@/services/pets";
+import { deletePet, getPetById, updatePet } from "@/services/pets";
 import { Picker } from "@react-native-picker/picker";
-import { useFocusEffect, useRouter } from "expo-router";
-import { PawPrint, SquarePen } from "lucide-react-native";
-import React, { useCallback, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { deleteField } from "firebase/firestore";
+import { ArrowLeft, PawPrint, SquarePen, Trash2 } from "lucide-react-native";
+
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   ImageSourcePropType,
   ScrollView,
@@ -21,8 +25,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function AddPet() {
+export default function EditPet() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  console.log("ID do pet:", id);
+
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [petData, setPetData] = useState({
     name: "",
     type: "dog",
@@ -41,11 +49,59 @@ export default function AddPet() {
   const [errors, setErrors] = useState<{ [k: string]: string }>({});
   const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
 
+  // load pet data
+  useEffect(() => {
+    const loadPet = async () => {
+      try {
+        const pet = await getPetById(id);
+
+        if (pet) {
+          console.log("Pet loaded:", pet);
+
+          // Convert birthDate to string
+          let birthDateStr = "";
+          if (pet.birthDate) {
+            if (pet.birthDate instanceof Date) {
+              birthDateStr = pet.birthDate.toISOString().split("T")[0];
+            } else if (typeof pet.birthDate === "string") {
+              birthDateStr = pet.birthDate;
+            }
+          }
+
+          setPetData({
+            name: pet.name || "",
+            type: pet.type || "dog",
+            gender: pet.gender || "male",
+            birthDate: birthDateStr,
+            weight: pet.weight ? pet.weight.toString() : "",
+            castrated: pet.castrated ? "yes" : "no",
+          });
+
+          // load icon if exists
+          if (pet.iconUrl) {
+            // iconUrl (string) => ImageSourcePropType
+            setSelectedIcon({ uri: pet.iconUrl });
+          }
+        } else {
+          console.log("Pet not found");
+        }
+      } catch (error) {
+        console.error("Error loading pet:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPet();
+  }, [id]);
+
   const handleInputChange = (field: string, value: string) => {
     setPetData((prev) => ({ ...prev, [field]: value }));
 
     setErrors((prev) => {
-      if (!prev[field]) return prev;
+      if (!prev[field]) {
+        return prev;
+      }
       const copy = { ...prev };
       delete copy[field];
       return copy;
@@ -73,70 +129,100 @@ export default function AddPet() {
     validate();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setTouched({ name: true, weight: true });
 
     if (!validate()) {
       return;
     }
 
-    // Firestore rejects undefined values, so omit birthDate when unknown
-    const { birthDate: birthDateStr, ...rest } = petData;
-    addPet({
-      ...rest,
-      type: petData.type as "dog" | "cat",
-      gender: petData.gender as "male" | "female",
-      castrated: petData.castrated === "yes",
-      ...(birthDateStr.trim() ? { birthDate: new Date(birthDateStr.trim()) } : {}),
-      weight: parseFloat(petData.weight),
-    });
+    try {
+      const updateData: any = {
+        name: petData.name,
+        type: petData.type as "dog" | "cat",
+        gender: petData.gender as "male" | "female",
+        castrated: petData.castrated === "yes",
+        // cleared date removes the field (unknown birthdate)
+        birthDate: petData.birthDate.trim()
+          ? new Date(petData.birthDate.trim())
+          : deleteField(),
+        weight: parseFloat(petData.weight),
+      };
 
-    setPetData({
-      name: "",
-      type: "dog",
-      gender: "male",
-      birthDate: "",
-      weight: "",
-      castrated: "no",
-    });
+      // handle icon update
+      if (
+        selectedIcon &&
+        typeof selectedIcon === "object" &&
+        "uri" in selectedIcon
+      ) {
+        updateData.iconUrl = (selectedIcon as { uri: string }).uri;
+      }
+      // handle number (require), resolve to URI
+      else if (selectedIcon && typeof selectedIcon === "number") {
+        updateData.iconUrl = Image.resolveAssetSource(selectedIcon)?.uri;
+      }
 
-    setErrors({});
-    setTouched({});
+      await updatePet(id, updateData);
 
-    router.replace("/(tabs)/profiles");
+      router.replace("/pets");
+    } catch (error) {
+      console.error("Erro ao atualizar pet:", error);
+    }
   };
 
-  const handleCancel = () => {
-    router.replace("/(tabs)/profiles");
+  const handleDelete = async () => {
+    // Confirmation before deleting pet
+    Alert.alert(
+      "Delete Pet",
+      "Are you sure you want to delete this pet? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deletePet(id);
+              router.replace("/pets");
+            } catch (error) {
+              console.error("Erro ao deletar pet:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleGoBack = () => {
+    router.replace("/pets");
   };
 
   const handleIconSelect = (icon: ImageSourcePropType) => {
-    setSelectedIcon(icon); // define the selected icon
+    setSelectedIcon(icon);
     setPetData((prev) => ({
       ...prev,
       iconUrl: Image.resolveAssetSource(icon)?.uri,
-    })); // ensures the iconUrl is a valid string
+    }));
     setIconModalVisible(false);
   };
 
-  // reset form when leaving the screen
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        setSelectedIcon(null);
-        setPetData({
-          name: "",
-          type: "dog",
-          gender: "male",
-          birthDate: "",
-          weight: "",
-          castrated: "no",
-        });
-        setErrors({});
-        setTouched({});
-      };
-    }, [])
-  );
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: Palette.neutral.offWhite }}
+        edges={["top", "bottom"]}
+      >
+        <ActivityIndicator
+          size="large"
+          color={Palette.purple.main}
+          style={{ marginTop: 50 }}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -144,15 +230,18 @@ export default function AddPet() {
       edges={["top", "bottom"]}
     >
       <ThemedView style={styles.container}>
-        {/* header */}
-        <View style={styles.header}>
-          <ThemedText style={styles.title}>Add New Pet</ThemedText>
-        </View>
-
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
+          <View style={styles.header}>
+            <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+              <ArrowLeft size={24} color={Palette.purple.darker} />
+            </TouchableOpacity>
+
+            <ThemedText style={styles.title}>Edit Pet</ThemedText>
+            <View style={{ width: 24 }} />
+          </View>
           {/* pet icon */}
           <View style={styles.imageSection}>
             <TouchableOpacity
@@ -186,9 +275,8 @@ export default function AddPet() {
           </View>
 
           {/* FORM */}
-
-          {/* name */}
           <View style={styles.formSection}>
+            {/* name */}
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Name</ThemedText>
               <ThemedInput
@@ -244,6 +332,7 @@ export default function AddPet() {
               />
             </View>
 
+            {/* weight */}
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Weight</ThemedText>
               <ThemedInput
@@ -258,6 +347,7 @@ export default function AddPet() {
               />
             </View>
 
+            {/* castrated */}
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Castrated</ThemedText>
               <View style={styles.pickerContainer}>
@@ -278,9 +368,10 @@ export default function AddPet() {
           {/* buttons */}
           <View style={styles.buttonContainer}>
             <ThemedButton
-              title="Cancel"
-              style={styles.cancelButton}
-              onPress={handleCancel}
+              title="Delete"
+              style={styles.deleteButton}
+              onPress={handleDelete}
+              icon={<Trash2 color={Palette.neutral.white} size={16} />}
             />
             <ThemedButton
               title="Save"
@@ -311,9 +402,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingTop: 16,
     paddingBottom: 16,
-    alignItems: "center",
+    paddingHorizontal: 16,
     backgroundColor: Palette.neutral.offWhite,
   },
   title: {
@@ -389,13 +483,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     marginTop: 24,
   },
-  cancelButton: {
+  deleteButton: {
     flex: 1,
-    backgroundColor: Palette.buttons.other,
+    backgroundColor: Palette.buttons.warning,
   },
   saveButton: {
     flex: 1,
     backgroundColor: Palette.purple.darker,
+  },
+  backButton: {
+    padding: 8,
   },
   bottomSpacing: {
     height: 40,

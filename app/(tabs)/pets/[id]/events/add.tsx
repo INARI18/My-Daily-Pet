@@ -173,7 +173,7 @@ export default function AddEvent() {
         {
           text: "OK",
           onPress: () =>
-            router.push(`/planner/${petId}/events/${eventData.type}`),
+            router.push(`/pets/${petId}/events/${eventData.type}`),
         },
       ]);
     } catch (error) {
@@ -185,7 +185,7 @@ export default function AddEvent() {
   };
 
   const handleGoBack = () => {
-    router.push(`/planner/${petId}`);
+    router.push(`/pets/${petId}`);
   };
 
   return (

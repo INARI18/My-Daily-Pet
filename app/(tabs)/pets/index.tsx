@@ -30,12 +30,12 @@ function ProfileCard({ pet }: { pet: Pet }) {
 
   const handlePressCard = () => {
     if (!pet.id) return;
-    router.push(`/(tabs)/planner/${pet.id}` as any);
+    router.push(`/pets/${pet.id}`);
   };
 
   const handlePressEditButton = () => {
     if (!pet.id) return;
-    router.push(`/(tabs)/editPet/${pet.id}` as any);
+    router.push(`/pets/${pet.id}/edit`);
   };
 
   return (
@@ -160,7 +160,7 @@ export default function Profiles() {
             )}
           </ScrollView>
         )}
-        <Pressable style={styles.fab} onPress={() => router.push("../addPet")}>
+        <Pressable style={styles.fab} onPress={() => router.push("/pets/add")}>
           <Image
             source={require("@/assets/images/profiles/add_pet_profile_button.png")}
             style={{ width: 65, height: 65 }}

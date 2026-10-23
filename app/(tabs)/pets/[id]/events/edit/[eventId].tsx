@@ -114,13 +114,13 @@ export default function EditEvent() {
           });
         } else {
           Alert.alert("Error", "Event not found", [
-            { text: "OK", onPress: () => router.push(`/planner/${petId}`) },
+            { text: "OK", onPress: () => router.push(`/pets/${petId}`) },
           ]);
         }
       } catch (error) {
         console.error("Error loading event:", error);
         Alert.alert("Error", "Failed to load event", [
-          { text: "OK", onPress: () => router.push(`/planner/${petId}`) },
+          { text: "OK", onPress: () => router.push(`/pets/${petId}`) },
         ]);
       } finally {
         setLoading(false);
@@ -218,7 +218,7 @@ export default function EditEvent() {
         {
           text: "OK",
           onPress: () =>
-            router.push(`/planner/${petId}/events/${eventData.type}`),
+            router.push(`/pets/${petId}/events/${eventData.type}`),
         },
       ]);
     } catch (error) {
@@ -248,7 +248,7 @@ export default function EditEvent() {
                 {
                   text: "OK",
                   onPress: () =>
-                    router.push(`/planner/${petId}/events/${eventData.type}`),
+                    router.push(`/pets/${petId}/events/${eventData.type}`),
                 },
               ]);
             } catch (error) {
@@ -262,7 +262,7 @@ export default function EditEvent() {
   };
 
   const handleGoBack = () => {
-    router.push(`/planner/${petId}`);
+    router.push(`/pets/${petId}`);
   };
 
   if (loading) {

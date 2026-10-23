@@ -15,13 +15,13 @@ export default function Navbar({ pageName }: { pageName: string }) {
       <Text style={styles.text}>{pageName}</Text>
       <TouchableOpacity
         style={styles.homeButton}
-        onPress={() => router.push("/user")}
+        onPress={() => router.push("/account")}
       >
         <UserRound color={Palette.neutral.white} size={24} />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.homeButton}
-        onPress={() => router.push("/")}
+        onPress={() => router.push("/pets")}
       >
         <Home color={Palette.neutral.white} size={24} />
       </TouchableOpacity>

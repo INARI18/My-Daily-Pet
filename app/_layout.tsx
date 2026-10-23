@@ -72,7 +72,7 @@ export default function RootLayout() {
       router.replace("/login");
     } else if (user && !inAuthGroup) {
       // Usuário autenticado na tela de login
-      router.replace("/(tabs)");
+      router.replace("/pets");
     }
   }, [user, segments, loading]);
 
@@ -93,10 +93,6 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="login" />
           <Stack.Screen name="register" />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: "modal", title: "Modal" }}
-          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

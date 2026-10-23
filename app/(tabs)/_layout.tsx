@@ -1,30 +1,47 @@
+import { Colors, Fonts } from "@/constants/theme";
 import { Tabs } from "expo-router";
+import { CalendarCheck, PawPrint, UserRound } from "lucide-react-native";
 import React from "react";
-
-// expo-router 58+: only screens declared here are reachable (tab bar is hidden anyway)
-const SCREENS = [
-  "index",
-  "profiles/index",
-  "addPet/index",
-  "editPet/[id]",
-  "user/index",
-  "planner/[id]/index",
-  "planner/[id]/events/[eventType]",
-  "planner/[id]/events/addEvent",
-  "planner/[id]/events/editEvent/[eventId]",
-];
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarStyle: { display: "none" },
         headerShown: false,
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarStyle: {
+          backgroundColor: Colors.surface,
+          borderTopColor: Colors.border,
+          height: 64,
+          paddingTop: 6,
+        },
+        tabBarLabelStyle: { fontFamily: Fonts.bodyBold, fontSize: 11 },
       }}
     >
-      {SCREENS.map((name) => (
-        <Tabs.Screen key={name} name={name} />
-      ))}
+      <Tabs.Screen
+        name="pets"
+        options={{
+          title: "Pets",
+          tabBarIcon: ({ color, size }) => <PawPrint color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="today"
+        options={{
+          title: "Today",
+          tabBarIcon: ({ color, size }) => (
+            <CalendarCheck color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: "Account",
+          tabBarIcon: ({ color, size }) => <UserRound color={color} size={size} />,
+        }}
+      />
     </Tabs>
   );
 }

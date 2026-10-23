@@ -26,7 +26,7 @@ const RegisterScreen = () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert("Usuário registrado com sucesso!");
-      router.replace("/(tabs)"); // redirects to home screen after registration and automatic login
+      router.replace("/pets");
     } catch (err: any) {
       const userFriendlyMessage = getFirebaseErrorMessage(err.code);
       setError(userFriendlyMessage);

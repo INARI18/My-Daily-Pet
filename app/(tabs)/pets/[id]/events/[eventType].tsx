@@ -142,7 +142,7 @@ export default function EventTypeList() {
   };
 
   const handleAddEvent = () => {
-    router.push(`/planner/${petId}/events/addEvent?type=${eventType}`);
+    router.push(`/pets/${petId}/events/add?type=${eventType}`);
   };
 
   const handleEditEvent = (eventId: string, isPast: boolean) => {
@@ -153,11 +153,11 @@ export default function EventTypeList() {
       );
       return;
     }
-    router.push(`/planner/${petId}/events/editEvent/${eventId}`);
+    router.push(`/pets/${petId}/events/edit/${eventId}`);
   };
 
   const handleGoBack = () => {
-    router.push(`/planner/${petId}`);
+    router.push(`/pets/${petId}`);
   };
 
   const formatDate = (date: Date) => {

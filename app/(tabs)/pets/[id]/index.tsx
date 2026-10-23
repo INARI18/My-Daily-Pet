@@ -65,7 +65,7 @@ export default function PetPlanner() {
   }, [id]);
 
   const handleCategoryPress = (categoryId: string) => {
-    router.push(`/planner/${id}/events/${categoryId}`);
+    router.push(`/pets/${id}/events/${categoryId}`);
   };
 
   return (
