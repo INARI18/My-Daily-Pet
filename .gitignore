@@ -44,3 +44,6 @@ app-example
 
 # Ignorar arquivos de ambiente
 .env
+
+# brainstorm mockups
+.superpowers/
