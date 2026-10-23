@@ -1,6 +1,7 @@
 import { Badge, BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CompleteCheck } from "@/components/ui/complete-check";
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
 import { Segmented } from "@/components/ui/segmented";
@@ -17,7 +18,7 @@ import {
 import { Event } from "@/types/event";
 import { formatDate, formatTime } from "@/utils/date";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { CalendarDays, Check, Clock, Repeat } from "lucide-react-native";
+import { CalendarDays, Clock, Repeat } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -48,7 +49,7 @@ function EventCard({
 }: {
   event: Event;
   onPress: () => void;
-  onComplete: () => void;
+  onComplete: () => Promise<void>;
 }) {
   const status = getEventStatus(event);
   const badge = BADGES[status];
@@ -58,6 +59,7 @@ function EventCard({
   return (
     <Card onPress={onPress} style={[styles.card, done && styles.cardDone]}>
       <View style={styles.cardTop}>
+        <CompleteCheck checked={done} onComplete={done ? undefined : onComplete} />
         <View style={styles.flex}>
           <View style={styles.line}>
             <CalendarDays size={15} color={done ? Colors.textMuted : Colors.primary} />
@@ -82,16 +84,6 @@ function EventCard({
         <Text style={styles.notes} numberOfLines={2}>
           {event.notes}
         </Text>
-      ) : null}
-      {!done ? (
-        <Button
-          title="Complete"
-          variant="ghost"
-          size="sm"
-          icon={<Check size={15} color={Colors.textMuted} />}
-          onPress={onComplete}
-          style={styles.complete}
-        />
       ) : null}
     </Card>
   );
@@ -122,21 +114,13 @@ export default function EventsByType() {
     }, [load])
   );
 
-  const handleComplete = (event: Event) => {
-    Alert.alert("Complete event", "Mark this event as done?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Complete",
-        onPress: async () => {
-          try {
-            await completeEvent(event);
-            load();
-          } catch {
-            Alert.alert("Error", "Could not complete the event.");
-          }
-        },
-      },
-    ]);
+  const handleComplete = async (event: Event) => {
+    try {
+      await completeEvent(event);
+      await load();
+    } catch {
+      Alert.alert("Error", "Could not complete the event.");
+    }
   };
 
   const visible = events?.filter((e) => (filter === "completed") === isCompleted(e)) ?? [];
@@ -221,7 +205,7 @@ const styles = StyleSheet.create({
   },
   card: { marginBottom: Spacing.md },
   cardDone: { opacity: 0.7 },
-  cardTop: { flexDirection: "row", alignItems: "flex-start", gap: Spacing.sm },
+  cardTop: { flexDirection: "row", alignItems: "flex-start", gap: Spacing.md },
   line: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 },
   date: { fontFamily: Fonts.title, fontSize: 17, color: Colors.text },
   time: { fontFamily: Fonts.body, fontSize: 13.5, color: Colors.textMuted },
@@ -236,7 +220,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.border,
   },
-  complete: { alignSelf: "flex-end", marginTop: Spacing.sm },
   empty: { alignItems: "center", paddingVertical: 48, gap: Spacing.sm },
   emptyTitle: { fontFamily: Fonts.title, fontSize: 18, color: Colors.text, marginTop: Spacing.sm },
   emptyText: { fontFamily: Fonts.body, fontSize: 13.5, color: Colors.textMuted, textAlign: "center" },

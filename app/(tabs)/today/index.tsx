@@ -1,7 +1,7 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CompleteCheck } from "@/components/ui/complete-check";
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
 import { EVENT_TYPE_LABELS } from "@/constants/events";
@@ -17,7 +17,6 @@ import {
 import { getPetIcon } from "@/services/pets";
 import { formatDate, formatTime } from "@/utils/date";
 import { useFocusEffect, useRouter } from "expo-router";
-import { Check } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -36,7 +35,13 @@ const SECTIONS: { status: EventStatus; title: string }[] = [
   { status: "week", title: "Next 7 days" },
 ];
 
-function TodayCard({ item, onComplete }: { item: PetEvent; onComplete: () => void }) {
+function TodayCard({
+  item,
+  onComplete,
+}: {
+  item: PetEvent;
+  onComplete: () => Promise<void>;
+}) {
   const router = useRouter();
   const { pet, event } = item;
   const status = getEventStatus(event);
@@ -57,13 +62,7 @@ function TodayCard({ item, onComplete }: { item: PetEvent; onComplete: () => voi
         </Text>
         {status === "overdue" ? <Badge tone="overdue" text="Overdue" /> : null}
       </View>
-      <Button
-        title="Done"
-        variant="ghost"
-        size="sm"
-        icon={<Check size={14} color={Colors.textMuted} />}
-        onPress={onComplete}
-      />
+      <CompleteCheck onComplete={onComplete} />
     </Card>
   );
 }
@@ -83,21 +82,13 @@ export default function Today() {
     }, [load])
   );
 
-  const handleComplete = (item: PetEvent) => {
-    Alert.alert("Complete event", `Mark ${item.pet.name}'s event as done?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Done",
-        onPress: async () => {
-          try {
-            await completeEvent(item.event);
-            load();
-          } catch {
-            Alert.alert("Error", "Could not complete the event.");
-          }
-        },
-      },
-    ]);
+  const handleComplete = async (item: PetEvent) => {
+    try {
+      await completeEvent(item.event);
+      await load();
+    } catch {
+      Alert.alert("Error", "Could not complete the event.");
+    }
   };
 
   const grouped = SECTIONS.map((s) => ({
