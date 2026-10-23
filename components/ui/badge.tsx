@@ -1,45 +1,32 @@
-import { ThemedText } from "@/components/themed-text";
-import { Fonts } from "@/constants/fonts";
+import { Colors, Fonts } from "@/constants/theme";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-type BadgeProps = {
-  text: string;
-  backgroundColor?: string;
-  textColor?: string;
+export type BadgeTone = "today" | "week" | "overdue" | "done" | "info";
+
+const TONES: Record<BadgeTone, { bg: string; text: string }> = {
+  today: { bg: Colors.warningSoft, text: Colors.warning },
+  week: { bg: Colors.successSoft, text: Colors.success },
+  overdue: { bg: Colors.dangerSoft, text: Colors.danger },
+  done: { bg: Colors.primarySoft, text: Colors.primary },
+  info: { bg: Colors.border, text: Colors.textMuted },
 };
 
-export default function Badge({
-  text,
-  backgroundColor = "#000",
-  textColor = "#fff",
-}: BadgeProps) {
+export function Badge({ tone, text }: { tone: BadgeTone; text: string }) {
+  const t = TONES[tone];
   return (
-    <View style={[styles.badge, { backgroundColor }]}>
-      <ThemedText style={[styles.badgeText, { color: textColor }]}>
-        {text}
-      </ThemedText>
+    <View style={[styles.badge, { backgroundColor: t.bg }]}>
+      <Text style={[styles.text, { color: t.text }]}>{text.toUpperCase()}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   badge: {
-    position: "absolute",
-    top: 8,
-    right: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 50,
-    elevation: 50,
+    alignSelf: "flex-start",
+    paddingVertical: 3,
+    paddingHorizontal: 9,
+    borderRadius: 999,
   },
-  badgeText: {
-    fontSize: 10,
-    fontFamily: Fonts.fredoka.bold,
-    color: "#fff",
-    textTransform: "uppercase",
-  },
+  text: { fontFamily: Fonts.bodyBold, fontSize: 10, letterSpacing: 0.4 },
 });

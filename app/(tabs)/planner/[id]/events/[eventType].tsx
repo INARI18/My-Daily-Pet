@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import Badge from "@/components/ui/badge";
+import { Badge, BadgeTone } from "@/components/ui/badge";
 import { ThemedButton } from "@/components/ui/themed-button";
 import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
@@ -31,7 +31,9 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-function getBadgeForDate(date?: Date | null) {
+function getBadgeForDate(
+  date?: Date | null
+): { text: string; tone: BadgeTone } | null {
   if (!date) return null;
 
   const now = new Date();
@@ -46,50 +48,21 @@ function getBadgeForDate(date?: Date | null) {
     date.getDate()
   );
 
-  if (dateOnly < startOfToday) {
-    return {
-      text: "Past",
-      backgroundColor: Palette.neutral.gray,
-      textColor: Palette.neutral.white,
-    };
-  }
-
+  if (dateOnly < startOfToday) return { text: "Past", tone: "info" };
   if (dateOnly.getTime() === startOfToday.getTime()) {
-    return {
-      text: "Today",
-      backgroundColor: Palette.badge.red,
-      textColor: Palette.neutral.white,
-    };
+    return { text: "Today", tone: "today" };
   }
 
   const sevenDaysAhead = new Date(
     startOfToday.getTime() + 7 * 24 * 60 * 60 * 1000
   );
-  if (dateOnly > startOfToday && dateOnly <= sevenDaysAhead) {
-    return {
-      text: "This week",
-      backgroundColor: Palette.badge.blue,
-      textColor: Palette.neutral.white,
-    };
-  }
+  if (dateOnly <= sevenDaysAhead) return { text: "This week", tone: "week" };
 
   if (
     date.getFullYear() === now.getFullYear() &&
     date.getMonth() === now.getMonth()
   ) {
-    return {
-      text: "This month",
-      backgroundColor: Palette.badge.yellow,
-      textColor: Palette.neutral.white,
-    };
-  }
-
-  if (date.getFullYear() > now.getFullYear()) {
-    return {
-      text: "Next year",
-      backgroundColor: Palette.badge.purple,
-      textColor: Palette.neutral.white,
-    };
+    return { text: "This month", tone: "done" };
   }
 
   return null;
@@ -288,13 +261,7 @@ export default function EventTypeList() {
         {(() => {
           const badgeDate = event.nextDate || event.inicialDate;
           const badge = getBadgeForDate(badgeDate as Date | undefined);
-          return badge ? (
-            <Badge
-              text={badge.text}
-              backgroundColor={badge.backgroundColor}
-              textColor={badge.textColor}
-            />
-          ) : null;
+          return badge ? <Badge text={badge.text} tone={badge.tone} /> : null;
         })()}
       </Pressable>
     );

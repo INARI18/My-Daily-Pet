@@ -15,11 +15,16 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 import {
+  Baloo2_700Bold,
+  Baloo2_800ExtraBold,
+} from "@expo-google-fonts/baloo-2";
+import {
   Fredoka_400Regular,
   Fredoka_500Medium,
   Fredoka_700Bold,
 } from "@expo-google-fonts/fredoka";
 import {
+  Nunito_400Regular,
   Nunito_600SemiBold,
   Nunito_800ExtraBold,
 } from "@expo-google-fonts/nunito";
@@ -33,11 +38,14 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
+    Baloo2_800ExtraBold,
+    Baloo2_700Bold,
     Fredoka_700Bold,
     Fredoka_500Medium,
     Fredoka_400Regular,
     Nunito_800ExtraBold,
     Nunito_600SemiBold,
+    Nunito_400Regular,
   });
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);

@@ -1,21 +1,14 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
+// Temporary shim for the legacy Themed* components until every screen uses the kit.
+import { Colors } from "@/constants/theme";
 
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+const LEGACY: Record<string, string> = {
+  text: Colors.text,
+  background: Colors.bg,
+};
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorName: "text" | "background"
 ) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
-
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
-  }
+  return props.light ?? LEGACY[colorName];
 }
