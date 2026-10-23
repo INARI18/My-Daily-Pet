@@ -1,6 +1,5 @@
 import { Fonts } from "@/constants/fonts";
 import { Palette } from "@/constants/palette";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Stack, useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Bone, Cat, Dog, PawPrint } from "lucide-react-native";
@@ -14,9 +13,8 @@ import { auth } from "../../firebase-config";
 import { getFirebaseErrorMessage } from "../../services/firebaseErrorHandler";
 import AuthLayout from "../auth-layout";
 
-type Props = NativeStackScreenProps<any, "Register">;
 
-const RegisterScreen = ({}: Props) => {
+const RegisterScreen = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

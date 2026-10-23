@@ -53,7 +53,10 @@ export default function AddEvent() {
   }>();
   const router = useRouter();
 
+  // default to the next full hour so a new event does not start in the past
   const today = new Date();
+  today.setMinutes(0, 0, 0);
+  today.setHours(today.getHours() + 1);
   const dateStr = `${today.getFullYear()}-${String(
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;

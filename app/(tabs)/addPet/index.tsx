@@ -59,6 +59,11 @@ export default function AddPet() {
       newErrors.name = "Name is required";
     }
 
+    const weight = parseFloat(petData.weight);
+    if (isNaN(weight) || weight <= 0) {
+      newErrors.weight = "Weight must be a number greater than 0";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -69,18 +74,20 @@ export default function AddPet() {
   };
 
   const handleSave = () => {
-    setTouched({ name: true });
+    setTouched({ name: true, weight: true });
 
     if (!validate()) {
       return;
     }
 
+    // Firestore rejects undefined values, so omit birthDate when unknown
+    const { birthDate: birthDateStr, ...rest } = petData;
     addPet({
-      ...petData,
+      ...rest,
       type: petData.type as "dog" | "cat",
       gender: petData.gender as "male" | "female",
       castrated: petData.castrated === "yes",
-      birthDate: new Date(petData.birthDate.trim()), // remove blank spaces to avoid invalid date
+      ...(birthDateStr.trim() ? { birthDate: new Date(birthDateStr.trim()) } : {}),
       weight: parseFloat(petData.weight),
     });
 
@@ -107,7 +114,7 @@ export default function AddPet() {
     setSelectedIcon(icon); // define the selected icon
     setPetData((prev) => ({
       ...prev,
-      iconUrl: Image.resolveAssetSource(icon).uri,
+      iconUrl: Image.resolveAssetSource(icon)?.uri,
     })); // ensures the iconUrl is a valid string
     setIconModalVisible(false);
   };
@@ -233,6 +240,7 @@ export default function AddPet() {
                 placeholder="Select date"
                 style={styles.input}
                 maximumDate={new Date()}
+                clearable
               />
             </View>
 
@@ -245,6 +253,8 @@ export default function AddPet() {
                 keyboardType="decimal-pad"
                 style={styles.input}
                 filter="numeric"
+                error={touched.weight ? errors.weight : null}
+                onBlur={() => handleBlur("weight")}
               />
             </View>
 

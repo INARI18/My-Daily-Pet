@@ -9,6 +9,7 @@ import { Palette } from "@/constants/palette";
 import { deletePet, getPetById, updatePet } from "@/services/pets";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { deleteField } from "firebase/firestore";
 import { ArrowLeft, PawPrint, SquarePen, Trash2 } from "lucide-react-native";
 
 import React, { useEffect, useState } from "react";
@@ -114,6 +115,11 @@ export default function EditPet() {
       newErrors.name = "Name is required";
     }
 
+    const weight = parseFloat(petData.weight);
+    if (isNaN(weight) || weight <= 0) {
+      newErrors.weight = "Weight must be a number greater than 0";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -124,7 +130,7 @@ export default function EditPet() {
   };
 
   const handleSave = async () => {
-    setTouched({ name: true });
+    setTouched({ name: true, weight: true });
 
     if (!validate()) {
       return;
@@ -136,7 +142,10 @@ export default function EditPet() {
         type: petData.type as "dog" | "cat",
         gender: petData.gender as "male" | "female",
         castrated: petData.castrated === "yes",
-        birthDate: new Date(petData.birthDate.trim()),
+        // cleared date removes the field (unknown birthdate)
+        birthDate: petData.birthDate.trim()
+          ? new Date(petData.birthDate.trim())
+          : deleteField(),
         weight: parseFloat(petData.weight),
       };
 
@@ -150,7 +159,7 @@ export default function EditPet() {
       }
       // handle number (require), resolve to URI
       else if (selectedIcon && typeof selectedIcon === "number") {
-        updateData.iconUrl = Image.resolveAssetSource(selectedIcon).uri;
+        updateData.iconUrl = Image.resolveAssetSource(selectedIcon)?.uri;
       }
 
       await updatePet(id, updateData);
@@ -195,7 +204,7 @@ export default function EditPet() {
     setSelectedIcon(icon);
     setPetData((prev) => ({
       ...prev,
-      iconUrl: Image.resolveAssetSource(icon).uri,
+      iconUrl: Image.resolveAssetSource(icon)?.uri,
     }));
     setIconModalVisible(false);
   };
@@ -319,6 +328,7 @@ export default function EditPet() {
                 placeholder="Select date"
                 style={styles.input}
                 maximumDate={new Date()}
+                clearable
               />
             </View>
 
@@ -332,6 +342,8 @@ export default function EditPet() {
                 keyboardType="decimal-pad"
                 style={styles.input}
                 filter="numeric"
+                error={touched.weight ? errors.weight : null}
+                onBlur={() => handleBlur("weight")}
               />
             </View>
 

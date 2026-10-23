@@ -49,7 +49,7 @@ export const getPetById = async (petId: string): Promise<Pet | null> => {
         gender: data.gender || "male",
         birthDate: data.birthDate?.toDate
           ? data.birthDate.toDate()
-          : new Date(),
+          : undefined,
         weight: data.weight || 0,
         castrated: data.castrated || false,
         iconUrl: data.iconUrl || undefined,
@@ -113,6 +113,9 @@ export const deletePet = async (petId: string) => {
   try {
     const userRef = doc(db, "users", user.uid);
     const petDocRef = doc(userRef, "pets", petId);
+    // subcollections are not deleted with the parent doc
+    const eventsSnapshot = await getDocs(collection(petDocRef, "events"));
+    await Promise.all(eventsSnapshot.docs.map((d) => deleteDoc(d.ref)));
     await deleteDoc(petDocRef);
     console.log("Pet deletado com sucesso:", petId);
   } catch (error) {
@@ -120,19 +123,21 @@ export const deletePet = async (petId: string) => {
   }
 };
 
-// calculate age from birthDate
+// calculate age from birthDate; null when unknown
 export function calculateAge(
-  birthDate: Date | string | number | { toDate?: () => Date }
-): number {
+  birthDate?: Date | string | number | { toDate?: () => Date } | null
+): number | null {
+  if (!birthDate) return null;
+
   const today = new Date();
   const birth =
-    birthDate && typeof (birthDate as any).toDate === "function"
+    typeof (birthDate as any).toDate === "function"
       ? (birthDate as any).toDate()
       : new Date(birthDate as any);
 
   if (isNaN(birth.getTime())) {
     // invalid date input
-    return 0;
+    return null;
   }
 
   let age = today.getFullYear() - birth.getFullYear();

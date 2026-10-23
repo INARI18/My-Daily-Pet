@@ -5,6 +5,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDocs,
   serverTimestamp,
@@ -171,9 +172,6 @@ export const updateEvent = async (
     if (updates.inicialDate) {
       firestoreUpdates.inicialDate = Timestamp.fromDate(updates.inicialDate);
     }
-    if (updates.nextDate) {
-      firestoreUpdates.nextDate = Timestamp.fromDate(updates.nextDate);
-    }
     if (updates.lastCompletedAt) {
       firestoreUpdates.lastCompletedAt = Timestamp.fromDate(
         updates.lastCompletedAt
@@ -185,11 +183,22 @@ export const updateEvent = async (
     if (updates.notificationEnabled !== undefined) {
       firestoreUpdates.notificationEnabled = updates.notificationEnabled;
     }
-    if (updates.recurrence !== undefined) {
-      firestoreUpdates.recurrence = updates.recurrence;
+    // a key explicitly set to undefined means "remove it" (Firestore ignores undefined)
+    if ("recurrence" in updates) {
+      firestoreUpdates.recurrence = updates.recurrence ?? deleteField();
     }
-    if (updates.notes !== undefined) {
-      firestoreUpdates.notes = updates.notes;
+    if ("notes" in updates) {
+      firestoreUpdates.notes = updates.notes ?? deleteField();
+    }
+    if ("nextDate" in updates) {
+      firestoreUpdates.nextDate = updates.nextDate
+        ? Timestamp.fromDate(updates.nextDate)
+        : deleteField();
+    } else if (updates.recurrence && updates.inicialDate) {
+      // keep nextDate in sync when the schedule changes
+      firestoreUpdates.nextDate = Timestamp.fromDate(
+        calculateNextDate(updates.inicialDate, updates.recurrence)
+      );
     }
     if (updates.petId !== undefined) {
       firestoreUpdates.petId = updates.petId;

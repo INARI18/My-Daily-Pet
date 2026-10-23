@@ -32,7 +32,7 @@ export default function PetCalendar({
       visible={!!visible}
       transparent
       animationType="slide"
-      onRequestClose={onClose}
+      onRequestClose={() => onClose?.()}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>

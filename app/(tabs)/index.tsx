@@ -3,7 +3,7 @@ import { pawData } from "@/constants/homeAnimations";
 import { Palette } from "@/constants/palette";
 import { useRouter } from "expo-router";
 import { PawPrint } from "lucide-react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -19,9 +19,9 @@ export default function HomeScreen() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  const pawAnimations = useRef(
+  const [pawAnimations] = useState(() =>
     pawData.map(() => new Animated.Value(1))
-  ).current;
+  );
 
   useEffect(() => {
     const animations = pawAnimations.map((scale, index) =>
@@ -44,19 +44,6 @@ export default function HomeScreen() {
     animations.forEach((animation) => animation.start());
     return () => animations.forEach((animation) => animation.stop());
   }, [pawAnimations]);
-
-  useEffect(() => {
-    if (pawAnimations.length !== pawData.length) {
-      console.warn(
-        "pawAnimations and pawData are out of sync. Resynchronizing..."
-      );
-      pawAnimations.splice(
-        0,
-        pawAnimations.length,
-        ...pawData.map(() => new Animated.Value(1))
-      );
-    }
-  }, [pawData]);
 
   useEffect(() => {
     // Simulate data loading

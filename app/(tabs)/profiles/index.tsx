@@ -87,7 +87,7 @@ function ProfileCard({ pet }: { pet: Pet }) {
             />
           </View>
           <Text style={{ color: Palette.neutral.gray, fontSize: 12 }}>
-            {age} years | {pet.weight} kg |{" "}
+            {age === null ? "Age unknown" : `${age} years`} | {pet.weight} kg |{" "}
             {pet.castrated ? "Castrated" : "Not Castrated"}
           </Text>
         </View>
@@ -152,7 +152,7 @@ export default function Profiles() {
           >
             {pets.length === 0 ? (
               <Text style={styles.emptyText}>
-                You don't have any pets registered yet. Add one by clicking the
+                You don&apos;t have any pets registered yet. Add one by clicking the
                 button below!
               </Text>
             ) : (

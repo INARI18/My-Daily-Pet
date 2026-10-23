@@ -85,7 +85,6 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="login" />
           <Stack.Screen name="register" />
-          <Stack.Screen name="add-pet" />
           <Stack.Screen
             name="modal"
             options={{ presentation: "modal", title: "Modal" }}

@@ -3,6 +3,7 @@ import { Palette } from "@/constants/palette";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { X } from "lucide-react-native";
 import { useState } from "react";
 import {
   Modal,
@@ -25,6 +26,7 @@ type ThemedDatePickerProps = {
   error?: string | null;
   maximumDate?: Date;
   minimumDate?: Date;
+  clearable?: boolean; // shows an "x" to clear the selected date
 };
 
 export function ThemedDatePicker({
@@ -36,6 +38,7 @@ export function ThemedDatePicker({
   error = null,
   maximumDate,
   minimumDate,
+  clearable = false,
 }: ThemedDatePickerProps) {
   const [showPicker, setShowPicker] = useState(false);
 
@@ -88,6 +91,17 @@ export function ThemedDatePicker({
           pointerEvents="none"
         />
       </TouchableOpacity>
+
+      {clearable && !!value && (
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={() => onChangeDate("")}
+          hitSlop={8}
+          accessibilityLabel="Clear date"
+        >
+          <X size={18} color={Palette.neutral.gray} />
+        </TouchableOpacity>
+      )}
 
       {error && <ThemedText style={styles.errorText}>{error}</ThemedText>}
 
@@ -150,6 +164,11 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: Palette.buttons.warning,
     borderWidth: 1.5,
+  },
+  clearButton: {
+    position: "absolute",
+    right: 12,
+    top: 15,
   },
   errorText: {
     color: Palette.buttons.warning,

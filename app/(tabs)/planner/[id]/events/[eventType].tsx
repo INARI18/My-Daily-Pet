@@ -412,7 +412,7 @@ export default function EventTypeList() {
             ) : (
               <View style={styles.cardsContainer}>
                 {events.map((event) => (
-                  <View key={event.id || Math.random().toString()}>
+                  <View key={event.id}>
                     {renderEventCard({ item: event })}
                   </View>
                 ))}
