@@ -5,6 +5,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  FieldValue,
   getDoc,
   getDocs,
   updateDoc,
@@ -63,10 +64,14 @@ export const getPetById = async (petId: string): Promise<Pet | null> => {
   }
 };
 
-// update pet
+// update pet; birthDate accepts deleteField() to clear an unknown birthdate
+export type PetUpdate = Partial<Omit<PetInput, "birthDate">> & {
+  birthDate?: Date | FieldValue;
+};
+
 export const updatePet = async (
   petId: string,
-  petData: Partial<PetInput>
+  petData: PetUpdate
 ): Promise<void> => {
   const user = auth.currentUser;
   if (!user) throw new Error("Usuário não autenticado");

@@ -1,20 +1,8 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { SquarePen } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import Navbar from "@/components/ui/navbar";
-import { Fonts } from "@/constants/fonts";
-import { Palette } from "@/constants/palette";
+import { Avatar } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { Header } from "@/components/ui/header";
+import { Screen } from "@/components/ui/screen";
+import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
 import {
   calculateAge,
   getPetGenderSymbol,
@@ -22,205 +10,125 @@ import {
   getPets,
 } from "@/services/pets";
 import { Pet } from "@/types/pet";
-import { getAuth } from "firebase/auth";
+import { useFocusEffect, useRouter } from "expo-router";
+import { Plus, SquarePen } from "lucide-react-native";
+import React, { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-function ProfileCard({ pet }: { pet: Pet }) {
-  const age = calculateAge(pet.birthDate);
+function PetCard({ pet }: { pet: Pet }) {
   const router = useRouter();
-
-  const handlePressCard = () => {
-    if (!pet.id) return;
-    router.push(`/pets/${pet.id}`);
-  };
-
-  const handlePressEditButton = () => {
-    if (!pet.id) return;
-    router.push(`/pets/${pet.id}/edit`);
-  };
+  const age = calculateAge(pet.birthDate);
+  const meta = [
+    age === null ? "Age unknown" : `${age} ${age === 1 ? "year" : "years"}`,
+    `${pet.weight} kg`,
+    pet.castrated ? "Castrated" : "Not castrated",
+  ].join("  ·  ");
 
   return (
-    <Pressable onPress={handlePressCard}>
-      <View
-        style={{
-          backgroundColor: Palette.neutral.white,
-          padding: 18,
-          borderRadius: 8,
-          marginBottom: 16,
-          flexDirection: "row",
-          gap: 14,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-          elevation: 3,
-        }}
-      >
-        <View
-          style={{
-            width: 40,
-            height: 40,
-          }}
-        >
-          <Image
-            source={getPetIcon(pet)}
-            style={{ width: "100%", height: "100%" }}
-          />
+    <Card onPress={() => router.push(`/pets/${pet.id}`)} style={styles.card}>
+      <Avatar source={getPetIcon(pet)} size="m" />
+      <View style={styles.cardBody}>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{pet.name}</Text>
+          <Image source={getPetGenderSymbol(pet)} style={styles.gender} />
         </View>
-        <View style={{ flexDirection: "column", gap: 5, flex: 1 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "bold",
-                fontFamily: Fonts.nunito.semiBold,
-                color: Palette.neutral.black,
-              }}
-            >
-              {pet.name}
-            </Text>
-            <Image
-              source={getPetGenderSymbol(pet)}
-              style={{
-                width: pet.gender === "female" ? 16 : 14,
-                height: pet.gender === "female" ? 16 : 14,
-              }}
-            />
-          </View>
-          <Text style={{ color: Palette.neutral.gray, fontSize: 12 }}>
-            {age === null ? "Age unknown" : `${age} years`} | {pet.weight} kg |{" "}
-            {pet.castrated ? "Castrated" : "Not Castrated"}
-          </Text>
-        </View>
-        <Pressable style={styles.editButton} onPress={handlePressEditButton}>
-          <SquarePen color={Palette.purple.darker} size={22} />
-        </Pressable>
+        <Text style={styles.meta}>{meta}</Text>
       </View>
-    </Pressable>
+      <Pressable
+        onPress={() => router.push(`/pets/${pet.id}/edit`)}
+        style={styles.edit}
+        hitSlop={8}
+        accessibilityLabel="Edit pet"
+      >
+        <SquarePen size={18} color={Colors.primary} />
+      </Pressable>
+    </Card>
   );
 }
 
-export default function Profiles() {
+export default function Pets() {
   const router = useRouter();
-  const params = useLocalSearchParams();
-  const auth = getAuth();
-  const [pets, setPets] = useState<Pet[]>(
-    params.pets && typeof params.pets === "string"
-      ? JSON.parse(params.pets)
-      : []
-  );
-  const [loading, setLoading] = useState(true);
+  const [pets, setPets] = useState<Pet[] | null>(null);
 
-  useEffect(() => {
-    // verify if the user is authenticated before fetching data
-    if (!auth.currentUser) {
-      setLoading(false);
-      return;
-    }
-
-    if (!params.pets) {
-      const fetchPets = async () => {
-        try {
-          const fetchedPets = await getPets();
-          setPets(fetchedPets);
-        } catch (error) {
-          console.error("Erro ao buscar pets:", error);
-        } finally {
-          setLoading(false);
-        }
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      getPets().then((list) => active && setPets(list));
+      return () => {
+        active = false;
       };
-
-      fetchPets();
-    } else {
-      setLoading(false);
-    }
-  }, [params, auth.currentUser]);
+    }, [])
+  );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
-      <View style={styles.container}>
-        <Navbar pageName="My Pets" />
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color={Palette.purple.main}
-            style={{ marginTop: 20 }}
-          />
-        ) : (
-          <ScrollView
-            style={styles.profilesContainer}
-            contentContainerStyle={{ paddingBottom: 16 }}
-          >
-            {pets.length === 0 ? (
-              <Text style={styles.emptyText}>
-                You don&apos;t have any pets registered yet. Add one by clicking the
-                button below!
-              </Text>
-            ) : (
-              pets.map((pet) => <ProfileCard key={pet.id} pet={pet} />)
-            )}
-          </ScrollView>
-        )}
-        <Pressable style={styles.fab} onPress={() => router.push("/pets/add")}>
-          <Image
-            source={require("@/assets/images/profiles/add_pet_profile_button.png")}
-            style={{ width: 65, height: 65 }}
-          />
-        </Pressable>
-      </View>
-    </SafeAreaView>
+    <Screen scroll contentStyle={styles.content}>
+      <Header title="My Pets" />
+      {pets === null ? (
+        <ActivityIndicator color={Colors.primary} style={styles.loading} />
+      ) : pets.length === 0 ? (
+        <Text style={styles.empty}>
+          No pets yet. Tap + to add your first one.
+        </Text>
+      ) : (
+        pets.map((pet) => <PetCard key={pet.id} pet={pet} />)
+      )}
+      <Pressable
+        style={styles.fab}
+        onPress={() => router.push("/pets/add")}
+        accessibilityLabel="Add pet"
+      >
+        <Plus size={28} color={Colors.onPrimary} strokeWidth={2.5} />
+      </Pressable>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Palette.purple.darker,
+  content: { paddingBottom: 96, minHeight: "100%" },
+  loading: { marginTop: 40 },
+  empty: {
+    fontFamily: Fonts.body,
+    fontSize: 15,
+    color: Colors.textMuted,
+    textAlign: "center",
+    marginTop: 40,
   },
-  container: {
-    flex: 1,
-    backgroundColor: Palette.purple.darker,
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
   },
-  profilesContainer: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: Palette.neutral.offWhite,
-    borderRadius: 6,
-    margin: 10,
-    overflow: "hidden",
+  cardBody: { flex: 1 },
+  nameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  name: { fontFamily: Fonts.title, fontSize: 18, color: Colors.text },
+  gender: { width: 14, height: 14 },
+  meta: { fontFamily: Fonts.body, fontSize: 12.5, color: Colors.textMuted, marginTop: 2 },
+  edit: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.primarySoft,
+    alignItems: "center",
+    justifyContent: "center",
   },
   fab: {
     position: "absolute",
-    bottom: 24,
-    right: 24,
+    right: Spacing.lg,
+    bottom: Spacing.lg,
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Palette.purple.main,
-    justifyContent: "center",
+    backgroundColor: Colors.accent,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    opacity: 0.9,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: Palette.neutral.gray,
-    textAlign: "center",
-    marginTop: 20,
-  },
-  editButton: {
-    padding: 10,
-    backgroundColor: Palette.neutral.offWhite,
-    borderRadius: 10,
     justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Shadow.card,
   },
 });
