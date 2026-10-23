@@ -1,5 +1,7 @@
 import { auth, db } from "@/firebase-config";
 import { Event, EventFirestore, Recurrence } from "@/types/event";
+import { Pet } from "@/types/pet";
+import { addDays, isSameDay, startOfDay } from "@/utils/date";
 import {
   Timestamp,
   addDoc,
@@ -7,20 +9,39 @@ import {
   deleteDoc,
   deleteField,
   doc,
+  getDoc,
   getDocs,
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
+import { getPets } from "./pets";
 
-/**
- * Calcula a próxima data baseada em uma data inicial e recorrência
- */
-export function calculateNextDate(
-  baseDate: Date,
-  recurrence: Recurrence
-): Date {
+export type EventInput = Omit<Event, "id" | "createdAt">;
+
+// ---- status rules (see spec, section 5) ----
+
+export function getReferenceDate(event: Event): Date {
+  return event.nextDate ?? event.inicialDate;
+}
+
+// one-time events are done once completed; recurring ones never are
+export function isCompleted(event: Event): boolean {
+  return !event.recurrence && !!event.lastCompletedAt;
+}
+
+export type EventStatus = "done" | "overdue" | "today" | "week" | "later";
+
+export function getEventStatus(event: Event, now = new Date()): EventStatus {
+  if (isCompleted(event)) return "done";
+  const ref = getReferenceDate(event);
+  if (isSameDay(ref, now)) return "today";
+  if (ref < now) return "overdue";
+  if (ref <= addDays(startOfDay(now), 7)) return "week";
+  return "later";
+}
+
+export function calculateNextDate(baseDate: Date, recurrence: Recurrence): Date {
   const nextDate = new Date(baseDate);
-
   switch (recurrence.unit) {
     case "hours":
       nextDate.setHours(nextDate.getHours() + recurrence.amount);
@@ -38,51 +59,39 @@ export function calculateNextDate(
       nextDate.setFullYear(nextDate.getFullYear() + recurrence.amount);
       break;
   }
-
   return nextDate;
 }
 
-/**
- * Converte um Event para o formato do Firestore
- */
-function eventToFirestore(
-  eventData: Omit<Event, "id" | "createdAt">
-): Record<string, any> {
-  const firestoreData: Record<string, any> = {
+// ---- Firestore mapping ----
+
+function eventsRef(petId: string) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Usuário não autenticado");
+  return collection(doc(db, "users", user.uid, "pets", petId), "events");
+}
+
+function eventToFirestore(eventData: EventInput): Record<string, any> {
+  const data: Record<string, any> = {
     petId: eventData.petId,
     type: eventData.type,
     inicialDate: Timestamp.fromDate(eventData.inicialDate),
     notificationEnabled: eventData.notificationEnabled,
     createdAt: serverTimestamp(),
   };
-
   if (eventData.recurrence) {
-    firestoreData.recurrence = eventData.recurrence;
-    firestoreData.nextDate = Timestamp.fromDate(
+    data.recurrence = eventData.recurrence;
+    data.nextDate = Timestamp.fromDate(
       calculateNextDate(eventData.inicialDate, eventData.recurrence)
     );
   }
-
-  if (eventData.nextDate) {
-    firestoreData.nextDate = Timestamp.fromDate(eventData.nextDate);
-  }
-
+  if (eventData.nextDate) data.nextDate = Timestamp.fromDate(eventData.nextDate);
   if (eventData.lastCompletedAt) {
-    firestoreData.lastCompletedAt = Timestamp.fromDate(
-      eventData.lastCompletedAt
-    );
+    data.lastCompletedAt = Timestamp.fromDate(eventData.lastCompletedAt);
   }
-
-  if (eventData.notes) {
-    firestoreData.notes = eventData.notes;
-  }
-
-  return firestoreData;
+  if (eventData.notes) data.notes = eventData.notes;
+  return data;
 }
 
-/**
- * Converte dados do Firestore para Event
- */
 function firestoreToEvent(id: string, data: EventFirestore): Event {
   return {
     id,
@@ -98,199 +107,95 @@ function firestoreToEvent(id: string, data: EventFirestore): Event {
   };
 }
 
-/**
- * Adiciona um novo evento para um pet
- */
-export const addEvent = async (
-  petId: string,
-  eventData: Omit<Event, "id" | "createdAt">
-): Promise<string> => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error("Usuário não autenticado");
-  }
+// ---- CRUD ----
 
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const petRef = doc(userRef, "pets", petId);
-    const eventsCollectionRef = collection(petRef, "events");
-
-    const firestoreData = eventToFirestore(eventData);
-    const docRef = await addDoc(eventsCollectionRef, firestoreData);
-
-    return docRef.id;
-  } catch (error) {
-    console.error("Erro ao adicionar evento:", error);
-    throw error;
-  }
+export const addEvent = async (petId: string, eventData: EventInput): Promise<string> => {
+  const docRef = await addDoc(eventsRef(petId), eventToFirestore(eventData));
+  return docRef.id;
 };
 
-/**
- * Deleta um evento
- */
-export const deleteEvent = async (
+export const getEventById = async (
   petId: string,
   eventId: string
-): Promise<void> => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error("Usuário não autenticado");
-  }
-
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const petRef = doc(userRef, "pets", petId);
-    const eventRef = doc(petRef, "events", eventId);
-
-    await deleteDoc(eventRef);
-  } catch (error) {
-    console.error("Erro ao deletar evento:", error);
-    throw error;
-  }
+): Promise<Event | null> => {
+  const snap = await getDoc(doc(eventsRef(petId), eventId));
+  return snap.exists() ? firestoreToEvent(snap.id, snap.data() as EventFirestore) : null;
 };
 
-/**
- * Atualiza um evento existente
- */
-export const updateEvent = async (
-  petId: string,
-  eventId: string,
-  updates: Partial<Omit<Event, "id" | "createdAt">>
-): Promise<void> => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error("Usuário não autenticado");
-  }
-
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const petRef = doc(userRef, "pets", petId);
-    const eventRef = doc(petRef, "events", eventId);
-
-    const firestoreUpdates: Record<string, any> = {};
-
-    if (updates.inicialDate) {
-      firestoreUpdates.inicialDate = Timestamp.fromDate(updates.inicialDate);
-    }
-    if (updates.lastCompletedAt) {
-      firestoreUpdates.lastCompletedAt = Timestamp.fromDate(
-        updates.lastCompletedAt
-      );
-    }
-    if (updates.type !== undefined) {
-      firestoreUpdates.type = updates.type;
-    }
-    if (updates.notificationEnabled !== undefined) {
-      firestoreUpdates.notificationEnabled = updates.notificationEnabled;
-    }
-    // a key explicitly set to undefined means "remove it" (Firestore ignores undefined)
-    if ("recurrence" in updates) {
-      firestoreUpdates.recurrence = updates.recurrence ?? deleteField();
-    }
-    if ("notes" in updates) {
-      firestoreUpdates.notes = updates.notes ?? deleteField();
-    }
-    if ("nextDate" in updates) {
-      firestoreUpdates.nextDate = updates.nextDate
-        ? Timestamp.fromDate(updates.nextDate)
-        : deleteField();
-    } else if (updates.recurrence && updates.inicialDate) {
-      // keep nextDate in sync when the schedule changes
-      firestoreUpdates.nextDate = Timestamp.fromDate(
-        calculateNextDate(updates.inicialDate, updates.recurrence)
-      );
-    }
-    if (updates.petId !== undefined) {
-      firestoreUpdates.petId = updates.petId;
-    }
-
-    await updateDoc(eventRef, firestoreUpdates);
-  } catch (error) {
-    console.error("Erro ao atualizar evento:", error);
-    throw error;
-  }
-};
-
-/**
- * Marca um evento como completo e calcula a próxima data se houver recorrência
- */
-export const completeEvent = async (
-  petId: string,
-  eventId: string
-): Promise<void> => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error("Usuário não autenticado");
-  }
-
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const petRef = doc(userRef, "pets", petId);
-    const eventRef = doc(petRef, "events", eventId);
-
-    const now = new Date();
-    const updates: Record<string, any> = {
-      lastCompletedAt: Timestamp.fromDate(now),
-    };
-
-    // Se houver recorrência, calcular próxima data
-    const events = await getAllEventsForPet(petId);
-    const event = events.find((e) => e.id === eventId);
-
-    if (event?.recurrence) {
-      const nextDate = calculateNextDate(now, event.recurrence);
-      updates.nextDate = Timestamp.fromDate(nextDate);
-    }
-
-    await updateDoc(eventRef, updates);
-  } catch (error) {
-    console.error("Erro ao completar evento:", error);
-    throw error;
-  }
-};
-
-/**
- * Busca todos os eventos de um pet
- */
 export const getAllEventsForPet = async (petId: string): Promise<Event[]> => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error("Usuário não autenticado");
-  }
-
   try {
-    const userRef = doc(db, "users", user.uid);
-    const petRef = doc(userRef, "pets", petId);
-    const eventsCollectionRef = collection(petRef, "events");
-    const eventsSnapshot = await getDocs(eventsCollectionRef);
-
-    return eventsSnapshot.docs.map((doc) =>
-      firestoreToEvent(doc.id, doc.data() as EventFirestore)
-    );
+    const snapshot = await getDocs(eventsRef(petId));
+    return snapshot.docs.map((d) => firestoreToEvent(d.id, d.data() as EventFirestore));
   } catch (error) {
     console.error("Erro ao buscar eventos:", error);
     return [];
   }
 };
 
-/**
- * Busca eventos próximos (útil para notificações)
- */
-export const getUpcomingEvents = async (
-  petId: string,
-  hoursAhead: number = 24
-): Promise<Event[]> => {
-  const allEvents = await getAllEventsForPet(petId);
-  const now = new Date();
-  const futureLimit = new Date(now.getTime() + hoursAhead * 60 * 60 * 1000);
+export const deleteEvent = async (petId: string, eventId: string): Promise<void> => {
+  await deleteDoc(doc(eventsRef(petId), eventId));
+};
 
-  return allEvents
-    .filter((event) => {
-      if (!event.nextDate) return false;
-      return event.nextDate >= now && event.nextDate <= futureLimit;
+export const updateEvent = async (
+  petId: string,
+  eventId: string,
+  updates: Partial<EventInput>
+): Promise<void> => {
+  const data: Record<string, any> = {};
+
+  if (updates.inicialDate) data.inicialDate = Timestamp.fromDate(updates.inicialDate);
+  if (updates.lastCompletedAt) {
+    data.lastCompletedAt = Timestamp.fromDate(updates.lastCompletedAt);
+  }
+  if (updates.type !== undefined) data.type = updates.type;
+  if (updates.notificationEnabled !== undefined) {
+    data.notificationEnabled = updates.notificationEnabled;
+  }
+  // a key explicitly set to undefined means "remove it" (Firestore ignores undefined)
+  if ("recurrence" in updates) data.recurrence = updates.recurrence ?? deleteField();
+  if ("notes" in updates) data.notes = updates.notes ?? deleteField();
+  if ("nextDate" in updates) {
+    data.nextDate = updates.nextDate ? Timestamp.fromDate(updates.nextDate) : deleteField();
+  } else if (updates.recurrence && updates.inicialDate) {
+    // keep nextDate in sync when the schedule changes
+    data.nextDate = Timestamp.fromDate(
+      calculateNextDate(updates.inicialDate, updates.recurrence)
+    );
+  }
+
+  await updateDoc(doc(eventsRef(petId), eventId), data);
+};
+
+// Marks an event as done. Recurring events advance nextDate, keeping the original
+// cadence, until it lands in the future; one-time events become completed.
+export const completeEvent = async (event: Event): Promise<void> => {
+  const now = new Date();
+  const data: Record<string, any> = { lastCompletedAt: Timestamp.fromDate(now) };
+
+  if (event.recurrence) {
+    let next = getReferenceDate(event);
+    do {
+      next = calculateNextDate(next, event.recurrence);
+    } while (next <= now);
+    data.nextDate = Timestamp.fromDate(next);
+  }
+
+  await updateDoc(doc(eventsRef(event.petId), event.id), data);
+};
+
+// ---- cross-pet queries (Today tab) ----
+
+export type PetEvent = { pet: Pet; event: Event };
+
+export const getActiveEventsForAllPets = async (): Promise<PetEvent[]> => {
+  const pets = await getPets();
+  const perPet = await Promise.all(
+    pets.map(async (pet) => {
+      const events = await getAllEventsForPet(pet.id);
+      return events.filter((e) => !isCompleted(e)).map((event) => ({ pet, event }));
     })
-    .sort((a, b) => {
-      if (!a.nextDate || !b.nextDate) return 0;
-      return a.nextDate.getTime() - b.nextDate.getTime();
-    });
+  );
+  return perPet
+    .flat()
+    .sort((a, b) => getReferenceDate(a.event).getTime() - getReferenceDate(b.event).getTime());
 };

@@ -1,180 +1,75 @@
 import PetCalendar from "@/components/calendar";
-import Navbar from "@/components/ui/navbar";
-import { ThemedButton } from "@/components/ui/themed-button";
-import { Fonts } from "@/constants/fonts";
-import { Palette } from "@/constants/palette";
+import { Card } from "@/components/ui/card";
+import { Header, HeaderIconButton } from "@/components/ui/header";
+import { Screen } from "@/components/ui/screen";
+import { EVENT_TYPE_LABELS, PLANNER_CATEGORIES } from "@/constants/events";
+import { Colors, Fonts, Spacing } from "@/constants/theme";
 import { getPetById } from "@/services/pets";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Calendar1 } from "lucide-react-native";
+import { CalendarDays } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-const PLANNER_CATEGORIES = [
-  {
-    id: "bath",
-    label: "Baths",
-    icon: require("@/assets/images/planner/shower.png"),
-  },
-  {
-    id: "walk",
-    label: "Walks",
-    icon: require("@/assets/images/planner/walk2.png"),
-  },
-  {
-    id: "medication",
-    label: "Medication",
-    icon: require("@/assets/images/planner/medication.png"),
-  },
-  {
-    id: "vaccination",
-    label: "Vaccines",
-    icon: require("@/assets/images/planner/vaccines.png"),
-  },
-  {
-    id: "food",
-    label: "Food",
-    icon: require("@/assets/images/planner/food.png"),
-  },
-  {
-    id: "playTime",
-    label: "Play Time",
-    icon: require("@/assets/images/planner/play_time.png"),
-  },
-];
+import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function PetPlanner() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  console.log("Planner for pet ID:", id);
-  const [pet, setPet] = useState<any>(null);
+  const router = useRouter();
+  const [petName, setPetName] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const router = useRouter();
-
   useEffect(() => {
-    let mounted = true;
-    async function fetchPet() {
-      if (!id) return;
-      const p = await getPetById(id);
-      if (mounted) setPet(p);
-    }
-    fetchPet();
+    let active = true;
+    getPetById(id).then((pet) => active && setPetName(pet?.name ?? ""));
     return () => {
-      mounted = false;
+      active = false;
     };
   }, [id]);
 
-  const handleCategoryPress = (categoryId: string) => {
-    router.push(`/pets/${id}/events/${categoryId}`);
-  };
-
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
-      <Navbar pageName="Planner" />
-      <View style={styles.container}>
-        <View style={styles.plannerContainer}>
-          <Text style={styles.petName}>{pet?.name ?? "Loading..."}</Text>
-
-          {/* Render categories in pairs */}
-          {[0, 2, 4].map((startIndex) => (
-            <View key={startIndex} style={styles.plannerButtonContainer}>
-              {PLANNER_CATEGORIES.slice(startIndex, startIndex + 2).map(
-                (category) => (
-                  <Pressable
-                    key={category.id}
-                    style={styles.plannerButton}
-                    onPress={() => handleCategoryPress(category.id)}
-                  >
-                    <Text style={styles.plannerButtonText}>
-                      {category.label}
-                    </Text>
-                    <Image style={styles.plannerIcon} source={category.icon} />
-                  </Pressable>
-                )
-              )}
-            </View>
-          ))}
-
-          <View style={styles.buttonContainer}>
-            <ThemedButton
-              icon={<Calendar1 size={15} color={Palette.neutral.white} />}
-              style={styles.calendarButton}
-              title={showCalendar ? "Hide Calendar" : "Calendar"}
-              onPress={() => setShowCalendar((s) => !s)}
-            />
-          </View>
-          <PetCalendar
-            visible={showCalendar}
-            onClose={() => setShowCalendar(false)}
-          />
-        </View>
+    <Screen scroll>
+      <Header
+        title={petName ?? " "}
+        onBack={() => router.back()}
+        right={
+          <HeaderIconButton
+            onPress={() => setShowCalendar(true)}
+            accessibilityLabel="Calendar"
+          >
+            <CalendarDays size={20} color={Colors.primary} />
+          </HeaderIconButton>
+        }
+      />
+      <Text style={styles.subtitle}>What do you want to plan?</Text>
+      <View style={styles.grid}>
+        {PLANNER_CATEGORIES.map((category) => (
+          <Card
+            key={category.type}
+            onPress={() => router.push(`/pets/${id}/events/${category.type}`)}
+            style={styles.tile}
+          >
+            <Text style={styles.tileLabel}>{EVENT_TYPE_LABELS[category.type].plural}</Text>
+            <Image source={category.icon} style={styles.tileImage} resizeMode="contain" />
+          </Card>
+        ))}
       </View>
-    </SafeAreaView>
+      <PetCalendar visible={showCalendar} onClose={() => setShowCalendar(false)} />
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Palette.purple.darker,
+  subtitle: {
+    fontFamily: Fonts.body,
+    fontSize: 14,
+    color: Colors.textMuted,
+    marginBottom: Spacing.md,
   },
-  container: {
-    flex: 1,
-    backgroundColor: Palette.purple.darker,
-  },
-  plannerContainer: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: Palette.neutral.offWhite,
-    borderRadius: 6,
-    margin: 10,
-    overflow: "hidden",
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.md },
+  tile: {
+    width: "48%",
+    flexGrow: 1,
     alignItems: "center",
+    paddingVertical: Spacing.md,
   },
-  petName: {
-    fontFamily: Fonts.fredoka.bold,
-    fontSize: 24,
-    marginBottom: 3,
-    marginTop: 3,
-    color: Palette.purple.darker,
-    textAlign: "center",
-  },
-  plannerButtonContainer: {
-    flexDirection: "row",
-    gap: 20,
-  },
-  plannerButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: Palette.neutral.white,
-    alignItems: "center",
-    borderRadius: 8,
-    width: 160,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  plannerButtonText: {
-    fontFamily: Fonts.fredoka.medium,
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  plannerIcon: {
-    height: 110,
-    width: 110,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    gap: 16,
-    paddingHorizontal: 24,
-    marginTop: 24,
-  },
-  calendarButton: {
-    padding: 10,
-    backgroundColor: Palette.purple.darker,
-    borderRadius: 8,
-    marginTop: 3,
-  },
+  tileLabel: { fontFamily: Fonts.title, fontSize: 16, color: Colors.text, marginBottom: 6 },
+  tileImage: { width: 108, height: 100 },
 });
