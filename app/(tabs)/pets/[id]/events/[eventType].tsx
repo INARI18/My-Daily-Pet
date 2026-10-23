@@ -131,7 +131,6 @@ export default function EventsByType() {
       <Header title={labels.plural} onBack={() => router.back()} />
       <Button
         title={`New ${labels.singular.toLowerCase()}`}
-        variant="accent"
         onPress={() => router.push(`/pets/${petId}/events/add?type=${type}`)}
       />
       <Segmented

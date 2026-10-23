@@ -60,5 +60,5 @@ const styles = StyleSheet.create({
   },
   itemSelected: { backgroundColor: Colors.accentSoft },
   text: { fontFamily: Fonts.bodyBold, fontSize: 13, color: Colors.textMuted },
-  textSelected: { color: Colors.warning },
+  textSelected: { color: Colors.primary },
 });

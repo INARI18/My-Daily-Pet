@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: Fonts.title,
     fontSize: 40,
-    color: Colors.accent,
+    color: Colors.bg,
     textAlign: "center",
   },
   subtitle: {

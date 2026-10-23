@@ -9,7 +9,7 @@ import {
   ViewStyle,
 } from "react-native";
 
-type Variant = "primary" | "accent" | "ghost" | "danger";
+type Variant = "primary" | "accent" | "light" | "ghost" | "danger";
 
 type ButtonProps = {
   title: string;
@@ -25,6 +25,7 @@ type ButtonProps = {
 const VARIANT_STYLES: Record<Variant, { bg: string; text: string; border?: string }> = {
   primary: { bg: Colors.primary, text: Colors.onPrimary },
   accent: { bg: Colors.accent, text: Colors.onPrimary },
+  light: { bg: Colors.bg, text: Colors.primary }, // for use on a primary background
   ghost: { bg: "transparent", text: Colors.textMuted, border: Colors.border },
   danger: { bg: Colors.dangerSoft, text: Colors.danger },
 };

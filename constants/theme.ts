@@ -5,8 +5,9 @@ export const Colors = {
   surface: "#FFFFFF",
   primary: "#5C1A5C",
   primarySoft: "#EFE6F2",
-  accent: "#FF8A5B",
-  accentSoft: "#FFE3D6",
+  // single-hue palette: the accent is a lighter purple, not a second color
+  accent: "#9B4D9B",
+  accentSoft: "#E6D3EA",
   text: "#3A2740",
   textMuted: "#8A7A80",
   border: "#F0E6DA",

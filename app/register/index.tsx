@@ -57,7 +57,7 @@ export default function RegisterScreen() {
           </Pressable>
         }
       />
-      <Button title="Registrar" variant="accent" onPress={handleRegister} loading={loading} />
+      <Button title="Registrar" variant="light" onPress={handleRegister} loading={loading} />
       <Button
         title="Já tem uma conta? Faça login"
         variant="ghost"

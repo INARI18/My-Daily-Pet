@@ -57,7 +57,7 @@ export default function LoginScreen() {
           </Pressable>
         }
       />
-      <Button title="Entrar" variant="accent" onPress={handleLogin} loading={loading} />
+      <Button title="Entrar" variant="light" onPress={handleLogin} loading={loading} />
       <Button
         title="Criar uma conta"
         variant="ghost"
