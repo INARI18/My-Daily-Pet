@@ -1,5 +1,5 @@
-import { Palette } from "@/constants/palette";
-import React, { useEffect, useState } from "react";
+import { Colors } from "@/constants/theme";
+import React, { useState } from "react";
 import {
   GestureResponderEvent,
   Modal,
@@ -13,19 +13,10 @@ import { Calendar } from "react-native-calendars";
 type PetCalendarProps = {
   visible?: boolean;
   onClose?: (e?: GestureResponderEvent) => void;
-  initialSelected?: string | null;
 };
 
-export default function PetCalendar({
-  visible = false,
-  onClose,
-  initialSelected = null,
-}: PetCalendarProps) {
-  const [selected, setSelected] = useState<string | null>(initialSelected);
-
-  useEffect(() => {
-    setSelected(initialSelected);
-  }, [initialSelected]);
+export default function PetCalendar({ visible = false, onClose }: PetCalendarProps) {
+  const [selected, setSelected] = useState<string | null>(null);
 
   return (
     <Modal
@@ -45,16 +36,13 @@ export default function PetCalendar({
           <View style={styles.container}>
             <Calendar
               // ensure a consistent month view and readable layout
-              onDayPress={(day) => {
-                setSelected(day.dateString);
-                console.log("Data selecionada:", day);
-              }}
+              onDayPress={(day) => setSelected(day.dateString)}
               markedDates={
                 selected
                   ? {
                       [selected]: {
                         selected: true,
-                        selectedColor: Palette.purple.main,
+                        selectedColor: Colors.primary,
                       },
                     }
                   : {}
@@ -65,16 +53,16 @@ export default function PetCalendar({
               hideExtraDays={false}
               monthFormat={"MMMM yyyy"}
               theme={{
-                backgroundColor: Palette.neutral.offWhite,
-                calendarBackground: Palette.neutral.offWhite,
-                textSectionTitleColor: Palette.purple.darker,
-                selectedDayBackgroundColor: Palette.purple.main,
+                backgroundColor: Colors.bg,
+                calendarBackground: Colors.bg,
+                textSectionTitleColor: Colors.primary,
+                selectedDayBackgroundColor: Colors.primary,
                 selectedDayTextColor: "#ffffff",
-                todayTextColor: Palette.purple.main,
-                dayTextColor: Palette.neutral.black,
+                todayTextColor: Colors.primary,
+                dayTextColor: Colors.text,
                 textDisabledColor: "#cfcfcf",
-                arrowColor: Palette.purple.main,
-                monthTextColor: Palette.neutral.black,
+                arrowColor: Colors.primary,
+                monthTextColor: Colors.text,
                 textDayFontSize: 16,
                 textMonthFontSize: 16,
                 textDayHeaderFontSize: 14,
@@ -98,7 +86,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: "100%",
     height: "88%",
-    backgroundColor: Palette.neutral.offWhite,
+    backgroundColor: Colors.bg,
     borderRadius: 12,
     overflow: "hidden",
   },
@@ -108,13 +96,13 @@ const styles = StyleSheet.create({
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "rgba(0,0,0,0.05)",
-    backgroundColor: Palette.neutral.offWhite,
+    backgroundColor: Colors.bg,
   },
   closeButton: {
     padding: 6,
   },
   closeText: {
-    color: Palette.buttons.warning,
+    color: Colors.danger,
     fontWeight: "600",
   },
   container: {

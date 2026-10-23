@@ -1,6 +1,5 @@
-import { Fonts } from "@/constants/fonts";
+import { Colors, Fonts } from "@/constants/theme";
 import iconMap from "@/constants/iconMap";
-import { Palette } from "@/constants/palette";
 import { Cat, Dog, X } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -48,7 +47,7 @@ export default function IconPickerModal({
               onPress={onClose}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <X size={24} color={Palette.neutral.gray} strokeWidth={2.5} />
+              <X size={24} color={Colors.textMuted} strokeWidth={2.5} />
             </TouchableOpacity>
           </View>
 
@@ -63,8 +62,8 @@ export default function IconPickerModal({
                   size={20}
                   color={
                     selectedTab === "cats"
-                      ? Palette.neutral.white
-                      : Palette.neutral.gray
+                      ? Colors.surface
+                      : Colors.textMuted
                   }
                   style={styles.iconInline}
                 />
@@ -87,8 +86,8 @@ export default function IconPickerModal({
                   size={20}
                   color={
                     selectedTab === "dogs"
-                      ? Palette.neutral.white
-                      : Palette.neutral.gray
+                      ? Colors.surface
+                      : Colors.textMuted
                   }
                   style={styles.iconInline}
                 />
@@ -141,7 +140,7 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
     maxHeight: "80%",
-    backgroundColor: Palette.neutral.white,
+    backgroundColor: Colors.surface,
     borderRadius: 20,
     overflow: "hidden",
   },
@@ -152,12 +151,12 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Palette.neutral.lightGray,
+    borderBottomColor: Colors.border,
   },
   title: {
     fontSize: 20,
-    fontFamily: Fonts.fredoka.bold,
-    color: Palette.purple.darker,
+    fontFamily: Fonts.title,
+    color: Colors.primary,
   },
   closeButton: {
     position: "absolute",
@@ -175,20 +174,20 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
-    backgroundColor: Palette.neutral.lightGray,
+    backgroundColor: Colors.border,
     alignItems: "center",
   },
   activeTab: {
-    backgroundColor: Palette.purple.darker,
+    backgroundColor: Colors.primary,
   },
   tabText: {
     fontSize: 14,
-    fontFamily: Fonts.fredoka.medium,
-    color: Palette.neutral.gray,
+    fontFamily: Fonts.bodyBold,
+    color: Colors.textMuted,
   },
   activeTabText: {
-    color: Palette.neutral.white,
-    fontFamily: Fonts.fredoka.bold,
+    color: Colors.surface,
+    fontFamily: Fonts.title,
   },
   gridContainer: {
     padding: 16,
@@ -201,7 +200,7 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     flex: 1,
-    backgroundColor: Palette.neutral.offWhite,
+    backgroundColor: Colors.bg,
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
@@ -220,7 +219,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Palette.neutral.gray,
+    color: Colors.textMuted,
     marginLeft: 8,
   },
   iconInline: {
