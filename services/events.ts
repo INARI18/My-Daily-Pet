@@ -1,7 +1,7 @@
 import { auth, db } from "@/firebase-config";
 import { Event, EventFirestore, Recurrence } from "@/types/event";
 import { Pet } from "@/types/pet";
-import { addDays, isSameDay, startOfDay } from "@/utils/date";
+import { addDays, isSameDay, startOfDay, toYMD } from "@/utils/date";
 import {
   Timestamp,
   addDoc,
@@ -60,6 +60,45 @@ export function calculateNextDate(baseDate: Date, recurrence: Recurrence): Date 
       break;
   }
   return nextDate;
+}
+
+// ---- calendar projection ----
+
+export type Occurrence = { event: Event; date: Date; done: boolean };
+
+const MAX_OCCURRENCES_PER_EVENT = 400;
+
+// Expands events into dated occurrences up to `until`, keyed by YYYY-MM-DD.
+// Recurring events repeat from their reference date; completed one-time events
+// stay on their date marked as done.
+export function getOccurrencesByDay(
+  events: Event[],
+  until: Date
+): Record<string, Occurrence[]> {
+  const byDay: Record<string, Occurrence[]> = {};
+  const push = (occ: Occurrence) => {
+    const key = toYMD(occ.date);
+    (byDay[key] ??= []).push(occ);
+  };
+
+  for (const event of events) {
+    if (!event.recurrence) {
+      push({ event, date: event.inicialDate, done: isCompleted(event) });
+      continue;
+    }
+    let date = getReferenceDate(event);
+    let count = 0;
+    while (date <= until && count < MAX_OCCURRENCES_PER_EVENT) {
+      push({ event, date, done: false });
+      date = calculateNextDate(date, event.recurrence);
+      count++;
+    }
+  }
+
+  for (const key of Object.keys(byDay)) {
+    byDay[key].sort((a, b) => a.date.getTime() - b.date.getTime());
+  }
+  return byDay;
 }
 
 // ---- Firestore mapping ----

@@ -11,6 +11,7 @@ import {
 } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
 import { EventInput } from "@/services/events";
+import { toYMD } from "@/utils/date";
 import { Bell, CalendarDays, FileText, Repeat } from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
@@ -45,11 +46,7 @@ export function defaultEventValues(type: EventType): EventFormValues {
   };
 }
 
-export function toYMD(d: Date): string {
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${m}-${day}`;
-}
+export { toYMD };
 
 // converts form values into the service input (petId added by the caller)
 export function toEventInput(values: EventFormValues, petId: string): EventInput {

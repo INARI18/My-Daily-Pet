@@ -4,16 +4,19 @@ import { Header, HeaderIconButton } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
 import { EVENT_TYPE_LABELS, PLANNER_CATEGORIES } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { getAllEventsForPet } from "@/services/events";
 import { getPetById } from "@/services/pets";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Event } from "@/types/event";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { CalendarDays } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function PetPlanner() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [petName, setPetName] = useState<string | null>(null);
+  const [events, setEvents] = useState<Event[]>([]);
   const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
@@ -23,6 +26,22 @@ export default function PetPlanner() {
       active = false;
     };
   }, [id]);
+
+  // events feed the calendar; reload when coming back from add/edit
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      getAllEventsForPet(id).then((list) => active && setEvents(list));
+      return () => {
+        active = false;
+      };
+    }, [id])
+  );
+
+  const openEvent = (event: Event) => {
+    setShowCalendar(false);
+    router.push(`/pets/${id}/events/edit/${event.id}`);
+  };
 
   return (
     <Screen scroll>
@@ -51,7 +70,12 @@ export default function PetPlanner() {
           </Card>
         ))}
       </View>
-      <PetCalendar visible={showCalendar} onClose={() => setShowCalendar(false)} />
+      <PetCalendar
+        visible={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        events={events}
+        onSelectEvent={openEvent}
+      />
     </Screen>
   );
 }
