@@ -146,7 +146,8 @@ export default function PetWeight() {
             />
           )}
 
-          <Text style={styles.sectionTitle}>{t("weight.history")}</Text>
+          {entries.length > 0 ? <Text style={styles.sectionTitle}>{t("weight.history")}</Text> : null}
+          {entries.length > 0 ? (
           <Card style={styles.list}>
             {[...entries].reverse().map((entry, index, arr) => (
               <View key={entry.id} style={[styles.item, index < arr.length - 1 && styles.itemDivider]}>
@@ -162,6 +163,7 @@ export default function PetWeight() {
               </View>
             ))}
           </Card>
+          ) : null}
         </>
       )}
     </Screen>
