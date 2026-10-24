@@ -6,7 +6,7 @@ import {
 } from "@/components/forms/event-form";
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
-import { Colors } from "@/constants/theme";
+import { useColors } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import { deleteEvent, getEventById, updateEvent } from "@/services/events";
 import { REMINDER_OFFSETS, ReminderOffset } from "@/services/notifications";
@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
 
 export default function EditEvent() {
+  const c = useColors();
   const { id: petId, eventId } = useLocalSearchParams<{ id: string; eventId: string }>();
   const router = useRouter();
   const t = useT();
@@ -89,12 +90,12 @@ export default function EditEvent() {
           secondary={{
             label: t("common.delete"),
             variant: "danger",
-            icon: <Trash2 size={16} color={Colors.danger} />,
+            icon: <Trash2 size={16} color={c.danger} />,
             onPress: handleDelete,
           }}
         />
       ) : (
-        <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />
+        <ActivityIndicator color={c.primary} style={{ marginTop: 40 }} />
       )}
     </Screen>
   );

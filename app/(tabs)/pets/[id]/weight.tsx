@@ -5,7 +5,8 @@ import { DateField } from "@/components/ui/date-field";
 import { Header } from "@/components/ui/header";
 import { Input } from "@/components/ui/input";
 import { Screen } from "@/components/ui/screen";
-import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { Fonts, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import { getPetById } from "@/services/pets";
 import { WeightEntry, addWeight, deleteWeight, getWeights } from "@/services/weights";
@@ -16,6 +17,8 @@ import React, { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function PetWeight() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const { id: petId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const t = useT();
@@ -93,7 +96,7 @@ export default function PetWeight() {
     <Screen scroll>
       <Header title={t("weight.title")} onBack={() => router.back()} />
       {entries === null ? (
-        <ActivityIndicator color={Colors.primary} style={styles.loading} />
+        <ActivityIndicator color={c.primary} style={styles.loading} />
       ) : (
         <>
           <Card style={styles.summary}>
@@ -151,7 +154,7 @@ export default function PetWeight() {
           ) : (
             <Button
               title={t("weight.add")}
-              icon={<Plus size={18} color={Colors.onPrimary} />}
+              icon={<Plus size={18} color={c.onPrimary} />}
               onPress={() => setAdding(true)}
             />
           )}
@@ -168,7 +171,7 @@ export default function PetWeight() {
                   hitSlop={10}
                   accessibilityLabel={t("common.delete")}
                 >
-                  <Trash2 size={16} color={Colors.textMuted} />
+                  <Trash2 size={16} color={c.textMuted} />
                 </Pressable>
               </View>
             ))}
@@ -180,7 +183,7 @@ export default function PetWeight() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   flex: { flex: 1 },
   loading: { marginTop: 40 },
   summary: { marginBottom: Spacing.lg },
@@ -189,12 +192,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 0.6,
     textTransform: "uppercase",
-    color: Colors.textMuted,
+    color: c.textMuted,
   },
-  big: { fontFamily: Fonts.title, fontSize: 34, color: Colors.text, marginTop: 2 },
-  delta: { fontFamily: Fonts.body, fontSize: 13, color: Colors.textMuted, marginBottom: Spacing.sm },
-  up: { color: Colors.warning },
-  down: { color: Colors.success },
+  big: { fontFamily: Fonts.title, fontSize: 34, color: c.text, marginTop: 2 },
+  delta: { fontFamily: Fonts.body, fontSize: 13, color: c.textMuted, marginBottom: Spacing.sm },
+  up: { color: c.warning },
+  down: { color: c.success },
   form: { gap: Spacing.md, marginBottom: Spacing.lg },
   row: { flexDirection: "row", gap: Spacing.md },
   sectionTitle: {
@@ -202,13 +205,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 0.6,
     textTransform: "uppercase",
-    color: Colors.textMuted,
+    color: c.textMuted,
     marginTop: Spacing.xl,
     marginBottom: Spacing.sm,
   },
   list: { paddingVertical: 4 },
   item: { flexDirection: "row", alignItems: "center", gap: Spacing.md, paddingVertical: Spacing.md },
-  itemDivider: { borderBottomWidth: 1, borderBottomColor: Colors.border },
-  itemValue: { fontFamily: Fonts.titleMedium, fontSize: 15, color: Colors.text, width: 76 },
-  itemDate: { flex: 1, fontFamily: Fonts.body, fontSize: 13, color: Colors.textMuted },
+  itemDivider: { borderBottomWidth: 1, borderBottomColor: c.border },
+  itemValue: { fontFamily: Fonts.titleMedium, fontSize: 15, color: c.text, width: 76 },
+  itemDate: { flex: 1, fontFamily: Fonts.body, fontSize: 13, color: c.textMuted },
 });

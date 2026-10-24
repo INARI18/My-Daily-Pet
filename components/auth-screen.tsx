@@ -1,4 +1,5 @@
-import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { Fonts, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { Bone, Cat, Dog, PawPrint } from "lucide-react-native";
 import React from "react";
 import {
@@ -33,11 +34,13 @@ type AuthScreenProps = {
 };
 
 export function AuthScreen({ title, subtitle, error, children }: AuthScreenProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   return (
     <SafeAreaView style={styles.safe}>
       {DECORATIONS.map(({ Icon, size, style }, i) => (
         <View key={i} style={[styles.decoration, style]} pointerEvents="none">
-          <Icon size={size} color={Colors.bg} strokeWidth={1.5} />
+          <Icon size={size} color={c.onBrand} strokeWidth={1.5} />
         </View>
       ))}
       <KeyboardAvoidingView
@@ -57,27 +60,27 @@ export function AuthScreen({ title, subtitle, error, children }: AuthScreenProps
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.primary, overflow: "hidden" },
+const makeStyles = (c: Palette) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: c.brand, overflow: "hidden" },
   decoration: { position: "absolute", opacity: 0.12 },
   content: { flex: 1, justifyContent: "center", paddingHorizontal: Spacing.xl },
   title: {
     fontFamily: Fonts.title,
     fontSize: 40,
-    color: Colors.bg,
+    color: c.onBrand,
     textAlign: "center",
   },
   subtitle: {
     fontFamily: Fonts.bodyStrong,
     fontSize: 15,
-    color: Colors.bg,
+    color: c.onBrand,
     textAlign: "center",
     opacity: 0.85,
     marginTop: 4,
     marginBottom: Spacing.xl,
   },
   errorBox: {
-    backgroundColor: Colors.dangerSoft,
+    backgroundColor: c.dangerSoft,
     borderRadius: 12,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -85,7 +88,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontFamily: Fonts.bodyStrong,
     fontSize: 13,
-    color: Colors.danger,
+    color: c.danger,
     textAlign: "center",
   },
   form: { gap: Spacing.md },

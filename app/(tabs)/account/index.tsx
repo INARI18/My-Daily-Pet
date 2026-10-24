@@ -3,7 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
 import { Segmented } from "@/components/ui/segmented";
-import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Shadow, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles, useThemePreference } from "@/theme/ThemeProvider";
 import { auth } from "@/firebase-config";
 import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import { deleteAccount, logOut, sendPasswordReset } from "@/services/account";
@@ -44,6 +45,7 @@ const LANGUAGES = [
 ] as const;
 
 function SectionTitle({ children }: { children: string }) {
+  const styles = useStyles(makeStyles);
   return <Text style={styles.sectionTitle}>{children}</Text>;
 }
 
@@ -62,6 +64,8 @@ function Row({
   danger?: boolean;
   last?: boolean;
 }) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   return (
     <Pressable
       onPress={onPress}
@@ -72,14 +76,21 @@ function Row({
         <Text style={[styles.rowTitle, danger && styles.dangerText]}>{title}</Text>
         <Text style={styles.rowSubtitle}>{subtitle}</Text>
       </View>
-      <ChevronRight size={18} color={Colors.textMuted} />
+      <ChevronRight size={18} color={c.textMuted} />
     </Pressable>
   );
 }
 
 export default function Account() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [language, setLanguage] = useLanguage();
+  const [themePreference, setThemePreference] = useThemePreference();
+  const themeOptions = (["system", "light", "dark"] as const).map((v) => ({
+    label: t(`account.themeOptions.${v}`),
+    value: v,
+  }));
   const [loggingOut, setLoggingOut] = useState(false);
   const [notificationsOn, setNotificationsOn] = useState(true);
   const [permission, setPermission] = useState<PermissionState>("undetermined");
@@ -169,10 +180,10 @@ export default function Account() {
 
       <View style={styles.profile}>
         <View style={styles.avatar}>
-          <UserRound size={40} color={Colors.primary} strokeWidth={1.8} />
+          <UserRound size={40} color={c.primary} strokeWidth={1.8} />
         </View>
         <View style={styles.emailPill}>
-          <Mail size={14} color={Colors.primary} />
+          <Mail size={14} color={c.primary} />
           <Text style={styles.email}>{email}</Text>
         </View>
       </View>
@@ -185,6 +196,13 @@ export default function Account() {
           value={language}
           onChange={setLanguage}
         />
+        <Segmented
+          label={t("account.theme")}
+          options={themeOptions}
+          value={themePreference}
+          onChange={setThemePreference}
+          containerStyle={styles.themeRow}
+        />
         <View style={styles.switchRow}>
           <View style={styles.flex}>
             <Text style={styles.switchTitle}>{t("notifications.setting")}</Text>
@@ -193,8 +211,8 @@ export default function Account() {
           <Switch
             value={notificationsOn}
             onValueChange={handleNotificationsToggle}
-            trackColor={{ false: Colors.border, true: Colors.accent }}
-            thumbColor={Colors.surface}
+            trackColor={{ false: c.border, true: c.accent }}
+            thumbColor={c.surface}
           />
         </View>
         {notificationsOn && permission === "denied" ? (
@@ -218,7 +236,7 @@ export default function Account() {
       <SectionTitle>{t("account.data")}</SectionTitle>
       <Card style={styles.listCard}>
         <Row
-          icon={<Download size={18} color={Colors.primary} />}
+          icon={<Download size={18} color={c.primary} />}
           title={t("account.export.title")}
           subtitle={t("account.export.subtitle")}
           onPress={handleExport}
@@ -229,13 +247,13 @@ export default function Account() {
       <SectionTitle>{t("account.security")}</SectionTitle>
       <Card style={styles.listCard}>
         <Row
-          icon={<KeyRound size={18} color={Colors.primary} />}
+          icon={<KeyRound size={18} color={c.primary} />}
           title={t("account.changePassword.title")}
           subtitle={t("account.changePassword.subtitle")}
           onPress={handlePasswordReset}
         />
         <Row
-          icon={<Trash2 size={18} color={Colors.danger} />}
+          icon={<Trash2 size={18} color={c.danger} />}
           title={t("account.deleteAccount.title")}
           subtitle={t("account.deleteAccount.subtitle")}
           onPress={handleDeleteAccount}
@@ -247,7 +265,7 @@ export default function Account() {
       <Button
         title={t("account.logout")}
         variant="ghost"
-        icon={<LogOut size={16} color={Colors.textMuted} />}
+        icon={<LogOut size={16} color={c.textMuted} />}
         onPress={handleLogout}
         loading={loggingOut}
         style={styles.logout}
@@ -256,14 +274,14 @@ export default function Account() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   flex: { flex: 1 },
   profile: { alignItems: "center", marginTop: Spacing.sm, marginBottom: Spacing.xl, gap: Spacing.md },
   avatar: {
     width: 88,
     height: 88,
     borderRadius: Radius.avatar,
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     alignItems: "center",
     justifyContent: "center",
     ...Shadow.card,
@@ -272,52 +290,53 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.sm,
-    backgroundColor: Colors.primarySoft,
+    backgroundColor: c.primarySoft,
     paddingVertical: 8,
     paddingHorizontal: Spacing.lg,
     borderRadius: 999,
   },
-  email: { fontFamily: Fonts.bodyStrong, fontSize: 14, color: Colors.primary },
+  email: { fontFamily: Fonts.bodyStrong, fontSize: 14, color: c.primary },
   sectionTitle: {
     fontFamily: Fonts.bodyBold,
     fontSize: 11,
     letterSpacing: 0.6,
     textTransform: "uppercase",
-    color: Colors.textMuted,
+    color: c.textMuted,
     marginBottom: Spacing.sm,
   },
   card: { marginBottom: Spacing.xl },
+  themeRow: { marginTop: Spacing.lg },
   switchRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.md,
     marginTop: Spacing.lg,
   },
-  switchTitle: { fontFamily: Fonts.titleMedium, fontSize: 15, color: Colors.text },
-  switchHint: { fontFamily: Fonts.body, fontSize: 12, color: Colors.textMuted, marginTop: 1 },
+  switchTitle: { fontFamily: Fonts.titleMedium, fontSize: 15, color: c.text },
+  switchHint: { fontFamily: Fonts.body, fontSize: 12, color: c.textMuted, marginTop: 1 },
   deniedBox: {
     marginTop: Spacing.md,
     padding: Spacing.md,
     borderRadius: Radius.chip,
-    backgroundColor: Colors.dangerSoft,
+    backgroundColor: c.dangerSoft,
     gap: Spacing.sm,
   },
-  deniedText: { fontFamily: Fonts.bodyStrong, fontSize: 12.5, color: Colors.danger },
+  deniedText: { fontFamily: Fonts.bodyStrong, fontSize: 12.5, color: c.danger },
   listCard: { paddingVertical: 4, marginBottom: Spacing.xl },
   row: { flexDirection: "row", alignItems: "center", gap: Spacing.md, paddingVertical: Spacing.md },
-  rowDivider: { borderBottomWidth: 1, borderBottomColor: Colors.border },
+  rowDivider: { borderBottomWidth: 1, borderBottomColor: c.border },
   pressed: { opacity: 0.7 },
   rowIcon: {
     width: 36,
     height: 36,
     borderRadius: Radius.chip,
-    backgroundColor: Colors.primarySoft,
+    backgroundColor: c.primarySoft,
     alignItems: "center",
     justifyContent: "center",
   },
-  rowIconDanger: { backgroundColor: Colors.dangerSoft },
-  rowTitle: { fontFamily: Fonts.titleMedium, fontSize: 15, color: Colors.text },
-  rowSubtitle: { fontFamily: Fonts.body, fontSize: 12.5, color: Colors.textMuted, marginTop: 1 },
-  dangerText: { color: Colors.danger },
+  rowIconDanger: { backgroundColor: c.dangerSoft },
+  rowTitle: { fontFamily: Fonts.titleMedium, fontSize: 15, color: c.text },
+  rowSubtitle: { fontFamily: Fonts.body, fontSize: 12.5, color: c.textMuted, marginTop: 1 },
+  dangerText: { color: c.danger },
   logout: { marginTop: Spacing.sm },
 });

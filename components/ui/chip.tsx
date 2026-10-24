@@ -1,4 +1,5 @@
-import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Spacing, Palette } from "@/constants/theme";
+import { useStyles } from "@/theme/ThemeProvider";
 import React from "react";
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { FieldLabel } from "./input";
@@ -13,6 +14,7 @@ type ChipProps = {
 };
 
 export function Chip({ label, selected = false, onPress, grow = false }: ChipProps) {
+  const styles = useStyles(makeStyles);
   return (
     <Pressable
       onPress={onPress}
@@ -43,6 +45,7 @@ export function ChipGroup<T extends string>({
   grow = false,
   containerStyle,
 }: ChipGroupProps<T>) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={containerStyle}>
       {label ? <FieldLabel>{label}</FieldLabel> : null}
@@ -61,19 +64,19 @@ export function ChipGroup<T extends string>({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   row: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.sm },
   chip: {
     paddingVertical: 9,
     paddingHorizontal: Spacing.lg,
     borderRadius: Radius.chip,
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1.5,
-    borderColor: Colors.border,
+    borderColor: c.border,
     alignItems: "center",
   },
   grow: { flex: 1 },
-  chipSelected: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  chipText: { fontFamily: Fonts.bodyBold, fontSize: 13, color: Colors.textMuted },
-  chipTextSelected: { color: Colors.onPrimary },
+  chipSelected: { backgroundColor: c.primary, borderColor: c.primary },
+  chipText: { fontFamily: Fonts.bodyBold, fontSize: 13, color: c.textMuted },
+  chipTextSelected: { color: c.onPrimary },
 });

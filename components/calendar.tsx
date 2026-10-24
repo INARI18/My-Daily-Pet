@@ -1,5 +1,6 @@
 import { CompleteCheck } from "@/components/ui/complete-check";
-import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import { Occurrence, getOccurrencesByDay } from "@/services/events";
 import { Event } from "@/types/event";
@@ -19,6 +20,8 @@ type PetCalendarProps = {
 const DAYS_AHEAD = 365;
 
 export default function PetCalendar({ visible, onClose, events, onSelectEvent }: PetCalendarProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [lang] = useLanguage();
   const [selected, setSelected] = useState(() => toYMD(new Date()));
@@ -33,12 +36,12 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
     for (const [day, occurrences] of Object.entries(byDay)) {
       result[day] = {
         marked: true,
-        dotColor: occurrences.every((o) => o.done) ? Colors.textMuted : Colors.accent,
+        dotColor: occurrences.every((o) => o.done) ? c.textMuted : c.accent,
       };
     }
-    result[selected] = { ...(result[selected] ?? {}), selected: true, selectedColor: Colors.primary };
+    result[selected] = { ...(result[selected] ?? {}), selected: true, selectedColor: c.primary };
     return result;
-  }, [byDay, selected]);
+  }, [byDay, selected, c]);
 
   const dayItems: Occurrence[] = byDay[selected] ?? [];
 
@@ -49,7 +52,7 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
           <View style={styles.header}>
             <Text style={styles.title}>{t("planner.calendar.title")}</Text>
             <Pressable onPress={onClose} hitSlop={10} accessibilityLabel={t("planner.calendar.close")}>
-              <X size={22} color={Colors.textMuted} />
+              <X size={22} color={c.textMuted} />
             </Pressable>
           </View>
 
@@ -60,17 +63,17 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
             enableSwipeMonths
             firstDay={1}
             theme={{
-              backgroundColor: Colors.surface,
-              calendarBackground: Colors.surface,
-              textSectionTitleColor: Colors.textMuted,
-              selectedDayBackgroundColor: Colors.primary,
-              selectedDayTextColor: Colors.onPrimary,
-              todayTextColor: Colors.accent,
-              dayTextColor: Colors.text,
-              textDisabledColor: Colors.border,
-              dotColor: Colors.accent,
-              arrowColor: Colors.primary,
-              monthTextColor: Colors.text,
+              backgroundColor: c.surface,
+              calendarBackground: c.surface,
+              textSectionTitleColor: c.textMuted,
+              selectedDayBackgroundColor: c.primary,
+              selectedDayTextColor: c.onPrimary,
+              todayTextColor: c.accent,
+              dayTextColor: c.text,
+              textDisabledColor: c.border,
+              dotColor: c.accent,
+              arrowColor: c.primary,
+              monthTextColor: c.text,
               textMonthFontFamily: Fonts.title,
               textDayHeaderFontFamily: Fonts.bodyBold,
               textDayFontFamily: Fonts.body,
@@ -115,7 +118,7 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
   },
   sheet: {
     height: "88%",
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     borderTopLeftRadius: Radius.card + 6,
     borderTopRightRadius: Radius.card + 6,
     paddingHorizontal: Spacing.md,
@@ -136,14 +139,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
     marginBottom: Spacing.sm,
   },
-  title: { fontFamily: Fonts.title, fontSize: 22, color: Colors.text },
-  divider: { height: 1, backgroundColor: Colors.border, marginVertical: Spacing.md },
+  title: { fontFamily: Fonts.title, fontSize: 22, color: c.text },
+  divider: { height: 1, backgroundColor: c.border, marginVertical: Spacing.md },
   dayLabel: {
     fontFamily: Fonts.bodyBold,
     fontSize: 11,
     letterSpacing: 0.6,
     textTransform: "uppercase",
-    color: Colors.textMuted,
+    color: c.textMuted,
     marginBottom: Spacing.sm,
     paddingHorizontal: Spacing.xs,
   },
@@ -155,11 +158,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.xs,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   pressed: { opacity: 0.7 },
   itemBody: { flex: 1 },
-  itemTitle: { fontFamily: Fonts.titleMedium, fontSize: 15, color: Colors.text },
-  itemMeta: { fontFamily: Fonts.body, fontSize: 12.5, color: Colors.textMuted, marginTop: 1 },
-  muted: { color: Colors.textMuted },
+  itemTitle: { fontFamily: Fonts.titleMedium, fontSize: 15, color: c.text },
+  itemMeta: { fontFamily: Fonts.body, fontSize: 12.5, color: c.textMuted, marginTop: 1 },
+  muted: { color: c.textMuted },
 });

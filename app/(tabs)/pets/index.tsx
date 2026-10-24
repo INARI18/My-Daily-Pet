@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { PETS_ILLUSTRATION } from "@/constants/events";
-import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Shadow, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import {
   calculateAge,
@@ -26,6 +27,8 @@ import {
 } from "react-native";
 
 function PetCard({ pet }: { pet: Pet }) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const router = useRouter();
   const t = useT();
   const age = calculateAge(pet.birthDate);
@@ -51,13 +54,15 @@ function PetCard({ pet }: { pet: Pet }) {
         hitSlop={8}
         accessibilityLabel={t("pets.editLabel")}
       >
-        <SquarePen size={18} color={Colors.primary} />
+        <SquarePen size={18} color={c.primary} />
       </Pressable>
     </Card>
   );
 }
 
 export default function Pets() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const router = useRouter();
   const t = useT();
   const [pets, setPets] = useState<Pet[] | null>(null);
@@ -80,7 +85,7 @@ export default function Pets() {
         image={PETS_ILLUSTRATION}
       />
       {pets === null ? (
-        <ActivityIndicator color={Colors.primary} style={styles.loading} />
+        <ActivityIndicator color={c.primary} style={styles.loading} />
       ) : pets.length === 0 ? (
         <View style={styles.emptyBox}>
           <Text style={styles.empty}>{t("pets.empty")}</Text>
@@ -94,20 +99,20 @@ export default function Pets() {
         onPress={() => router.push("/pets/add")}
         accessibilityLabel={t("pets.addLabel")}
       >
-        <Plus size={28} color={Colors.onPrimary} strokeWidth={2.5} />
+        <Plus size={28} color={c.onPrimary} strokeWidth={2.5} />
       </Pressable>
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   content: { paddingBottom: 96, minHeight: "100%" },
   loading: { marginTop: 40 },
   emptyBox: { marginTop: 32, gap: Spacing.lg },
   empty: {
     fontFamily: Fonts.body,
     fontSize: 15,
-    color: Colors.textMuted,
+    color: c.textMuted,
     textAlign: "center",
   },
   card: {
@@ -118,14 +123,14 @@ const styles = StyleSheet.create({
   },
   cardBody: { flex: 1 },
   nameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-  name: { fontFamily: Fonts.title, fontSize: 18, color: Colors.text },
+  name: { fontFamily: Fonts.title, fontSize: 18, color: c.text },
   gender: { width: 14, height: 14 },
-  meta: { fontFamily: Fonts.body, fontSize: 12.5, color: Colors.textMuted, marginTop: 2 },
+  meta: { fontFamily: Fonts.body, fontSize: 12.5, color: c.textMuted, marginTop: 2 },
   edit: {
     width: 36,
     height: 36,
     borderRadius: Radius.chip,
-    backgroundColor: Colors.primarySoft,
+    backgroundColor: c.primarySoft,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     alignItems: "center",
     justifyContent: "center",
     ...Shadow.card,

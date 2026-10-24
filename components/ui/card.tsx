@@ -1,4 +1,5 @@
-import { Colors, Radius, Shadow, Spacing } from "@/constants/theme";
+import { Radius, Shadow, Spacing, Palette } from "@/constants/theme";
+import { useStyles } from "@/theme/ThemeProvider";
 import React from "react";
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
@@ -9,6 +10,7 @@ type CardProps = {
 };
 
 export function Card({ children, onPress, style }: CardProps) {
+  const styles = useStyles(makeStyles);
   if (onPress) {
     return (
       <Pressable
@@ -22,11 +24,13 @@ export function Card({ children, onPress, style }: CardProps) {
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     borderRadius: Radius.card,
     padding: Spacing.lg - 2,
+    borderWidth: 1,
+    borderColor: c.cardBorder,
     ...Shadow.card,
   },
   pressed: { opacity: 0.85 },

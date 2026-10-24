@@ -4,7 +4,8 @@ import { HeaderIconButton } from "@/components/ui/header";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { PETS_ILLUSTRATION, PLANNER_CATEGORIES } from "@/constants/events";
-import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import { getAllEventsForPet } from "@/services/events";
 import { getPetById, getPetIcon } from "@/services/pets";
@@ -16,6 +17,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function PetPlanner() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const t = useT();
@@ -60,20 +63,20 @@ export default function PetPlanner() {
             onPress={() => setShowCalendar(true)}
             accessibilityLabel={t("planner.calendar.open")}
           >
-            <CalendarDays size={20} color={Colors.primary} />
+            <CalendarDays size={20} color={c.primary} />
           </HeaderIconButton>
         }
       />
       {pet ? (
         <Card onPress={() => router.push(`/pets/${id}/weight`)} style={styles.weightCard}>
           <View style={styles.weightIcon}>
-            <Scale size={18} color={Colors.primary} />
+            <Scale size={18} color={c.primary} />
           </View>
           <View style={styles.flex}>
             <Text style={styles.weightLabel}>{t("weight.title")}</Text>
             <Text style={styles.weightValue}>{t("pets.meta.kg", { weight: pet.weight })}</Text>
           </View>
-          <ChevronRight size={18} color={Colors.textMuted} />
+          <ChevronRight size={18} color={c.textMuted} />
         </Card>
       ) : null}
       <View style={styles.grid}>
@@ -98,7 +101,7 @@ export default function PetPlanner() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   flex: { flex: 1 },
   weightCard: {
     flexDirection: "row",
@@ -111,12 +114,12 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: Radius.chip,
-    backgroundColor: Colors.primarySoft,
+    backgroundColor: c.primarySoft,
     alignItems: "center",
     justifyContent: "center",
   },
-  weightLabel: { fontFamily: Fonts.bodyBold, fontSize: 11, letterSpacing: 0.6, textTransform: "uppercase", color: Colors.textMuted },
-  weightValue: { fontFamily: Fonts.titleMedium, fontSize: 16, color: Colors.text },
+  weightLabel: { fontFamily: Fonts.bodyBold, fontSize: 11, letterSpacing: 0.6, textTransform: "uppercase", color: c.textMuted },
+  weightValue: { fontFamily: Fonts.titleMedium, fontSize: 16, color: c.text },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.md },
   tile: {
     width: "48%",
@@ -124,6 +127,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: Spacing.md,
   },
-  tileLabel: { fontFamily: Fonts.title, fontSize: 16, color: Colors.text, marginBottom: 6 },
+  tileLabel: { fontFamily: Fonts.title, fontSize: 16, color: c.text, marginBottom: 6 },
   tileImage: { width: 108, height: 100 },
 });

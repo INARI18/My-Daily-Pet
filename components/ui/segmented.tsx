@@ -1,4 +1,5 @@
-import { Colors, Fonts, Radius } from "@/constants/theme";
+import { Fonts, Radius, Palette } from "@/constants/theme";
+import { useStyles } from "@/theme/ThemeProvider";
 import React from "react";
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import type { Option } from "./chip";
@@ -19,6 +20,7 @@ export function Segmented<T extends string>({
   label,
   containerStyle,
 }: SegmentedProps<T>) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={containerStyle}>
       {label ? <FieldLabel>{label}</FieldLabel> : null}
@@ -43,13 +45,13 @@ export function Segmented<T extends string>({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   track: {
     flexDirection: "row",
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     borderRadius: Radius.control,
     borderWidth: 1.5,
-    borderColor: Colors.border,
+    borderColor: c.border,
     padding: 4,
   },
   item: {
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.control - 4,
     alignItems: "center",
   },
-  itemSelected: { backgroundColor: Colors.accentSoft },
-  text: { fontFamily: Fonts.bodyBold, fontSize: 13, color: Colors.textMuted },
-  textSelected: { color: Colors.primary },
+  itemSelected: { backgroundColor: c.accentSoft },
+  text: { fontFamily: Fonts.bodyBold, fontSize: 13, color: c.textMuted },
+  textSelected: { color: c.primary },
 });

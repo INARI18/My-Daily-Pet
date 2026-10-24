@@ -4,7 +4,8 @@ import { ChipGroup } from "@/components/ui/chip";
 import { DateField } from "@/components/ui/date-field";
 import { Input } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
-import { Colors, Radius, Shadow, Spacing } from "@/constants/theme";
+import { Radius, Shadow, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import { PawPrint, SquarePen } from "lucide-react-native";
 import React, { useState } from "react";
@@ -55,6 +56,8 @@ export function PetForm({
   onSubmit,
   secondary,
 }: PetFormProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [values, setValues] = useState<PetFormValues>(initial);
   const [errors, setErrors] = useState<Partial<Record<"name" | "weight", string>>>({});
@@ -107,11 +110,11 @@ export function PetForm({
               resizeMode="contain"
             />
           ) : (
-            <PawPrint size={36} color={Colors.textMuted} />
+            <PawPrint size={36} color={c.textMuted} />
           )}
         </View>
         <View style={styles.avatarEdit}>
-          <SquarePen size={14} color={Colors.onPrimary} />
+          <SquarePen size={14} color={c.onPrimary} />
         </View>
       </Pressable>
 
@@ -194,7 +197,7 @@ export function PetForm({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   form: { gap: Spacing.lg },
   flex: { flex: 1 },
   row: { flexDirection: "row", gap: Spacing.md },
@@ -203,7 +206,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: Radius.avatar,
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     alignItems: "center",
     justifyContent: "center",
     ...Shadow.card,
@@ -216,9 +219,9 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     borderWidth: 3,
-    borderColor: Colors.bg,
+    borderColor: c.bg,
     alignItems: "center",
     justifyContent: "center",
   },

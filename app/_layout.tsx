@@ -1,14 +1,8 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { AppThemeProvider, NavigationThemeProvider } from "@/theme/ThemeProvider";
 import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -44,7 +38,6 @@ export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const segments = useSegments();
-  const colorScheme = useColorScheme();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -81,16 +74,17 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <LanguageProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="login" />
-          <Stack.Screen name="register" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-      </LanguageProvider>
+      <AppThemeProvider>
+        <LanguageProvider>
+          <NavigationThemeProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="login" />
+              <Stack.Screen name="register" />
+            </Stack>
+          </NavigationThemeProvider>
+        </LanguageProvider>
+      </AppThemeProvider>
     </SafeAreaProvider>
   );
 }

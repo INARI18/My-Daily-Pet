@@ -1,4 +1,5 @@
-import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Shadow, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import { ArrowLeft } from "lucide-react-native";
 import React from "react";
@@ -11,6 +12,8 @@ type HeaderProps = {
 };
 
 export function Header({ title, onBack, right }: HeaderProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   return (
     <View style={styles.row}>
@@ -21,7 +24,7 @@ export function Header({ title, onBack, right }: HeaderProps) {
           hitSlop={8}
           accessibilityLabel={t("common.back")}
         >
-          <ArrowLeft size={20} color={Colors.primary} />
+          <ArrowLeft size={20} color={c.primary} />
         </Pressable>
       ) : null}
       <Text style={styles.title} numberOfLines={1}>
@@ -41,6 +44,7 @@ export function HeaderIconButton({
   children: React.ReactNode;
   accessibilityLabel: string;
 }) {
+  const styles = useStyles(makeStyles);
   return (
     <Pressable
       onPress={onPress}
@@ -53,7 +57,7 @@ export function HeaderIconButton({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -65,7 +69,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: Radius.chip,
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     alignItems: "center",
     justifyContent: "center",
     ...Shadow.card,
@@ -74,6 +78,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: Fonts.title,
     fontSize: 24,
-    color: Colors.text,
+    color: c.text,
   },
 });

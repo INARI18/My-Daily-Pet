@@ -1,4 +1,5 @@
-import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -14,7 +15,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { FieldError, FieldLabel, fieldStyles } from "./input";
+import { FieldError, FieldLabel, makeFieldStyles } from "./input";
 
 type DateFieldProps = {
   value: string; // YYYY-MM-DD or ""
@@ -51,6 +52,9 @@ export function DateField({
   maximumDate,
   containerStyle,
 }: DateFieldProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
+  const fieldStyles = useStyles(makeFieldStyles);
   const t = useT();
   const [open, setOpen] = useState(false);
   const dateValue = parseYMD(value) ?? new Date();
@@ -90,7 +94,7 @@ export function DateField({
             hitSlop={8}
             accessibilityLabel={t("common.clearDate")}
           >
-            <X size={18} color={Colors.textMuted} />
+            <X size={18} color={c.textMuted} />
           </Pressable>
         ) : null}
       </View>
@@ -119,10 +123,10 @@ export function DateField({
   );
 }
 
-const styles = StyleSheet.create({
-  text: { fontFamily: Fonts.body, fontSize: 15, color: Colors.text },
-  placeholder: { color: Colors.textMuted },
-  boxError: { borderColor: Colors.danger },
+const makeStyles = (c: Palette) => StyleSheet.create({
+  text: { fontFamily: Fonts.body, fontSize: 15, color: c.text },
+  placeholder: { color: c.textMuted },
+  boxError: { borderColor: c.danger },
   clear: { position: "absolute", right: 12, top: 0, bottom: 0, justifyContent: "center" },
   overlay: {
     flex: 1,
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(58, 39, 64, 0.4)",
   },
   sheet: {
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     borderTopLeftRadius: Radius.card,
     borderTopRightRadius: Radius.card,
     paddingBottom: Spacing.xl,
@@ -139,5 +143,5 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     padding: Spacing.lg,
   },
-  doneText: { fontFamily: Fonts.bodyBold, fontSize: 16, color: Colors.primary },
+  doneText: { fontFamily: Fonts.bodyBold, fontSize: 16, color: c.primary },
 });

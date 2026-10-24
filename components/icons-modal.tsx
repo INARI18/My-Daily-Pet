@@ -1,4 +1,5 @@
-import { Colors, Fonts } from "@/constants/theme";
+import { Fonts, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import iconMap from "@/constants/iconMap";
 import { Cat, Dog, X } from "lucide-react-native";
@@ -28,6 +29,8 @@ export default function IconPickerModal({
   onClose,
   onSelect,
 }: IconPickerModalProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [selectedTab, setSelectedTab] = useState<"cats" | "dogs">("cats");
   const currentIcons = selectedTab === "cats" ? catIcons : dogIcons;
@@ -49,7 +52,7 @@ export default function IconPickerModal({
               onPress={onClose}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <X size={24} color={Colors.textMuted} strokeWidth={2.5} />
+              <X size={24} color={c.textMuted} strokeWidth={2.5} />
             </TouchableOpacity>
           </View>
 
@@ -64,8 +67,8 @@ export default function IconPickerModal({
                   size={20}
                   color={
                     selectedTab === "cats"
-                      ? Colors.surface
-                      : Colors.textMuted
+                      ? c.surface
+                      : c.textMuted
                   }
                   style={styles.iconInline}
                 />
@@ -88,8 +91,8 @@ export default function IconPickerModal({
                   size={20}
                   color={
                     selectedTab === "dogs"
-                      ? Colors.surface
-                      : Colors.textMuted
+                      ? c.surface
+                      : c.textMuted
                   }
                   style={styles.iconInline}
                 />
@@ -130,7 +133,7 @@ export default function IconPickerModal({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
     maxHeight: "80%",
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     borderRadius: 20,
     overflow: "hidden",
   },
@@ -153,12 +156,12 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   title: {
     fontSize: 20,
     fontFamily: Fonts.title,
-    color: Colors.primary,
+    color: c.primary,
   },
   closeButton: {
     position: "absolute",
@@ -176,19 +179,19 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
-    backgroundColor: Colors.border,
+    backgroundColor: c.border,
     alignItems: "center",
   },
   activeTab: {
-    backgroundColor: Colors.primary,
+    backgroundColor: c.primary,
   },
   tabText: {
     fontSize: 14,
     fontFamily: Fonts.bodyBold,
-    color: Colors.textMuted,
+    color: c.textMuted,
   },
   activeTabText: {
-    color: Colors.surface,
+    color: c.surface,
     fontFamily: Fonts.title,
   },
   gridContainer: {
@@ -202,7 +205,7 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     flex: 1,
-    backgroundColor: Colors.bg,
+    backgroundColor: c.bg,
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
@@ -221,7 +224,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.textMuted,
+    color: c.textMuted,
     marginLeft: 8,
   },
   iconInline: {

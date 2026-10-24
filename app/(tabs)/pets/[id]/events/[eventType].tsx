@@ -6,7 +6,8 @@ import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { Segmented } from "@/components/ui/segmented";
 import { PLANNER_ICON, isEventType } from "@/constants/events";
-import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { Fonts, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import {
   EventStatus,
@@ -47,6 +48,8 @@ function EventCard({
   onPress: () => void;
   onComplete: () => Promise<void>;
 }) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [lang] = useLanguage();
   const status = getEventStatus(event);
@@ -60,15 +63,15 @@ function EventCard({
         <CompleteCheck checked={done} onComplete={done ? undefined : onComplete} />
         <View style={styles.flex}>
           <View style={styles.line}>
-            <CalendarDays size={15} color={done ? Colors.textMuted : Colors.primary} />
+            <CalendarDays size={15} color={done ? c.textMuted : c.primary} />
             <Text style={[styles.date, done && styles.muted]}>{formatDate(date, lang)}</Text>
           </View>
           <View style={styles.line}>
-            <Clock size={14} color={Colors.textMuted} />
+            <Clock size={14} color={c.textMuted} />
             <Text style={styles.time}>{formatTime(date, lang)}</Text>
             {event.recurrence ? (
               <>
-                <Repeat size={13} color={Colors.textMuted} style={styles.repeatIcon} />
+                <Repeat size={13} color={c.textMuted} style={styles.repeatIcon} />
                 <Text style={styles.time}>
                   {t(`recurrence.${event.recurrence.unit}`, { count: event.recurrence.amount })}
                 </Text>
@@ -93,6 +96,8 @@ function EventCard({
 }
 
 export default function EventsByType() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const { id: petId, eventType } = useLocalSearchParams<{ id: string; eventType: string }>();
   const router = useRouter();
   const t = useT();
@@ -159,7 +164,7 @@ export default function EventsByType() {
         containerStyle={styles.filter}
       />
       {events === null ? (
-        <ActivityIndicator color={Colors.primary} style={styles.loading} />
+        <ActivityIndicator color={c.primary} style={styles.loading} />
       ) : (
         <ScrollView
           style={styles.flex}
@@ -171,14 +176,14 @@ export default function EventsByType() {
                 setRefreshing(true);
                 load();
               }}
-              tintColor={Colors.primary}
+              tintColor={c.primary}
             />
           }
         >
           <Text style={styles.count}>{t("events.count", { count: visible.length })}</Text>
           {visible.length === 0 ? (
             <View style={styles.empty}>
-              <CalendarDays size={56} color={Colors.border} />
+              <CalendarDays size={56} color={c.border} />
               <Text style={styles.emptyTitle}>
                 {filter === "completed"
                   ? t("events.empty.completedTitle")
@@ -207,7 +212,7 @@ export default function EventsByType() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   flex: { flex: 1 },
   filter: { marginTop: Spacing.md, marginBottom: Spacing.md },
   loading: { marginTop: 40 },
@@ -216,34 +221,34 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 0.6,
     textTransform: "uppercase",
-    color: Colors.textMuted,
+    color: c.textMuted,
     marginBottom: Spacing.sm,
   },
   card: { marginBottom: Spacing.md },
   cardDone: { opacity: 0.7 },
   cardTop: { flexDirection: "row", alignItems: "flex-start", gap: Spacing.md },
   line: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 },
-  date: { fontFamily: Fonts.title, fontSize: 17, color: Colors.text },
-  time: { fontFamily: Fonts.body, fontSize: 13.5, color: Colors.textMuted },
+  date: { fontFamily: Fonts.title, fontSize: 17, color: c.text },
+  time: { fontFamily: Fonts.body, fontSize: 13.5, color: c.textMuted },
   repeatIcon: { marginLeft: 6 },
-  muted: { color: Colors.textMuted },
+  muted: { color: c.textMuted },
   notes: {
     fontFamily: Fonts.body,
     fontSize: 13,
-    color: Colors.textMuted,
+    color: c.textMuted,
     marginTop: Spacing.sm,
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: c.border,
   },
   lastDone: {
     fontFamily: Fonts.bodyStrong,
     fontSize: 12,
-    color: Colors.success,
+    color: c.success,
     marginTop: Spacing.sm,
   },
   empty: { alignItems: "center", paddingVertical: 48, gap: Spacing.sm },
-  emptyTitle: { fontFamily: Fonts.title, fontSize: 18, color: Colors.text, marginTop: Spacing.sm },
-  emptyText: { fontFamily: Fonts.body, fontSize: 13.5, color: Colors.textMuted, textAlign: "center" },
+  emptyTitle: { fontFamily: Fonts.title, fontSize: 18, color: c.text, marginTop: Spacing.sm },
+  emptyText: { fontFamily: Fonts.body, fontSize: 13.5, color: c.textMuted, textAlign: "center" },
   bottom: { height: Spacing.xl },
 });

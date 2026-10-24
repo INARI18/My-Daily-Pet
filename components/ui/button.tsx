@@ -1,4 +1,5 @@
-import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import React from "react";
 import {
   ActivityIndicator,
@@ -22,13 +23,13 @@ type ButtonProps = {
   style?: ViewStyle;
 };
 
-const VARIANT_STYLES: Record<Variant, { bg: string; text: string; border?: string }> = {
-  primary: { bg: Colors.primary, text: Colors.onPrimary },
-  accent: { bg: Colors.accent, text: Colors.onPrimary },
-  light: { bg: Colors.bg, text: Colors.primary }, // for use on a primary background
-  ghost: { bg: "transparent", text: Colors.textMuted, border: Colors.border },
-  danger: { bg: Colors.dangerSoft, text: Colors.danger },
-};
+const VARIANT_STYLES = (c: Palette): Record<Variant, { bg: string; text: string; border?: string }> => ({
+  primary: { bg: c.primary, text: c.onPrimary },
+  accent: { bg: c.accent, text: c.onPrimary },
+  light: { bg: c.onBrand, text: c.brand }, // for use on the auth screens
+  ghost: { bg: "transparent", text: c.textMuted, border: c.border },
+  danger: { bg: c.dangerSoft, text: c.danger },
+});
 
 export function Button({
   title,
@@ -40,7 +41,9 @@ export function Button({
   disabled = false,
   style,
 }: ButtonProps) {
-  const v = VARIANT_STYLES[variant];
+  const styles = useStyles(makeStyles);
+  const c = useColors();
+  const v = VARIANT_STYLES(c)[variant];
   const inactive = disabled || loading;
 
   return (
@@ -73,7 +76,7 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   base: {
     borderRadius: Radius.control,
     paddingVertical: 13,

@@ -4,7 +4,8 @@ import { ChipGroup } from "@/components/ui/chip";
 import { DateField } from "@/components/ui/date-field";
 import { Input } from "@/components/ui/input";
 import { EventType, RECURRENCE_UNITS, RecurrenceUnit } from "@/constants/events";
-import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { Fonts, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import { EventInput } from "@/services/events";
 import { REMINDER_OFFSETS, ReminderOffset } from "@/services/notifications";
@@ -90,6 +91,8 @@ function SectionHeader({
   switchValue?: boolean;
   onSwitch?: (v: boolean) => void;
 }) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   return (
     <View style={styles.sectionHeader}>
       {icon}
@@ -98,8 +101,8 @@ function SectionHeader({
         <Switch
           value={!!switchValue}
           onValueChange={onSwitch}
-          trackColor={{ false: Colors.border, true: Colors.accent }}
-          thumbColor={Colors.surface}
+          trackColor={{ false: c.border, true: c.accent }}
+          thumbColor={c.surface}
         />
       ) : null}
     </View>
@@ -113,6 +116,8 @@ export function EventForm({
   onSubmit,
   secondary,
 }: EventFormProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [values, setValues] = useState<EventFormValues>(initial);
   const [errors, setErrors] = useState<Errors>({});
@@ -143,7 +148,7 @@ export function EventForm({
     return Object.keys(next).length === 0;
   };
 
-  const iconColor = Colors.primary;
+  const iconColor = c.primary;
 
   return (
     <View style={styles.form}>
@@ -263,7 +268,7 @@ export function EventForm({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   form: { gap: Spacing.md },
   flex: { flex: 1 },
   sectionHeader: {
@@ -272,9 +277,9 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
-  sectionTitle: { flex: 1, fontFamily: Fonts.title, fontSize: 17, color: Colors.text },
+  sectionTitle: { flex: 1, fontFamily: Fonts.title, fontSize: 17, color: c.text },
   timeRow: { flexDirection: "row", alignItems: "flex-start", gap: Spacing.sm, marginTop: Spacing.md },
-  colon: { fontFamily: Fonts.title, fontSize: 22, color: Colors.text, marginTop: 30 },
+  colon: { fontFamily: Fonts.title, fontSize: 22, color: c.text, marginTop: 30 },
   recurrence: { flexDirection: "row", gap: Spacing.md, alignItems: "flex-start" },
   amount: { width: 84 },
   buttons: { flexDirection: "row", gap: Spacing.md, marginTop: Spacing.sm },

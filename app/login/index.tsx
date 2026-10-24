@@ -1,7 +1,8 @@
 import { AuthScreen } from "@/components/auth-screen";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Colors } from "@/constants/theme";
+import { Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { auth } from "@/firebase-config";
 import { useT } from "@/i18n/LanguageProvider";
 import { getFirebaseErrorMessage } from "@/services/firebaseErrorHandler";
@@ -12,6 +13,8 @@ import React, { useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
 export default function LoginScreen() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const router = useRouter();
   const t = useT();
   const [email, setEmail] = useState("");
@@ -52,9 +55,9 @@ export default function LoginScreen() {
         right={
           <Pressable onPress={() => setShowPassword((s) => !s)} hitSlop={8}>
             {showPassword ? (
-              <EyeOff size={18} color={Colors.textMuted} />
+              <EyeOff size={18} color={c.textMuted} />
             ) : (
-              <Eye size={18} color={Colors.textMuted} />
+              <Eye size={18} color={c.textMuted} />
             )}
           </Pressable>
         }
@@ -70,6 +73,6 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  ghost: { borderColor: Colors.bg },
+const makeStyles = (c: Palette) => StyleSheet.create({
+  ghost: { borderColor: c.onBrand },
 });

@@ -1,7 +1,7 @@
 import { PetForm, PetFormValues } from "@/components/forms/pet-form";
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
-import { Colors } from "@/constants/theme";
+import { useColors } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import { deletePet, getPetById, updatePet } from "@/services/pets";
 import { addWeight } from "@/services/weights";
@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
 
 export default function EditPet() {
+  const c = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const t = useT();
@@ -91,12 +92,12 @@ export default function EditPet() {
           secondary={{
             label: t("common.delete"),
             variant: "danger",
-            icon: <Trash2 size={16} color={Colors.danger} />,
+            icon: <Trash2 size={16} color={c.danger} />,
             onPress: handleDelete,
           }}
         />
       ) : (
-        <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />
+        <ActivityIndicator color={c.primary} style={{ marginTop: 40 }} />
       )}
     </Screen>
   );

@@ -3,7 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { Segmented } from "@/components/ui/segmented";
-import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { Fonts, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import { NewsItem, fetchArticles, fetchNews } from "@/services/content";
 import { formatDate } from "@/utils/date";
@@ -46,6 +47,8 @@ function Page<T>({
   footer: React.ReactNode;
 }) {
   const t = useT();
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   if (state.error) {
     return (
       <View style={[styles.page, styles.center, { width }]}>
@@ -57,7 +60,7 @@ function Page<T>({
   if (state.data === null) {
     return (
       <View style={[styles.page, styles.center, { width }]}>
-        <ActivityIndicator color={Colors.primary} />
+        <ActivityIndicator color={c.primary} />
       </View>
     );
   }
@@ -66,7 +69,7 @@ function Page<T>({
       style={[styles.page, { width }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={state.refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
+        <RefreshControl refreshing={state.refreshing} onRefresh={onRefresh} tintColor={c.primary} />
       }
     >
       {state.data.length === 0 ? (
@@ -80,6 +83,8 @@ function Page<T>({
 }
 
 export default function Discover() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [lang] = useLanguage();
   const { width: windowWidth } = useWindowDimensions();
@@ -133,7 +138,7 @@ export default function Discover() {
 
   const disclaimer = (
     <View style={styles.disclaimer}>
-      <Newspaper size={14} color={Colors.textMuted} />
+      <Newspaper size={14} color={c.textMuted} />
       <Text style={styles.disclaimerText}>{t("discover.disclaimer")}</Text>
     </View>
   );
@@ -168,7 +173,7 @@ export default function Discover() {
                 </Text>
               ) : null}
               <View style={styles.linkRow}>
-                <ExternalLink size={13} color={Colors.primary} />
+                <ExternalLink size={13} color={c.primary} />
                 <Text style={styles.link}>{t("discover.open")}</Text>
               </View>
             </Card>
@@ -187,7 +192,7 @@ export default function Discover() {
               </Text>
               <Text style={styles.title}>{item.title}</Text>
               <View style={styles.linkRow}>
-                <ExternalLink size={13} color={Colors.primary} />
+                <ExternalLink size={13} color={c.primary} />
                 <Text style={styles.link}>{t("discover.openPubMed")}</Text>
               </View>
             </Card>
@@ -198,25 +203,25 @@ export default function Discover() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   flex: { flex: 1 },
   segmented: { marginBottom: Spacing.md },
   page: { flex: 1 },
   center: { alignItems: "center", justifyContent: "flex-start", paddingTop: 40, gap: Spacing.md },
-  errorText: { fontFamily: Fonts.body, fontSize: 14, color: Colors.textMuted, textAlign: "center" },
-  empty: { fontFamily: Fonts.body, fontSize: 14, color: Colors.textMuted, textAlign: "center", marginTop: 40 },
+  errorText: { fontFamily: Fonts.body, fontSize: 14, color: c.textMuted, textAlign: "center" },
+  empty: { fontFamily: Fonts.body, fontSize: 14, color: c.textMuted, textAlign: "center", marginTop: 40 },
   card: { marginBottom: Spacing.md, gap: 4 },
   meta: {
     fontFamily: Fonts.bodyBold,
     fontSize: 11,
     letterSpacing: 0.4,
     textTransform: "uppercase",
-    color: Colors.textMuted,
+    color: c.textMuted,
   },
-  title: { fontFamily: Fonts.titleMedium, fontSize: 16, lineHeight: 21, color: Colors.text },
-  summary: { fontFamily: Fonts.body, fontSize: 13, lineHeight: 18, color: Colors.textMuted },
+  title: { fontFamily: Fonts.titleMedium, fontSize: 16, lineHeight: 21, color: c.text },
+  summary: { fontFamily: Fonts.body, fontSize: 13, lineHeight: 18, color: c.textMuted },
   linkRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
-  link: { fontFamily: Fonts.bodyBold, fontSize: 12, color: Colors.primary },
+  link: { fontFamily: Fonts.bodyBold, fontSize: 12, color: c.primary },
   disclaimer: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -224,5 +229,5 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.lg,
     paddingHorizontal: Spacing.xs,
   },
-  disclaimerText: { flex: 1, fontFamily: Fonts.body, fontSize: 12, color: Colors.textMuted, lineHeight: 17 },
+  disclaimerText: { flex: 1, fontFamily: Fonts.body, fontSize: 12, color: c.textMuted, lineHeight: 17 },
 });

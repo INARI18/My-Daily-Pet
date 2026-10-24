@@ -5,7 +5,8 @@ import { CompleteCheck } from "@/components/ui/complete-check";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { illustrationOfTheDay } from "@/constants/events";
-import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { Fonts, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import {
   EventStatus,
@@ -47,6 +48,7 @@ function TodayCard({
   item: PetEvent;
   onComplete: () => Promise<void>;
 }) {
+  const styles = useStyles(makeStyles);
   const router = useRouter();
   const t = useT();
   const [lang] = useLanguage();
@@ -77,6 +79,8 @@ function TodayCard({
 }
 
 export default function Today() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   const [lang] = useLanguage();
   const router = useRouter();
@@ -119,7 +123,7 @@ export default function Today() {
         image={illustrationOfTheDay()}
       />
       {items === null ? (
-        <ActivityIndicator color={Colors.primary} style={styles.loading} />
+        <ActivityIndicator color={c.primary} style={styles.loading} />
       ) : (
         <ScrollView
           style={styles.flex}
@@ -131,7 +135,7 @@ export default function Today() {
                 setRefreshing(true);
                 load();
               }}
-              tintColor={Colors.primary}
+              tintColor={c.primary}
             />
           }
         >
@@ -179,7 +183,7 @@ export default function Today() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   flex: { flex: 1 },
   loading: { marginTop: 40 },
   section: { marginBottom: Spacing.md },
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 0.6,
     textTransform: "uppercase",
-    color: Colors.textMuted,
+    color: c.textMuted,
     marginBottom: Spacing.sm,
   },
   card: {
@@ -198,25 +202,25 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   cardBody: { flex: 1, gap: 3 },
-  cardTitle: { fontFamily: Fonts.title, fontSize: 16, color: Colors.text },
-  cardMeta: { fontFamily: Fonts.body, fontSize: 13, color: Colors.textMuted },
+  cardTitle: { fontFamily: Fonts.title, fontSize: 16, color: c.text },
+  cardMeta: { fontFamily: Fonts.body, fontSize: 13, color: c.textMuted },
   empty: { alignItems: "center", paddingVertical: 48, gap: Spacing.sm },
   emptyIcon: {
     width: 120,
     height: 120,
     borderRadius: 36,
-    backgroundColor: Colors.accentSoft,
+    backgroundColor: c.accentSoft,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.md,
   },
   emptyImage: { width: 84, height: 84 },
   emptyButton: { marginTop: Spacing.md, alignSelf: "stretch" },
-  emptyTitle: { fontFamily: Fonts.title, fontSize: 20, color: Colors.text },
+  emptyTitle: { fontFamily: Fonts.title, fontSize: 20, color: c.text },
   emptyText: {
     fontFamily: Fonts.body,
     fontSize: 13.5,
-    color: Colors.textMuted,
+    color: c.textMuted,
     textAlign: "center",
     paddingHorizontal: Spacing.xl,
   },

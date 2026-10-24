@@ -1,4 +1,6 @@
-import { Colors, Spacing } from "@/constants/theme";
+import { PawBackground } from "@/components/paw-background";
+import { Spacing } from "@/constants/theme";
+import { useColors } from "@/theme/ThemeProvider";
 import React from "react";
 import { ScrollView, StyleSheet, View, ViewStyle } from "react-native";
 import { Edge, SafeAreaView } from "react-native-safe-area-context";
@@ -18,8 +20,10 @@ export function Screen({
   style,
   contentStyle,
 }: ScreenProps) {
+  const c = useColors();
   return (
-    <SafeAreaView style={[styles.safe, style]} edges={edges}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: c.bg }, style]} edges={edges}>
+      <PawBackground />
       {scroll ? (
         <ScrollView
           style={styles.flex}
@@ -39,7 +43,7 @@ export function Screen({
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.bg },
+  safe: { flex: 1 },
   flex: { flex: 1 },
   content: { paddingHorizontal: Spacing.lg, paddingBottom: Spacing.xl },
 });

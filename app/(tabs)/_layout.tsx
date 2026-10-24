@@ -1,4 +1,5 @@
-import { Colors, Fonts } from "@/constants/theme";
+import { Fonts } from "@/constants/theme";
+import { useColors } from "@/theme/ThemeProvider";
 import { useReminders } from "@/hooks/use-reminders";
 import { useT } from "@/i18n/LanguageProvider";
 import { Tabs } from "expo-router";
@@ -10,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export const unstable_settings = { anchor: "today" };
 
 export default function TabLayout() {
+  const c = useColors();
   const t = useT();
   // edge-to-edge on Android: keep the tab bar above the system navigation bar
   const insets = useSafeAreaInsets();
@@ -19,11 +21,11 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarActiveTintColor: c.primary,
+        tabBarInactiveTintColor: c.textMuted,
         tabBarStyle: {
-          backgroundColor: Colors.surface,
-          borderTopColor: Colors.border,
+          backgroundColor: c.surface,
+          borderTopColor: c.border,
           height: 58 + insets.bottom,
           paddingTop: 6,
           paddingBottom: insets.bottom,

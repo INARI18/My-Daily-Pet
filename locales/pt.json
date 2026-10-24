@@ -199,6 +199,8 @@
     "title": "Conta",
     "preferences": "Preferências",
     "language": "Idioma",
+    "theme": "Aparência",
+    "themeOptions": { "system": "Sistema", "light": "Claro", "dark": "Escuro" },
     "data": "Dados",
     "export": { "title": "Exportar dados", "subtitle": "Backup em JSON dos seus pets e eventos" },
     "exportError": "Não foi possível exportar seus dados.",

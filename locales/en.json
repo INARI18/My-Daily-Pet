@@ -199,6 +199,8 @@
     "title": "Account",
     "preferences": "Preferences",
     "language": "Language",
+    "theme": "Appearance",
+    "themeOptions": { "system": "System", "light": "Light", "dark": "Dark" },
     "data": "Data",
     "export": { "title": "Export data", "subtitle": "JSON backup of your pets and events" },
     "exportError": "Could not export your data.",

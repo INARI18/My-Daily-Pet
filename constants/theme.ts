@@ -1,8 +1,34 @@
-// Design tokens. See docs/superpowers/specs/2026-10-23-redesign-design.md
+// Design tokens. Colors come in two palettes; screens read them through useColors().
 
-export const Colors = {
+export type Palette = {
+  bg: string;
+  surface: string;
+  cardBorder: string; // transparent in light, visible in dark (replaces the shadow)
+  primary: string;
+  primarySoft: string;
+  accent: string;
+  accentSoft: string;
+  text: string;
+  textMuted: string;
+  border: string;
+  success: string;
+  successSoft: string;
+  warning: string;
+  warningSoft: string;
+  danger: string;
+  dangerSoft: string;
+  onPrimary: string;
+  petDog: string; // avatar tints
+  petCat: string;
+  paw: string; // background paw prints
+  brand: string; // deep purple of the auth screens, same in both modes
+  onBrand: string;
+};
+
+export const LightColors: Palette = {
   bg: "#FFF7EA",
   surface: "#FFFFFF",
+  cardBorder: "transparent",
   primary: "#5C1A5C",
   primarySoft: "#EFE6F2",
   // single-hue palette: the accent is a lighter purple, not a second color
@@ -18,7 +44,37 @@ export const Colors = {
   danger: "#B3261E",
   dangerSoft: "#FBE0DD",
   onPrimary: "#FFFFFF",
-} as const;
+  petDog: "#FFF1DC",
+  petCat: "#E6D3EA",
+  paw: "rgba(92, 26, 92, 0.05)",
+  brand: "#5C1A5C",
+  onBrand: "#FFF7EA",
+};
+
+export const DarkColors: Palette = {
+  bg: "#16101A",
+  surface: "#2E2135",
+  cardBorder: "#4B3B54",
+  primary: "#D9A3E3",
+  primarySoft: "#3F3047",
+  accent: "#C58BD0",
+  accentSoft: "#4A3355",
+  text: "#FBF3F8",
+  textMuted: "#C2B3C6",
+  border: "#4B3B54",
+  success: "#BFF2D6",
+  successSoft: "#1F5A3E",
+  warning: "#FFD4C4",
+  warningSoft: "#6B3528",
+  danger: "#FFB4AD",
+  dangerSoft: "#5A2328",
+  onPrimary: "#16101A",
+  petDog: "#5A4630",
+  petCat: "#4A3355",
+  paw: "rgba(217, 163, 227, 0.07)",
+  brand: "#3A1F3D",
+  onBrand: "#FBF3F8",
+};
 
 export const Fonts = {
   title: "Baloo2_800ExtraBold",

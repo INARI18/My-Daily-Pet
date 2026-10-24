@@ -1,4 +1,5 @@
-import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
+import { Fonts, Radius, Shadow, Spacing, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { useT } from "@/i18n/LanguageProvider";
 import { ArrowLeft } from "lucide-react-native";
 import React from "react";
@@ -16,6 +17,8 @@ type HeroProps = {
 // Lilac block with the screen title and one of the illustrations; replaces Header
 // on the main screens so every screen has a piece of the illustration set.
 export function Hero({ title, subtitle, image, imageSize = 96, onBack, right }: HeroProps) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = useT();
   return (
     <View style={styles.wrap}>
@@ -23,7 +26,7 @@ export function Hero({ title, subtitle, image, imageSize = 96, onBack, right }: 
         <View style={styles.toolbar}>
           {onBack ? (
             <Pressable onPress={onBack} style={styles.iconButton} hitSlop={8} accessibilityLabel={t("common.back")}>
-              <ArrowLeft size={20} color={Colors.primary} />
+              <ArrowLeft size={20} color={c.primary} />
             </Pressable>
           ) : (
             <View />
@@ -46,19 +49,7 @@ export function Hero({ title, subtitle, image, imageSize = 96, onBack, right }: 
   );
 }
 
-export const heroIconButton = StyleSheet.create({
-  button: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.chip,
-    backgroundColor: Colors.surface,
-    alignItems: "center",
-    justifyContent: "center",
-    ...Shadow.card,
-  },
-}).button;
-
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   wrap: { paddingTop: Spacing.lg, marginBottom: Spacing.lg },
   toolbar: {
     flexDirection: "row",
@@ -66,9 +57,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: Spacing.md,
   },
-  iconButton: heroIconButton,
+  iconButton: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.chip,
+    backgroundColor: c.surface,
+    alignItems: "center",
+    justifyContent: "center",
+    ...Shadow.card,
+  },
   block: {
-    backgroundColor: Colors.accentSoft,
+    backgroundColor: c.accentSoft,
     borderRadius: Radius.card + 2,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.lg,
@@ -78,11 +77,11 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   text: { flex: 1 },
-  title: { fontFamily: Fonts.title, fontSize: 26, lineHeight: 30, color: Colors.text },
+  title: { fontFamily: Fonts.title, fontSize: 26, lineHeight: 30, color: c.text },
   subtitle: {
     fontFamily: Fonts.bodyStrong,
     fontSize: 13,
-    color: Colors.primary,
+    color: c.primary,
     opacity: 0.85,
     marginTop: 4,
   },

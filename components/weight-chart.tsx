@@ -1,4 +1,5 @@
-import { Colors, Fonts } from "@/constants/theme";
+import { Fonts, Palette } from "@/constants/theme";
+import { useColors, useStyles } from "@/theme/ThemeProvider";
 import { WeightEntry } from "@/services/weights";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -9,6 +10,8 @@ const PAD = { top: 12, right: 12, bottom: 8, left: 36 };
 
 // Minimal line chart: weight over time, no axes library needed.
 export function WeightChart({ entries }: { entries: WeightEntry[] }) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const [width, setWidth] = useState(0);
   if (entries.length < 2) return null;
 
@@ -39,14 +42,14 @@ export function WeightChart({ entries }: { entries: WeightEntry[] }) {
                 x2={width - PAD.right}
                 y1={y(v)}
                 y2={y(v)}
-                stroke={Colors.border}
+                stroke={c.border}
                 strokeWidth={1}
               />
             ))}
             <Polyline
               points={points}
               fill="none"
-              stroke={Colors.primary}
+              stroke={c.primary}
               strokeWidth={2.5}
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -57,8 +60,8 @@ export function WeightChart({ entries }: { entries: WeightEntry[] }) {
                 cx={x(e.date)}
                 cy={y(e.value)}
                 r={4}
-                fill={Colors.surface}
-                stroke={Colors.accent}
+                fill={c.surface}
+                stroke={c.accent}
                 strokeWidth={2.5}
               />
             ))}
@@ -74,7 +77,7 @@ export function WeightChart({ entries }: { entries: WeightEntry[] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) => StyleSheet.create({
   wrap: { width: "100%", height: HEIGHT },
   tick: {
     position: "absolute",
@@ -83,6 +86,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
     fontFamily: Fonts.body,
     fontSize: 10,
-    color: Colors.textMuted,
+    color: c.textMuted,
   },
 });
