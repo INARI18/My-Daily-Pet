@@ -20,7 +20,10 @@ export type EventInput = Omit<Event, "id" | "createdAt">;
 
 // ---- status rules (see spec, section 5) ----
 
+// Until the first completion the event is due on its initial date; after that,
+// nextDate (advanced by completeEvent) is the due date.
 export function getReferenceDate(event: Event): Date {
+  if (!event.lastCompletedAt) return event.inicialDate;
   return event.nextDate ?? event.inicialDate;
 }
 
@@ -69,8 +72,8 @@ export type Occurrence = { event: Event; date: Date; done: boolean };
 const MAX_OCCURRENCES_PER_EVENT = 400;
 
 // Expands events into dated occurrences up to `until`, keyed by YYYY-MM-DD.
-// Recurring events repeat from their reference date; completed one-time events
-// stay on their date marked as done.
+// Recurring events repeat from their initial date; occurrences before the reference
+// date count as done. Completed one-time events stay on their date marked as done.
 export function getOccurrencesByDay(
   events: Event[],
   until: Date
@@ -86,10 +89,11 @@ export function getOccurrencesByDay(
       push({ event, date: event.inicialDate, done: isCompleted(event) });
       continue;
     }
-    let date = getReferenceDate(event);
+    const reference = getReferenceDate(event);
+    let date = event.inicialDate;
     let count = 0;
     while (date <= until && count < MAX_OCCURRENCES_PER_EVENT) {
-      push({ event, date, done: false });
+      push({ event, date, done: date < reference });
       date = calculateNextDate(date, event.recurrence);
       count++;
     }
@@ -117,12 +121,7 @@ function eventToFirestore(eventData: EventInput): Record<string, any> {
     notificationEnabled: eventData.notificationEnabled,
     createdAt: serverTimestamp(),
   };
-  if (eventData.recurrence) {
-    data.recurrence = eventData.recurrence;
-    data.nextDate = Timestamp.fromDate(
-      calculateNextDate(eventData.inicialDate, eventData.recurrence)
-    );
-  }
+  if (eventData.recurrence) data.recurrence = eventData.recurrence;
   if (eventData.nextDate) data.nextDate = Timestamp.fromDate(eventData.nextDate);
   if (eventData.lastCompletedAt) {
     data.lastCompletedAt = Timestamp.fromDate(eventData.lastCompletedAt);
@@ -196,10 +195,8 @@ export const updateEvent = async (
   if ("nextDate" in updates) {
     data.nextDate = updates.nextDate ? Timestamp.fromDate(updates.nextDate) : deleteField();
   } else if (updates.recurrence && updates.inicialDate) {
-    // keep nextDate in sync when the schedule changes
-    data.nextDate = Timestamp.fromDate(
-      calculateNextDate(updates.inicialDate, updates.recurrence)
-    );
+    // schedule changed: the new initial date is the next due date
+    data.nextDate = Timestamp.fromDate(updates.inicialDate);
   }
 
   await updateDoc(doc(eventsRef(petId), eventId), data);
