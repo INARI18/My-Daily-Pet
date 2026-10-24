@@ -14,7 +14,20 @@
   "tabs": {
     "today": "Today",
     "pets": "Pets",
+    "discover": "Discover",
     "account": "Account"
+  },
+  "discover": {
+    "title": "Discover",
+    "subtitle": "News and research about pet health",
+    "news": "News",
+    "articles": "Articles",
+    "open": "Read on the source",
+    "openPubMed": "Read on PubMed",
+    "error": "Could not load the content. Check your connection and try again.",
+    "retry": "Try again",
+    "empty": "Nothing here right now.",
+    "disclaimer": "Third-party content, in the language of the source. It does not replace your veterinarian."
   },
   "eventTypes": {
     "bath": { "singular": "Bath", "plural": "Baths" },

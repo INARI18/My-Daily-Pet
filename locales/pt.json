@@ -14,7 +14,20 @@
   "tabs": {
     "today": "Hoje",
     "pets": "Pets",
+    "discover": "Descobrir",
     "account": "Conta"
+  },
+  "discover": {
+    "title": "Descobrir",
+    "subtitle": "Notícias e pesquisas sobre saúde pet",
+    "news": "Notícias",
+    "articles": "Artigos",
+    "open": "Ler na fonte",
+    "openPubMed": "Ler no PubMed",
+    "error": "Não foi possível carregar o conteúdo. Verifique a conexão e tente de novo.",
+    "retry": "Tentar de novo",
+    "empty": "Nada por aqui agora.",
+    "disclaimer": "Conteúdo de terceiros, no idioma da fonte. Não substitui o veterinário."
   },
   "eventTypes": {
     "bath": { "singular": "Banho", "plural": "Banhos" },

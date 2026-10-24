@@ -1,7 +1,7 @@
 import { Colors, Fonts } from "@/constants/theme";
 import { useT } from "@/i18n/LanguageProvider";
 import { Tabs } from "expo-router";
-import { CalendarCheck, PawPrint, UserRound } from "lucide-react-native";
+import { CalendarCheck, Compass, PawPrint, UserRound } from "lucide-react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -43,6 +43,13 @@ export default function TabLayout() {
         options={{
           title: t("tabs.pets"),
           tabBarIcon: ({ color, size }) => <PawPrint color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="discover"
+        options={{
+          title: t("tabs.discover"),
+          tabBarIcon: ({ color, size }) => <Compass color={color} size={size} />,
         }}
       />
       <Tabs.Screen
