@@ -4,6 +4,7 @@ import { Screen } from "@/components/ui/screen";
 import { Colors } from "@/constants/theme";
 import { useT } from "@/i18n/LanguageProvider";
 import { deletePet, getPetById, updatePet } from "@/services/pets";
+import { addWeight } from "@/services/weights";
 import { toYMD } from "@/utils/date";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { deleteField } from "firebase/firestore";
@@ -51,6 +52,11 @@ export default function EditPet() {
         birthDate: values.birthDate ? new Date(values.birthDate) : deleteField(),
         ...(values.iconUrl ? { iconUrl: values.iconUrl } : {}),
       });
+      // a changed weight is a new measurement, so the history stays in sync
+      const weight = parseFloat(values.weight);
+      if (weight !== parseFloat(initial?.weight ?? "")) {
+        await addWeight(id, weight, new Date());
+      }
       router.back();
     } catch {
       Alert.alert(t("common.error"), t("pets.saveError"));

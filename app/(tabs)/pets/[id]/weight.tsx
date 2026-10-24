@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Screen } from "@/components/ui/screen";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
 import { useLanguage, useT } from "@/i18n/LanguageProvider";
+import { getPetById } from "@/services/pets";
 import { WeightEntry, addWeight, deleteWeight, getWeights } from "@/services/weights";
 import { formatDate, toYMD } from "@/utils/date";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -28,7 +29,16 @@ export default function PetWeight() {
 
   const load = useCallback(async () => {
     try {
-      setEntries(await getWeights(petId));
+      let list = await getWeights(petId);
+      // pets created before the weight history: seed it with the registered weight
+      if (list.length === 0) {
+        const pet = await getPetById(petId);
+        if (pet?.weight) {
+          await addWeight(petId, pet.weight, new Date());
+          list = await getWeights(petId);
+        }
+      }
+      setEntries(list);
     } catch (err: any) {
       setEntries([]);
       Alert.alert(t("common.error"), err?.message ?? t("weight.loadError"));
