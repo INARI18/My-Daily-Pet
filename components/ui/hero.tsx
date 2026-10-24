@@ -14,7 +14,7 @@ type HeroProps = {
 
 // Lilac block with the screen title and one of the illustrations; replaces Header
 // on the main screens so every screen has a piece of the illustration set.
-export function Hero({ title, subtitle, image, imageSize = 112, onBack, right }: HeroProps) {
+export function Hero({ title, subtitle, image, imageSize = 96, onBack, right }: HeroProps) {
   return (
     <View style={styles.wrap}>
       {onBack || right ? (
@@ -68,12 +68,11 @@ const styles = StyleSheet.create({
   block: {
     backgroundColor: Colors.accentSoft,
     borderRadius: Radius.card + 2,
-    paddingLeft: Spacing.lg,
-    paddingRight: Spacing.sm,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.sm,
+    gap: Spacing.md,
     overflow: "hidden",
   },
   text: { flex: 1 },
@@ -85,5 +84,5 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     marginTop: 4,
   },
-  image: { marginVertical: -Spacing.md },
+  image: { marginVertical: -Spacing.xs },
 });
