@@ -2,11 +2,15 @@ import { Colors, Fonts } from "@/constants/theme";
 import { Tabs } from "expo-router";
 import { CalendarCheck, PawPrint, UserRound } from "lucide-react-native";
 import React from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Today is the landing tab
 export const unstable_settings = { anchor: "today" };
 
 export default function TabLayout() {
+  // edge-to-edge on Android: keep the tab bar above the system navigation bar
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
@@ -16,8 +20,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: Colors.surface,
           borderTopColor: Colors.border,
-          height: 64,
+          height: 58 + insets.bottom,
           paddingTop: 6,
+          paddingBottom: insets.bottom,
         },
         tabBarLabelStyle: { fontFamily: Fonts.bodyBold, fontSize: 11 },
       }}

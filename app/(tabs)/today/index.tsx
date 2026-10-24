@@ -137,11 +137,13 @@ export default function Today() {
         >
           {grouped.length === 0 ? (
             <View style={styles.empty}>
-              <Image
-                source={require("@/assets/images/homeScreen/cat_silhouette.png")}
-                style={styles.emptyImage}
-                resizeMode="contain"
-              />
+              <View style={styles.emptyIcon}>
+                <Image
+                  source={require("@/assets/icons/cats/1.png")}
+                  style={styles.emptyImage}
+                  resizeMode="contain"
+                />
+              </View>
               <Text style={styles.emptyTitle}>Nothing for today</Text>
               <Text style={styles.emptyText}>
                 Events due today, overdue or in the next 7 days show up here.
@@ -190,7 +192,16 @@ const styles = StyleSheet.create({
   cardTitle: { fontFamily: Fonts.title, fontSize: 16, color: Colors.text },
   cardMeta: { fontFamily: Fonts.body, fontSize: 13, color: Colors.textMuted },
   empty: { alignItems: "center", paddingVertical: 48, gap: Spacing.sm },
-  emptyImage: { width: 120, height: 200, marginBottom: Spacing.sm, opacity: 0.9 },
+  emptyIcon: {
+    width: 120,
+    height: 120,
+    borderRadius: 36,
+    backgroundColor: Colors.accentSoft,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.md,
+  },
+  emptyImage: { width: 84, height: 84 },
   emptyTitle: { fontFamily: Fonts.title, fontSize: 20, color: Colors.text },
   emptyText: {
     fontFamily: Fonts.body,
