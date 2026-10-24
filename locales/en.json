@@ -107,7 +107,7 @@
   "pets": {
     "title": "My Pets",
     "count": { "zero": "No pets yet", "one": "1 pet", "other": "%{count} pets" },
-    "empty": "No pets yet. Tap + to add your first one.",
+    "empty": "No pets yet. Add the first one to start planning.",
     "addLabel": "Add pet",
     "addButton": "Add pet",
     "editLabel": "Edit pet",
