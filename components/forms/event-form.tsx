@@ -7,6 +7,7 @@ import { EventType, RECURRENCE_UNITS, RecurrenceUnit } from "@/constants/events"
 import { Colors, Fonts, Spacing } from "@/constants/theme";
 import { useT } from "@/i18n/LanguageProvider";
 import { EventInput } from "@/services/events";
+import { REMINDER_OFFSETS, ReminderOffset } from "@/services/notifications";
 import { toYMD } from "@/utils/date";
 import { Bell, CalendarDays, FileText, Repeat } from "lucide-react-native";
 import React, { useState } from "react";
@@ -21,6 +22,7 @@ export type EventFormValues = {
   recurrenceAmount: string;
   recurrenceUnit: RecurrenceUnit;
   notificationEnabled: boolean;
+  reminderOffset: ReminderOffset;
   notes: string;
 };
 
@@ -38,6 +40,7 @@ export function defaultEventValues(type: EventType): EventFormValues {
     recurrenceAmount: "1",
     recurrenceUnit: "days",
     notificationEnabled: true,
+    reminderOffset: 0,
     notes: "",
   };
 }
@@ -53,6 +56,7 @@ export function toEventInput(values: EventFormValues, petId: string): EventInput
     type: values.type,
     inicialDate,
     notificationEnabled: values.notificationEnabled,
+    reminderOffsetMinutes: values.reminderOffset,
     notes: values.notes.trim() || undefined,
     recurrence: values.hasRecurrence
       ? { amount: parseInt(values.recurrenceAmount), unit: values.recurrenceUnit }
@@ -114,6 +118,10 @@ export function EventForm({
   const [errors, setErrors] = useState<Errors>({});
 
   const unitOptions = RECURRENCE_UNITS.map((unit) => ({ label: t(`units.${unit}`), value: unit }));
+  const offsetOptions = REMINDER_OFFSETS.map((m) => ({
+    label: t(`reminders.offset.${m}`),
+    value: String(m),
+  }));
 
   const set = <K extends keyof EventFormValues>(key: K, value: EventFormValues[K]) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -213,6 +221,14 @@ export function EventForm({
           switchValue={values.notificationEnabled}
           onSwitch={(v) => set("notificationEnabled", v)}
         />
+        {values.notificationEnabled ? (
+          <ChipGroup
+            label={t("reminders.remindMe")}
+            options={offsetOptions}
+            value={String(values.reminderOffset)}
+            onChange={(v) => set("reminderOffset", Number(v) as ReminderOffset)}
+          />
+        ) : null}
       </Card>
 
       <Card>

@@ -1,4 +1,5 @@
 import { Colors, Fonts } from "@/constants/theme";
+import { useReminders } from "@/hooks/use-reminders";
 import { useT } from "@/i18n/LanguageProvider";
 import { Tabs } from "expo-router";
 import { CalendarCheck, Compass, PawPrint, UserRound } from "lucide-react-native";
@@ -12,6 +13,7 @@ export default function TabLayout() {
   const t = useT();
   // edge-to-edge on Android: keep the tab bar above the system navigation bar
   const insets = useSafeAreaInsets();
+  useReminders();
 
   return (
     <Tabs

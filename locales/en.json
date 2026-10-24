@@ -45,6 +45,19 @@
     "months": { "one": "every month", "other": "every %{count} months" },
     "years": { "one": "every year", "other": "every %{count} years" }
   },
+  "reminders": {
+    "remindMe": "Remind me",
+    "offset": { "0": "At the time", "15": "15 min before", "60": "1 h before", "1440": "1 day before" }
+  },
+  "notifications": {
+    "channel": "Reminders",
+    "bodyToday": "Today at %{time}",
+    "bodyDate": "%{date} at %{time}",
+    "setting": "Notifications",
+    "settingHint": "Reminders for events that have notifications on.",
+    "denied": "Notifications are blocked for this app in the system settings.",
+    "openSettings": "Open settings"
+  },
   "units": {
     "hours": "Hours",
     "days": "Days",

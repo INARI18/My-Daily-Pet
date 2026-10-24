@@ -10,6 +10,14 @@ import { deleteAccount, logOut, sendPasswordReset } from "@/services/account";
 import { exportDataAsJson } from "@/services/export";
 import { getFirebaseErrorMessage } from "@/services/firebaseErrorHandler";
 import {
+  PermissionState,
+  ensurePermission,
+  getPermissionState,
+  syncReminders,
+} from "@/services/notifications";
+import { getNotificationsEnabled, setNotificationsEnabled } from "@/services/preferences";
+import { useFocusEffect } from "expo-router";
+import {
   ChevronRight,
   Download,
   KeyRound,
@@ -18,8 +26,17 @@ import {
   Trash2,
   UserRound,
 } from "lucide-react-native";
-import React, { useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  Alert,
+  Linking,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from "react-native";
 
 const LANGUAGES = [
   { label: "English", value: "en" },
@@ -64,7 +81,26 @@ export default function Account() {
   const t = useT();
   const [language, setLanguage] = useLanguage();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [notificationsOn, setNotificationsOn] = useState(true);
+  const [permission, setPermission] = useState<PermissionState>("undetermined");
   const email = auth.currentUser?.email ?? "";
+
+  useFocusEffect(
+    useCallback(() => {
+      getNotificationsEnabled().then(setNotificationsOn);
+      if (Platform.OS !== "web") getPermissionState().then(setPermission);
+    }, [])
+  );
+
+  const handleNotificationsToggle = async (value: boolean) => {
+    setNotificationsOn(value);
+    await setNotificationsEnabled(value);
+    if (value && Platform.OS !== "web") {
+      await ensurePermission();
+      setPermission(await getPermissionState());
+    }
+    syncReminders().catch(() => {});
+  };
 
   const handleExport = async () => {
     try {
@@ -149,6 +185,29 @@ export default function Account() {
           value={language}
           onChange={setLanguage}
         />
+        <View style={styles.switchRow}>
+          <View style={styles.flex}>
+            <Text style={styles.switchTitle}>{t("notifications.setting")}</Text>
+            <Text style={styles.switchHint}>{t("notifications.settingHint")}</Text>
+          </View>
+          <Switch
+            value={notificationsOn}
+            onValueChange={handleNotificationsToggle}
+            trackColor={{ false: Colors.border, true: Colors.accent }}
+            thumbColor={Colors.surface}
+          />
+        </View>
+        {notificationsOn && permission === "denied" ? (
+          <View style={styles.deniedBox}>
+            <Text style={styles.deniedText}>{t("notifications.denied")}</Text>
+            <Button
+              title={t("notifications.openSettings")}
+              variant="ghost"
+              size="sm"
+              onPress={() => Linking.openSettings()}
+            />
+          </View>
+        ) : null}
       </Card>
 
       <SectionTitle>{t("account.data")}</SectionTitle>
@@ -223,6 +282,22 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   card: { marginBottom: Spacing.xl },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+    marginTop: Spacing.lg,
+  },
+  switchTitle: { fontFamily: Fonts.titleMedium, fontSize: 15, color: Colors.text },
+  switchHint: { fontFamily: Fonts.body, fontSize: 12, color: Colors.textMuted, marginTop: 1 },
+  deniedBox: {
+    marginTop: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.dangerSoft,
+    gap: Spacing.sm,
+  },
+  deniedText: { fontFamily: Fonts.bodyStrong, fontSize: 12.5, color: Colors.danger },
   listCard: { paddingVertical: 4, marginBottom: Spacing.xl },
   row: { flexDirection: "row", alignItems: "center", gap: Spacing.md, paddingVertical: Spacing.md },
   rowDivider: { borderBottomWidth: 1, borderBottomColor: Colors.border },

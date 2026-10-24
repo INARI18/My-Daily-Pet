@@ -12,6 +12,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { ImageSourcePropType } from "react-native";
+import { emitEventsChanged } from "@/utils/events-bus";
 
 // add new pet
 export const addPet = async (petData: PetInput): Promise<void> => {
@@ -135,7 +136,7 @@ export const deletePet = async (petId: string) => {
       await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
     }
     await deleteDoc(petDocRef);
-    console.log("Pet deletado com sucesso:", petId);
+    emitEventsChanged();
   } catch (error) {
     console.error("Erro ao deletar pet:", error);
   }

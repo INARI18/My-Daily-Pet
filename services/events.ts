@@ -2,6 +2,7 @@ import { auth, db } from "@/firebase-config";
 import { Event, EventFirestore, Recurrence } from "@/types/event";
 import { Pet } from "@/types/pet";
 import { addDays, isSameDay, startOfDay, toYMD } from "@/utils/date";
+import { emitEventsChanged } from "@/utils/events-bus";
 import {
   Timestamp,
   addDoc,
@@ -119,6 +120,7 @@ function eventToFirestore(eventData: EventInput): Record<string, any> {
     type: eventData.type,
     inicialDate: Timestamp.fromDate(eventData.inicialDate),
     notificationEnabled: eventData.notificationEnabled,
+    reminderOffsetMinutes: eventData.reminderOffsetMinutes ?? 0,
     createdAt: serverTimestamp(),
   };
   if (eventData.recurrence) data.recurrence = eventData.recurrence;
@@ -139,6 +141,7 @@ function firestoreToEvent(id: string, data: EventFirestore): Event {
     recurrence: data.recurrence,
     nextDate: data.nextDate?.toDate(),
     notificationEnabled: data.notificationEnabled,
+    reminderOffsetMinutes: data.reminderOffsetMinutes ?? 0,
     createdAt: data.createdAt?.toDate(),
     lastCompletedAt: data.lastCompletedAt?.toDate(),
     notes: data.notes,
@@ -149,6 +152,7 @@ function firestoreToEvent(id: string, data: EventFirestore): Event {
 
 export const addEvent = async (petId: string, eventData: EventInput): Promise<string> => {
   const docRef = await addDoc(eventsRef(petId), eventToFirestore(eventData));
+  emitEventsChanged();
   return docRef.id;
 };
 
@@ -172,6 +176,7 @@ export const getAllEventsForPet = async (petId: string): Promise<Event[]> => {
 
 export const deleteEvent = async (petId: string, eventId: string): Promise<void> => {
   await deleteDoc(doc(eventsRef(petId), eventId));
+  emitEventsChanged();
 };
 
 export const updateEvent = async (
@@ -189,6 +194,9 @@ export const updateEvent = async (
   if (updates.notificationEnabled !== undefined) {
     data.notificationEnabled = updates.notificationEnabled;
   }
+  if (updates.reminderOffsetMinutes !== undefined) {
+    data.reminderOffsetMinutes = updates.reminderOffsetMinutes;
+  }
   // a key explicitly set to undefined means "remove it" (Firestore ignores undefined)
   if ("recurrence" in updates) data.recurrence = updates.recurrence ?? deleteField();
   if ("notes" in updates) data.notes = updates.notes ?? deleteField();
@@ -200,6 +208,7 @@ export const updateEvent = async (
   }
 
   await updateDoc(doc(eventsRef(petId), eventId), data);
+  emitEventsChanged();
 };
 
 // Marks an event as done. Recurring events advance nextDate, keeping the original
@@ -217,6 +226,7 @@ export const completeEvent = async (event: Event): Promise<void> => {
   }
 
   await updateDoc(doc(eventsRef(event.petId), event.id), data);
+  emitEventsChanged();
 };
 
 // ---- cross-pet queries (Today tab) ----

@@ -9,6 +9,7 @@ import { Screen } from "@/components/ui/screen";
 import { Colors } from "@/constants/theme";
 import { useT } from "@/i18n/LanguageProvider";
 import { deleteEvent, getEventById, updateEvent } from "@/services/events";
+import { REMINDER_OFFSETS, ReminderOffset } from "@/services/notifications";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Trash2 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -39,6 +40,7 @@ export default function EditEvent() {
         recurrenceAmount: String(event.recurrence?.amount ?? 1),
         recurrenceUnit: event.recurrence?.unit ?? "days",
         notificationEnabled: event.notificationEnabled,
+        reminderOffset: (REMINDER_OFFSETS.find((m) => m === event.reminderOffsetMinutes) ?? 0) as ReminderOffset,
         notes: event.notes ?? "",
       });
     });
