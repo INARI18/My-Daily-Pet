@@ -15,7 +15,8 @@ import {
   getEventStatus,
   getReferenceDate,
 } from "@/services/events";
-import { getPetIcon } from "@/services/pets";
+import { getPetIcon, getPets } from "@/services/pets";
+import { Button } from "@/components/ui/button";
 import { formatDate, formatLongDate, formatTime } from "@/utils/date";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -78,11 +79,15 @@ function TodayCard({
 export default function Today() {
   const t = useT();
   const [lang] = useLanguage();
+  const router = useRouter();
   const [items, setItems] = useState<PetEvent[] | null>(null);
+  const [hasPets, setHasPets] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
-    setItems(await getActiveEventsForAllPets());
+    const [events, pets] = await Promise.all([getActiveEventsForAllPets(), getPets()]);
+    setItems(events);
+    setHasPets(pets.length > 0);
     setRefreshing(false);
   }, []);
 
@@ -139,8 +144,19 @@ export default function Today() {
                   resizeMode="contain"
                 />
               </View>
-              <Text style={styles.emptyTitle}>{t("today.empty.title")}</Text>
-              <Text style={styles.emptyText}>{t("today.empty.text")}</Text>
+              <Text style={styles.emptyTitle}>
+                {hasPets ? t("today.empty.title") : t("today.noPets.title")}
+              </Text>
+              <Text style={styles.emptyText}>
+                {hasPets ? t("today.empty.text") : t("today.noPets.text")}
+              </Text>
+              {!hasPets ? (
+                <Button
+                  title={t("pets.addButton")}
+                  onPress={() => router.push("/pets/add")}
+                  style={styles.emptyButton}
+                />
+              ) : null}
             </View>
           ) : (
             grouped.map((section) => (
@@ -195,6 +211,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   emptyImage: { width: 84, height: 84 },
+  emptyButton: { marginTop: Spacing.md, alignSelf: "stretch" },
   emptyTitle: { fontFamily: Fonts.title, fontSize: 20, color: Colors.text },
   emptyText: {
     fontFamily: Fonts.body,

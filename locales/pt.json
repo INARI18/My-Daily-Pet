@@ -60,13 +60,29 @@
       "title": "Nada para hoje",
       "text": "Eventos de hoje, atrasados ou dos próximos 7 dias aparecem aqui."
     },
+    "noPets": {
+      "title": "Bem-vindo!",
+      "text": "Cadastre seu primeiro pet para planejar banhos, passeios, remédios e mais."
+    },
     "completeError": "Não foi possível concluir o evento."
+  },
+  "weight": {
+    "title": "Peso",
+    "current": "Peso atual",
+    "change": "%{delta} kg desde %{date}",
+    "noComparison": "Registre outra medição para ver a variação.",
+    "add": "Registrar peso",
+    "history": "Histórico",
+    "saveError": "Não foi possível salvar o peso.",
+    "loadError": "Não foi possível carregar o histórico de peso.",
+    "deleteConfirm": { "title": "Excluir medição", "message": "Remover este registro de peso?" }
   },
   "pets": {
     "title": "Meus Pets",
     "count": { "zero": "Nenhum pet ainda", "one": "1 pet", "other": "%{count} pets" },
     "empty": "Nenhum pet ainda. Toque em + para adicionar o primeiro.",
     "addLabel": "Adicionar pet",
+    "addButton": "Adicionar pet",
     "editLabel": "Editar pet",
     "meta": {
       "ageUnknown": "Idade desconhecida",
@@ -128,6 +144,7 @@
       "completedText": "Eventos únicos concluídos aparecem aqui."
     },
     "completeError": "Não foi possível concluir o evento.",
+    "lastDone": "Feito pela última vez em %{date}",
     "addTitle": "Adicionar evento",
     "editTitle": "Editar evento",
     "notFound": "Evento não encontrado",

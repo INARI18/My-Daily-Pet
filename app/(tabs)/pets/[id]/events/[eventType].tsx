@@ -83,6 +83,11 @@ function EventCard({
           {event.notes}
         </Text>
       ) : null}
+      {!done && event.lastCompletedAt ? (
+        <Text style={styles.lastDone}>
+          {t("events.lastDone", { date: formatDate(event.lastCompletedAt, lang) })}
+        </Text>
+      ) : null}
     </Card>
   );
 }
@@ -230,6 +235,12 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
+  },
+  lastDone: {
+    fontFamily: Fonts.bodyStrong,
+    fontSize: 12,
+    color: Colors.success,
+    marginTop: Spacing.sm,
   },
   empty: { alignItems: "center", paddingVertical: 48, gap: Spacing.sm },
   emptyTitle: { fontFamily: Fonts.title, fontSize: 18, color: Colors.text, marginTop: Spacing.sm },

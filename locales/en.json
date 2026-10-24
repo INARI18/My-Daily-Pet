@@ -60,13 +60,29 @@
       "title": "Nothing for today",
       "text": "Events due today, overdue or in the next 7 days show up here."
     },
+    "noPets": {
+      "title": "Welcome!",
+      "text": "Add your first pet to start planning baths, walks, meds and more."
+    },
     "completeError": "Could not complete the event."
+  },
+  "weight": {
+    "title": "Weight",
+    "current": "Current weight",
+    "change": "%{delta} kg since %{date}",
+    "noComparison": "Log another measurement to see the change.",
+    "add": "Log weight",
+    "history": "History",
+    "saveError": "Could not save the weight.",
+    "loadError": "Could not load the weight history.",
+    "deleteConfirm": { "title": "Delete measurement", "message": "Remove this weight entry?" }
   },
   "pets": {
     "title": "My Pets",
     "count": { "zero": "No pets yet", "one": "1 pet", "other": "%{count} pets" },
     "empty": "No pets yet. Tap + to add your first one.",
     "addLabel": "Add pet",
+    "addButton": "Add pet",
     "editLabel": "Edit pet",
     "meta": {
       "ageUnknown": "Age unknown",
@@ -128,6 +144,7 @@
       "completedText": "Completed one-time events show up here."
     },
     "completeError": "Could not complete the event.",
+    "lastDone": "Last done %{date}",
     "addTitle": "Add event",
     "editTitle": "Edit event",
     "notFound": "Event not found",

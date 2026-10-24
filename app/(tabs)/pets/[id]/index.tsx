@@ -4,14 +4,14 @@ import { HeaderIconButton } from "@/components/ui/header";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { PETS_ILLUSTRATION, PLANNER_CATEGORIES } from "@/constants/events";
-import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import { useT } from "@/i18n/LanguageProvider";
 import { getAllEventsForPet } from "@/services/events";
 import { getPetById, getPetIcon } from "@/services/pets";
 import { Event } from "@/types/event";
 import { Pet } from "@/types/pet";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { CalendarDays } from "lucide-react-native";
+import { CalendarDays, ChevronRight, Scale } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
@@ -64,6 +64,18 @@ export default function PetPlanner() {
           </HeaderIconButton>
         }
       />
+      {pet ? (
+        <Card onPress={() => router.push(`/pets/${id}/weight`)} style={styles.weightCard}>
+          <View style={styles.weightIcon}>
+            <Scale size={18} color={Colors.primary} />
+          </View>
+          <View style={styles.flex}>
+            <Text style={styles.weightLabel}>{t("weight.title")}</Text>
+            <Text style={styles.weightValue}>{t("pets.meta.kg", { weight: pet.weight })}</Text>
+          </View>
+          <ChevronRight size={18} color={Colors.textMuted} />
+        </Card>
+      ) : null}
       <View style={styles.grid}>
         {PLANNER_CATEGORIES.map((category) => (
           <Card
@@ -87,6 +99,24 @@ export default function PetPlanner() {
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  weightCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
+    paddingVertical: Spacing.md,
+  },
+  weightIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.primarySoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  weightLabel: { fontFamily: Fonts.bodyBold, fontSize: 11, letterSpacing: 0.6, textTransform: "uppercase", color: Colors.textMuted },
+  weightValue: { fontFamily: Fonts.titleMedium, fontSize: 16, color: Colors.text },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.md },
   tile: {
     width: "48%",

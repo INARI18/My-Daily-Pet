@@ -8,6 +8,7 @@ import {
   FieldValue,
   getDoc,
   getDocs,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { ImageSourcePropType } from "react-native";
@@ -24,7 +25,17 @@ export const addPet = async (petData: PetInput): Promise<void> => {
     const userRef = doc(db, "users", user.uid);
     const petsCollectionRef = collection(userRef, "pets");
 
-    await addDoc(petsCollectionRef, petData);
+    const petRef = await addDoc(petsCollectionRef, petData);
+    // the registered weight is the first entry of the weight history;
+    // never let it block pet creation (e.g. rules not deployed yet)
+    try {
+      await addDoc(collection(petRef, "weights"), {
+        value: petData.weight,
+        date: Timestamp.fromDate(new Date()),
+      });
+    } catch (error) {
+      console.warn("Could not write the initial weight entry:", error);
+    }
   } catch (error) {
     console.error("Erro ao adicionar pet:", error);
     throw error;
@@ -119,8 +130,10 @@ export const deletePet = async (petId: string) => {
     const userRef = doc(db, "users", user.uid);
     const petDocRef = doc(userRef, "pets", petId);
     // subcollections are not deleted with the parent doc
-    const eventsSnapshot = await getDocs(collection(petDocRef, "events"));
-    await Promise.all(eventsSnapshot.docs.map((d) => deleteDoc(d.ref)));
+    for (const name of ["events", "weights"]) {
+      const snapshot = await getDocs(collection(petDocRef, name));
+      await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
+    }
     await deleteDoc(petDocRef);
     console.log("Pet deletado com sucesso:", petId);
   } catch (error) {

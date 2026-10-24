@@ -1,4 +1,5 @@
 import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
@@ -81,7 +82,10 @@ export default function Pets() {
       {pets === null ? (
         <ActivityIndicator color={Colors.primary} style={styles.loading} />
       ) : pets.length === 0 ? (
-        <Text style={styles.empty}>{t("pets.empty")}</Text>
+        <View style={styles.emptyBox}>
+          <Text style={styles.empty}>{t("pets.empty")}</Text>
+          <Button title={t("pets.addButton")} onPress={() => router.push("/pets/add")} />
+        </View>
       ) : (
         pets.map((pet) => <PetCard key={pet.id} pet={pet} />)
       )}
@@ -99,12 +103,12 @@ export default function Pets() {
 const styles = StyleSheet.create({
   content: { paddingBottom: 96, minHeight: "100%" },
   loading: { marginTop: 40 },
+  emptyBox: { marginTop: 32, gap: Spacing.lg },
   empty: {
     fontFamily: Fonts.body,
     fontSize: 15,
     color: Colors.textMuted,
     textAlign: "center",
-    marginTop: 40,
   },
   card: {
     flexDirection: "row",
