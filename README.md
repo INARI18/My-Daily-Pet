@@ -48,6 +48,22 @@ npx tsc --noEmit
 npx expo lint
 ```
 
+## Building an APK
+
+Builds run on EAS. The Firebase values from `.env` must exist on EAS for the
+profile you build (they are not uploaded with the code):
+
+```bash
+eas login
+eas env:push --environment preview --path .env   # once, or when the values change
+eas build -p android --profile preview            # installable APK
+```
+
+`eas build -p android --profile development` makes a development client (an
+Expo Go with this project's native modules, needed for reminders when the store
+Expo Go lags behind). Releases are tagged `vX.Y.Z` and the APK is attached to the
+GitHub release.
+
 ## Project layout
 
 - `app/` routes (expo-router): `login`, `register`, `(tabs)/{today,pets,discover,account}`
