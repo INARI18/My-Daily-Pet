@@ -1,7 +1,8 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Header } from "@/components/ui/header";
+import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
+import { PETS_ILLUSTRATION } from "@/constants/events";
 import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
 import {
   calculateAge,
@@ -33,7 +34,7 @@ function PetCard({ pet }: { pet: Pet }) {
 
   return (
     <Card onPress={() => router.push(`/pets/${pet.id}`)} style={styles.card}>
-      <Avatar source={getPetIcon(pet)} size="m" />
+      <Avatar source={getPetIcon(pet)} size="m" tone={pet.type} />
       <View style={styles.cardBody}>
         <View style={styles.nameRow}>
           <Text style={styles.name}>{pet.name}</Text>
@@ -69,7 +70,17 @@ export default function Pets() {
 
   return (
     <Screen scroll contentStyle={styles.content}>
-      <Header title="My Pets" />
+      <Hero
+        title="My Pets"
+        subtitle={
+          pets === null
+            ? " "
+            : pets.length === 0
+              ? "No pets yet"
+              : `${pets.length} ${pets.length === 1 ? "pet" : "pets"}`
+        }
+        image={PETS_ILLUSTRATION}
+      />
       {pets === null ? (
         <ActivityIndicator color={Colors.primary} style={styles.loading} />
       ) : pets.length === 0 ? (

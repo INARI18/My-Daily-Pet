@@ -2,9 +2,9 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { CompleteCheck } from "@/components/ui/complete-check";
-import { Header } from "@/components/ui/header";
+import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
-import { EVENT_TYPE_LABELS } from "@/constants/events";
+import { EVENT_TYPE_LABELS, TODAY_ILLUSTRATIONS } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
 import {
   EventStatus,
@@ -29,11 +29,17 @@ import {
   View,
 } from "react-native";
 
-function greeting(): string {
+const GREETINGS = {
+  morning: "Good morning",
+  afternoon: "Good afternoon",
+  evening: "Good evening",
+} as const;
+
+function dayPeriod(): keyof typeof GREETINGS {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+  if (hour < 12) return "morning";
+  if (hour < 18) return "afternoon";
+  return "evening";
 }
 
 const SECTIONS: { status: EventStatus; title: string }[] = [
@@ -59,7 +65,7 @@ function TodayCard({
       onPress={() => router.push(`/pets/${pet.id}/events/edit/${event.id}`)}
       style={styles.card}
     >
-      <Avatar source={getPetIcon(pet)} size="s" />
+      <Avatar source={getPetIcon(pet)} size="s" tone={pet.type} />
       <View style={styles.cardBody}>
         <Text style={styles.cardTitle}>
           {pet.name} · {EVENT_TYPE_LABELS[event.type].singular}
@@ -103,10 +109,15 @@ export default function Today() {
     items: (items ?? []).filter((i) => getEventStatus(i.event) === s.status),
   })).filter((s) => s.items.length > 0);
 
+  const period = dayPeriod();
+
   return (
     <Screen>
-      <Header title={greeting()} />
-      <Text style={styles.dateLine}>{formatLongDate(new Date())}</Text>
+      <Hero
+        title={GREETINGS[period]}
+        subtitle={formatLongDate(new Date())}
+        image={TODAY_ILLUSTRATIONS[period]}
+      />
       {items === null ? (
         <ActivityIndicator color={Colors.primary} style={styles.loading} />
       ) : (
@@ -160,13 +171,6 @@ export default function Today() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   loading: { marginTop: 40 },
-  dateLine: {
-    fontFamily: Fonts.bodyStrong,
-    fontSize: 14,
-    color: Colors.textMuted,
-    marginTop: -Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
   section: { marginBottom: Spacing.md },
   sectionTitle: {
     fontFamily: Fonts.bodyBold,

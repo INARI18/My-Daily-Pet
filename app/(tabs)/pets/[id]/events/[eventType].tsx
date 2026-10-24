@@ -2,10 +2,10 @@ import { Badge, BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CompleteCheck } from "@/components/ui/complete-check";
-import { Header } from "@/components/ui/header";
+import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { Segmented } from "@/components/ui/segmented";
-import { EVENT_TYPE_LABELS, isEventType } from "@/constants/events";
+import { EVENT_TYPE_LABELS, PLANNER_ICON, isEventType } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
 import {
   EventStatus,
@@ -128,7 +128,17 @@ export default function EventsByType() {
 
   return (
     <Screen>
-      <Header title={labels.plural} onBack={() => router.back()} />
+      <Hero
+        title={labels.plural}
+        subtitle={
+          events === null
+            ? " "
+            : `${events.filter((e) => !isCompleted(e)).length} active · ${events.filter(isCompleted).length} completed`
+        }
+        image={PLANNER_ICON[type]}
+        imageSize={96}
+        onBack={() => router.back()}
+      />
       <Button
         title={`New ${labels.singular.toLowerCase()}`}
         onPress={() => router.push(`/pets/${petId}/events/add?type=${type}`)}

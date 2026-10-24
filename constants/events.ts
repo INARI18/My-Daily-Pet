@@ -23,6 +23,25 @@ export const PLANNER_CATEGORIES: { type: EventType; icon: number }[] = [
   { type: "playTime", icon: require("@/assets/images/planner/play_time.png") },
 ];
 
+export const PLANNER_ICON: Record<EventType, number> = {
+  bath: PLANNER_CATEGORIES[0].icon,
+  walk: PLANNER_CATEGORIES[1].icon,
+  medication: PLANNER_CATEGORIES[2].icon,
+  vaccination: PLANNER_CATEGORIES[3].icon,
+  food: PLANNER_CATEGORIES[4].icon,
+  playTime: PLANNER_CATEGORIES[5].icon,
+  other: PLANNER_CATEGORIES[5].icon,
+};
+
+// hero illustrations for the Today tab, by time of day
+export const TODAY_ILLUSTRATIONS = {
+  morning: require("@/assets/images/planner/walk.png"),
+  afternoon: require("@/assets/images/planner/play_time.png"),
+  evening: require("@/assets/images/planner/food2.png"),
+} as const;
+
+export const PETS_ILLUSTRATION = require("@/assets/images/planner/play_time.png");
+
 export const RECURRENCE_UNITS: { label: string; value: RecurrenceUnit }[] = [
   { label: "Hours", value: "hours" },
   { label: "Days", value: "days" },

@@ -155,12 +155,12 @@ export function calculateAge(
   return age;
 }
 
-// get pet icon, return default if not set
+// get pet icon; without a chosen one, fall back to the first icon of the pet's type
 export function getPetIcon(pet: Pet): ImageSourcePropType {
-  // prefer stored icon URL, fallback to a static asset path
-  return pet.iconUrl
-    ? { uri: pet.iconUrl }
-    : require("@/assets/icons/default_icon.png");
+  if (pet.iconUrl) return { uri: pet.iconUrl };
+  return pet.type === "cat"
+    ? require("@/assets/icons/cats/1.png")
+    : require("@/assets/icons/dogs/1.png");
 }
 
 export function getPetGenderSymbol(pet: Pet): ImageSourcePropType {
