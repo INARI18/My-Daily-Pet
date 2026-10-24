@@ -208,6 +208,11 @@ export default function Account() {
             />
           </View>
         ) : null}
+        {notificationsOn && permission === "unavailable" && Platform.OS !== "web" ? (
+          <View style={styles.deniedBox}>
+            <Text style={styles.deniedText}>{t("notifications.unavailable")}</Text>
+          </View>
+        ) : null}
       </Card>
 
       <SectionTitle>{t("account.data")}</SectionTitle>

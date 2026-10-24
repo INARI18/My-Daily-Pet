@@ -1,25 +1,25 @@
 import {
+  addReminderTapListener,
   ensurePermission,
-  reminderDataFrom,
+  remindersAvailable,
   setupNotifications,
   syncReminders,
+  useLaunchReminder,
 } from "@/services/notifications";
 import { subscribeEventsChanged } from "@/utils/events-bus";
-import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState } from "react-native";
 
 // Keeps scheduled reminders in sync with the data and opens the event when a
-// reminder is tapped. Mounted once, inside the authenticated area.
-// expo-notifications has no web support, so the web build gets a no-op.
-export const useReminders: () => void = Platform.OS === "web" ? () => {} : useRemindersNative;
-
-function useRemindersNative() {
+// reminder is tapped. Mounted once, inside the authenticated area. Does nothing
+// where expo-notifications is unavailable (web, or a client without the module).
+export function useReminders() {
   const router = useRouter();
-  const lastResponse = Notifications.useLastNotificationResponse();
+  const launchReminder = useLaunchReminder();
 
   useEffect(() => {
+    if (!remindersAvailable) return;
     let active = true;
     const resync = () => {
       syncReminders().catch((e) => console.warn("reminder sync failed", e));
@@ -35,22 +35,22 @@ function useRemindersNative() {
     const appState = AppState.addEventListener("change", (state) => {
       if (state === "active") resync();
     });
-    const tap = Notifications.addNotificationResponseReceivedListener((response) => {
-      const data = reminderDataFrom(response);
-      if (data) router.push(`/pets/${data.petId}/events/edit/${data.eventId}`);
-    });
+    const removeTap = addReminderTapListener((data) =>
+      router.push(`/pets/${data.petId}/events/edit/${data.eventId}`)
+    );
 
     return () => {
       active = false;
       unsubscribeBus();
       appState.remove();
-      tap.remove();
+      removeTap();
     };
   }, [router]);
 
   // app opened from a reminder while closed
   useEffect(() => {
-    const data = reminderDataFrom(lastResponse ?? null);
-    if (data) router.push(`/pets/${data.petId}/events/edit/${data.eventId}`);
-  }, [lastResponse, router]);
+    if (launchReminder) {
+      router.push(`/pets/${launchReminder.petId}/events/edit/${launchReminder.eventId}`);
+    }
+  }, [launchReminder, router]);
 }

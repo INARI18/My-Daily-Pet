@@ -56,6 +56,7 @@
     "setting": "Notificações",
     "settingHint": "Lembretes dos eventos que estão com notificação ligada.",
     "denied": "As notificações estão bloqueadas para este app nas configurações do sistema.",
+    "unavailable": "Lembretes não estão disponíveis nesta versão do app (atualize o Expo Go ou use um build de desenvolvimento).",
     "openSettings": "Abrir configurações"
   },
   "units": {
