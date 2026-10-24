@@ -56,7 +56,7 @@
     "setting": "Notifications",
     "settingHint": "Reminders for events that have notifications on.",
     "denied": "Notifications are blocked for this app in the system settings.",
-    "unavailable": "Reminders are not available in this version of the app (update Expo Go or use a development build).",
+    "unavailable": "Reminders are not available in this version of the app.",
     "openSettings": "Open settings"
   },
   "units": {
