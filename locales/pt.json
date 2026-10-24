@@ -110,6 +110,11 @@
     "empty": "Nenhum pet ainda. Cadastre o primeiro para começar a planejar.",
     "addLabel": "Adicionar pet",
     "addButton": "Adicionar pet",
+    "selected": { "one": "1 selecionado", "other": "%{count} selecionados" },
+    "deleteSelected": {
+      "title": "Excluir pets",
+      "message": { "one": "Excluir 1 pet e todos os eventos dele? Não dá para desfazer.", "other": "Excluir %{count} pets e todos os eventos deles? Não dá para desfazer." }
+    },
     "editLabel": "Editar pet",
     "meta": {
       "ageUnknown": "Idade desconhecida",

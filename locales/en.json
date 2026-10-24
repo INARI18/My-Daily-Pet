@@ -110,6 +110,11 @@
     "empty": "No pets yet. Add the first one to start planning.",
     "addLabel": "Add pet",
     "addButton": "Add pet",
+    "selected": { "one": "1 selected", "other": "%{count} selected" },
+    "deleteSelected": {
+      "title": "Delete pets",
+      "message": { "one": "Delete 1 pet and all its events? This cannot be undone.", "other": "Delete %{count} pets and all their events? This cannot be undone." }
+    },
     "editLabel": "Edit pet",
     "meta": {
       "ageUnknown": "Age unknown",

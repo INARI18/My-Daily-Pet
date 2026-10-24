@@ -6,15 +6,18 @@ import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 type CardProps = {
   children: React.ReactNode;
   onPress?: () => void;
+  onLongPress?: () => void;
   style?: StyleProp<ViewStyle>;
 };
 
-export function Card({ children, onPress, style }: CardProps) {
+export function Card({ children, onPress, onLongPress, style }: CardProps) {
   const styles = useStyles(makeStyles);
-  if (onPress) {
+  if (onPress || onLongPress) {
     return (
       <Pressable
         onPress={onPress}
+        onLongPress={onLongPress}
+        delayLongPress={350}
         style={({ pressed }) => [styles.card, pressed && styles.pressed, style]}
       >
         {children}
