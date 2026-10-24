@@ -3,6 +3,9 @@ import { Tabs } from "expo-router";
 import { CalendarCheck, PawPrint, UserRound } from "lucide-react-native";
 import React from "react";
 
+// Today is the landing tab
+export const unstable_settings = { anchor: "today" };
+
 export default function TabLayout() {
   return (
     <Tabs
@@ -20,19 +23,19 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="pets"
-        options={{
-          title: "Pets",
-          tabBarIcon: ({ color, size }) => <PawPrint color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
         name="today"
         options={{
           title: "Today",
           tabBarIcon: ({ color, size }) => (
             <CalendarCheck color={color} size={size} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="pets"
+        options={{
+          title: "Pets",
+          tabBarIcon: ({ color, size }) => <PawPrint color={color} size={size} />,
         }}
       />
       <Tabs.Screen

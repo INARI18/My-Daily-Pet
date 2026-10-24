@@ -7,9 +7,11 @@ import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
 import { auth } from "@/firebase-config";
 import { useLanguage } from "@/hooks/use-preferences";
 import { deleteAccount, logOut, sendPasswordReset } from "@/services/account";
+import { exportDataAsJson } from "@/services/export";
 import { getFirebaseErrorMessage } from "@/services/firebaseErrorHandler";
 import {
   ChevronRight,
+  Download,
   KeyRound,
   LogOut,
   Mail,
@@ -62,6 +64,14 @@ export default function Account() {
   const [language, setLanguage] = useLanguage();
   const [loggingOut, setLoggingOut] = useState(false);
   const email = auth.currentUser?.email ?? "";
+
+  const handleExport = async () => {
+    try {
+      await exportDataAsJson();
+    } catch (err: any) {
+      Alert.alert("Error", err?.message ?? "Could not export your data.");
+    }
+  };
 
   const handlePasswordReset = () => {
     Alert.alert("Change password", `We will email a reset link to ${email}.`, [
@@ -138,6 +148,17 @@ export default function Account() {
       <Card style={styles.card}>
         <Segmented label="Language" options={LANGUAGES} value={language} onChange={setLanguage} />
         <Text style={styles.hint}>Texts will follow this setting once translations are in.</Text>
+      </Card>
+
+      <SectionTitle>Data</SectionTitle>
+      <Card style={styles.listCard}>
+        <Row
+          icon={<Download size={18} color={Colors.primary} />}
+          title="Export data"
+          subtitle="JSON backup of your pets and events"
+          onPress={handleExport}
+          last
+        />
       </Card>
 
       <SectionTitle>Security</SectionTitle>

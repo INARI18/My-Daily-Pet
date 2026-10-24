@@ -6,6 +6,15 @@ export function formatDate(date: Date): string {
   }).format(date);
 }
 
+// e.g. "Friday, October 24"
+export function formatLongDate(date: Date): string {
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+}
+
 export function formatTime(date: Date): string {
   return new Intl.DateTimeFormat("en-US", {
     hour: "numeric",

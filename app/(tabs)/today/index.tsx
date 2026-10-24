@@ -15,7 +15,7 @@ import {
   getReferenceDate,
 } from "@/services/events";
 import { getPetIcon } from "@/services/pets";
-import { formatDate, formatTime } from "@/utils/date";
+import { formatDate, formatLongDate, formatTime } from "@/utils/date";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
@@ -28,6 +28,13 @@ import {
   Text,
   View,
 } from "react-native";
+
+function greeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 const SECTIONS: { status: EventStatus; title: string }[] = [
   { status: "overdue", title: "Overdue" },
@@ -98,7 +105,8 @@ export default function Today() {
 
   return (
     <Screen>
-      <Header title="Today" />
+      <Header title={greeting()} />
+      <Text style={styles.dateLine}>{formatLongDate(new Date())}</Text>
       {items === null ? (
         <ActivityIndicator color={Colors.primary} style={styles.loading} />
       ) : (
@@ -119,7 +127,7 @@ export default function Today() {
           {grouped.length === 0 ? (
             <View style={styles.empty}>
               <Image
-                source={require("@/assets/images/planner/play_time.png")}
+                source={require("@/assets/images/homeScreen/cat_silhouette.png")}
                 style={styles.emptyImage}
                 resizeMode="contain"
               />
@@ -152,6 +160,13 @@ export default function Today() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   loading: { marginTop: 40 },
+  dateLine: {
+    fontFamily: Fonts.bodyStrong,
+    fontSize: 14,
+    color: Colors.textMuted,
+    marginTop: -Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
   section: { marginBottom: Spacing.md },
   sectionTitle: {
     fontFamily: Fonts.bodyBold,
@@ -171,7 +186,7 @@ const styles = StyleSheet.create({
   cardTitle: { fontFamily: Fonts.title, fontSize: 16, color: Colors.text },
   cardMeta: { fontFamily: Fonts.body, fontSize: 13, color: Colors.textMuted },
   empty: { alignItems: "center", paddingVertical: 48, gap: Spacing.sm },
-  emptyImage: { width: 160, height: 140, marginBottom: Spacing.sm },
+  emptyImage: { width: 120, height: 200, marginBottom: Spacing.sm, opacity: 0.9 },
   emptyTitle: { fontFamily: Fonts.title, fontSize: 20, color: Colors.text },
   emptyText: {
     fontFamily: Fonts.body,

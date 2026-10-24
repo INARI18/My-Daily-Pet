@@ -64,7 +64,7 @@ export default function RootLayout() {
       router.replace("/login");
     } else if (user && !inAuthGroup) {
       // Usuário autenticado na tela de login
-      router.replace("/pets");
+      router.replace("/today");
     }
   }, [user, segments, loading]);
 
