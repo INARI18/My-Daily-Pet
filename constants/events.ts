@@ -33,12 +33,24 @@ export const PLANNER_ICON: Record<EventType, number> = {
   other: PLANNER_CATEGORIES[5].icon,
 };
 
-// hero illustrations for the Today tab, by time of day
-export const TODAY_ILLUSTRATIONS = {
-  morning: require("@/assets/images/planner/walk.png"),
-  afternoon: require("@/assets/images/planner/play_time.png"),
-  evening: require("@/assets/images/planner/food2.png"),
-} as const;
+// every illustration in the set; the Today hero rotates through them once a day
+export const ALL_ILLUSTRATIONS: number[] = [
+  require("@/assets/images/planner/walk.png"),
+  require("@/assets/images/planner/play_time.png"),
+  require("@/assets/images/planner/food2.png"),
+  require("@/assets/images/planner/shower.png"),
+  require("@/assets/images/planner/vaccines.png"),
+  require("@/assets/images/planner/walk2.png"),
+  require("@/assets/images/planner/medication.png"),
+  require("@/assets/images/planner/food.png"),
+];
+
+// same picture all day, a different one tomorrow
+export function illustrationOfTheDay(date = new Date()): number {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((date.getTime() - start.getTime()) / 86_400_000);
+  return ALL_ILLUSTRATIONS[dayOfYear % ALL_ILLUSTRATIONS.length];
+}
 
 export const PETS_ILLUSTRATION = require("@/assets/images/planner/play_time.png");
 

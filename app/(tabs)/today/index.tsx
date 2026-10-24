@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { CompleteCheck } from "@/components/ui/complete-check";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
-import { EVENT_TYPE_LABELS, TODAY_ILLUSTRATIONS } from "@/constants/events";
+import { EVENT_TYPE_LABELS, illustrationOfTheDay } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
 import {
   EventStatus,
@@ -116,7 +116,7 @@ export default function Today() {
       <Hero
         title={GREETINGS[period]}
         subtitle={formatLongDate(new Date())}
-        image={TODAY_ILLUSTRATIONS[period]}
+        image={illustrationOfTheDay()}
       />
       {items === null ? (
         <ActivityIndicator color={Colors.primary} style={styles.loading} />
