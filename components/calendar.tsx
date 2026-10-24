@@ -15,11 +15,18 @@ type PetCalendarProps = {
   onClose: () => void;
   events: Event[];
   onSelectEvent: (event: Event) => void;
+  petNames?: Record<string, string>; // when showing several pets, prefix items with the pet
 };
 
 const DAYS_AHEAD = 365;
 
-export default function PetCalendar({ visible, onClose, events, onSelectEvent }: PetCalendarProps) {
+export default function PetCalendar({
+  visible,
+  onClose,
+  events,
+  onSelectEvent,
+  petNames,
+}: PetCalendarProps) {
   const c = useColors();
   const styles = useStyles(makeStyles);
   const t = useT();
@@ -99,6 +106,7 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
                 <CompleteCheck checked={occ.done} />
                 <View style={styles.itemBody}>
                   <Text style={[styles.itemTitle, occ.done && styles.muted]}>
+                    {petNames?.[occ.event.petId] ? `${petNames[occ.event.petId]} · ` : ""}
                     {t(`eventTypes.${occ.event.type}.singular`)}
                   </Text>
                   <Text style={styles.itemMeta} numberOfLines={1}>

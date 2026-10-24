@@ -1,4 +1,6 @@
+import PetCalendar from "@/components/calendar";
 import { Avatar } from "@/components/ui/avatar";
+import { HeaderIconButton } from "@/components/ui/header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { CompleteCheck } from "@/components/ui/complete-check";
@@ -20,6 +22,7 @@ import { getPetIcon, getPets } from "@/services/pets";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatLongDate, formatTime } from "@/utils/date";
 import { useFocusEffect, useRouter } from "expo-router";
+import { CalendarDays } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -86,6 +89,7 @@ export default function Today() {
   const router = useRouter();
   const [items, setItems] = useState<PetEvent[] | null>(null);
   const [hasPets, setHasPets] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
@@ -121,6 +125,24 @@ export default function Today() {
         title={t(`today.greeting.${dayPeriod()}`)}
         subtitle={formatLongDate(new Date(), lang)}
         image={illustrationOfTheDay()}
+        right={
+          <HeaderIconButton
+            onPress={() => setShowCalendar(true)}
+            accessibilityLabel={t("planner.calendar.open")}
+          >
+            <CalendarDays size={20} color={c.primary} />
+          </HeaderIconButton>
+        }
+      />
+      <PetCalendar
+        visible={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        events={(items ?? []).map((i) => i.event)}
+        petNames={Object.fromEntries((items ?? []).map((i) => [i.pet.id, i.pet.name]))}
+        onSelectEvent={(event) => {
+          setShowCalendar(false);
+          router.push(`/pets/${event.petId}/events/edit/${event.id}`);
+        }}
       />
       {items === null ? (
         <ActivityIndicator color={c.primary} style={styles.loading} />
