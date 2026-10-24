@@ -1,4 +1,5 @@
 import IconPickerModal from "@/components/icons-modal";
+import { iconIdFor, petIconSource } from "@/constants/iconMap";
 import { Button } from "@/components/ui/button";
 import { ChipGroup } from "@/components/ui/chip";
 import { DateField } from "@/components/ui/date-field";
@@ -91,11 +92,7 @@ export function PetForm({
   };
 
   const handleIconSelect = (icon: ImageSourcePropType) => {
-    const uri =
-      typeof icon === "number"
-        ? Image.resolveAssetSource(icon)?.uri
-        : (icon as { uri?: string }).uri;
-    set("iconUrl", uri);
+    set("iconUrl", iconIdFor(icon) ?? (icon as { uri?: string }).uri);
     setIconModal(false);
   };
 
@@ -105,7 +102,7 @@ export function PetForm({
         <View style={styles.avatar}>
           {values.iconUrl ? (
             <Image
-              source={{ uri: values.iconUrl }}
+              source={petIconSource(values.iconUrl)}
               style={styles.avatarImage}
               resizeMode="contain"
             />

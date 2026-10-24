@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { ImageSourcePropType } from "react-native";
 import { emitEventsChanged } from "@/utils/events-bus";
+import { petIconSource } from "@/constants/iconMap";
 
 // add new pet
 export const addPet = async (petData: PetInput): Promise<void> => {
@@ -171,7 +172,7 @@ export function calculateAge(
 
 // get pet icon; without a chosen one, fall back to the first icon of the pet's type
 export function getPetIcon(pet: Pet): ImageSourcePropType {
-  if (pet.iconUrl) return { uri: pet.iconUrl };
+  if (pet.iconUrl) return petIconSource(pet.iconUrl);
   return pet.type === "cat"
     ? require("@/assets/icons/cats/1.png")
     : require("@/assets/icons/dogs/1.png");

@@ -48,3 +48,31 @@ const iconMap: Record<string, ImageSourcePropType[]> = {
 };
 
 export default iconMap;
+
+// Pet icons are stored as stable ids ("dogs/3") instead of asset URIs, which
+// differ between dev (Metro URL) and release builds.
+export type IconSet = "cats" | "dogs";
+
+export function iconIdFor(source: ImageSourcePropType): string | undefined {
+  for (const set of ["cats", "dogs"] as IconSet[]) {
+    const index = iconMap[set].indexOf(source);
+    if (index >= 0) return `${set}/${index + 1}`;
+  }
+  return undefined;
+}
+
+export function resolveIconId(id: string): ImageSourcePropType | undefined {
+  const match = /^(cats|dogs)\/(\d+)$/.exec(id);
+  if (!match) return undefined;
+  return iconMap[match[1] as IconSet][Number(match[2]) - 1];
+}
+
+// anything stored in iconUrl: an icon id or a legacy URI
+export function petIconSource(iconUrl: string): ImageSourcePropType {
+  return resolveIconId(iconUrl) ?? { uri: iconUrl };
+}
+
+export function randomIconId(type: "dog" | "cat"): string {
+  const set: IconSet = type === "cat" ? "cats" : "dogs";
+  return `${set}/${Math.floor(Math.random() * iconMap[set].length) + 1}`;
+}
