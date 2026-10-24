@@ -1,4 +1,5 @@
 import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { ArrowLeft } from "lucide-react-native";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -10,6 +11,7 @@ type HeaderProps = {
 };
 
 export function Header({ title, onBack, right }: HeaderProps) {
+  const t = useT();
   return (
     <View style={styles.row}>
       {onBack ? (
@@ -17,7 +19,7 @@ export function Header({ title, onBack, right }: HeaderProps) {
           onPress={onBack}
           style={styles.iconButton}
           hitSlop={8}
-          accessibilityLabel="Back"
+          accessibilityLabel={t("common.back")}
         >
           <ArrowLeft size={20} color={Colors.primary} />
         </Pressable>

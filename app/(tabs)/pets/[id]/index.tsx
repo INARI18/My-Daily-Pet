@@ -3,12 +3,9 @@ import { Card } from "@/components/ui/card";
 import { HeaderIconButton } from "@/components/ui/header";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
-import {
-  EVENT_TYPE_LABELS,
-  PETS_ILLUSTRATION,
-  PLANNER_CATEGORIES,
-} from "@/constants/events";
+import { PETS_ILLUSTRATION, PLANNER_CATEGORIES } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { getAllEventsForPet } from "@/services/events";
 import { getPetById, getPetIcon } from "@/services/pets";
 import { Event } from "@/types/event";
@@ -21,6 +18,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 export default function PetPlanner() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const t = useT();
   const [pet, setPet] = useState<Pet | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -53,14 +51,14 @@ export default function PetPlanner() {
     <Screen scroll>
       <Hero
         title={pet?.name ?? " "}
-        subtitle="What do you want to plan?"
+        subtitle={t("planner.subtitle")}
         image={pet ? getPetIcon(pet) : PETS_ILLUSTRATION}
         imageSize={pet ? 80 : 96}
         onBack={() => router.back()}
         right={
           <HeaderIconButton
             onPress={() => setShowCalendar(true)}
-            accessibilityLabel="Calendar"
+            accessibilityLabel={t("planner.calendar.open")}
           >
             <CalendarDays size={20} color={Colors.primary} />
           </HeaderIconButton>
@@ -73,7 +71,7 @@ export default function PetPlanner() {
             onPress={() => router.push(`/pets/${id}/events/${category.type}`)}
             style={styles.tile}
           >
-            <Text style={styles.tileLabel}>{EVENT_TYPE_LABELS[category.type].plural}</Text>
+            <Text style={styles.tileLabel}>{t(`eventTypes.${category.type}.plural`)}</Text>
             <Image source={category.icon} style={styles.tileImage} resizeMode="contain" />
           </Card>
         ))}

@@ -1,6 +1,6 @@
 import { CompleteCheck } from "@/components/ui/complete-check";
-import { EVENT_TYPE_LABELS } from "@/constants/events";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import { Occurrence, getOccurrencesByDay } from "@/services/events";
 import { Event } from "@/types/event";
 import { addDays, formatTime, toYMD } from "@/utils/date";
@@ -19,6 +19,8 @@ type PetCalendarProps = {
 const DAYS_AHEAD = 365;
 
 export default function PetCalendar({ visible, onClose, events, onSelectEvent }: PetCalendarProps) {
+  const t = useT();
+  const [lang] = useLanguage();
   const [selected, setSelected] = useState(() => toYMD(new Date()));
 
   const byDay = useMemo(
@@ -45,13 +47,14 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
       <View style={styles.overlay}>
         <View style={styles.sheet}>
           <View style={styles.header}>
-            <Text style={styles.title}>Calendar</Text>
-            <Pressable onPress={onClose} hitSlop={10} accessibilityLabel="Close calendar">
+            <Text style={styles.title}>{t("planner.calendar.title")}</Text>
+            <Pressable onPress={onClose} hitSlop={10} accessibilityLabel={t("planner.calendar.close")}>
               <X size={22} color={Colors.textMuted} />
             </Pressable>
           </View>
 
           <Calendar
+            key={lang}
             onDayPress={(day) => setSelected(day.dateString)}
             markedDates={marked}
             enableSwipeMonths
@@ -80,8 +83,8 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
           <View style={styles.divider} />
           <Text style={styles.dayLabel}>
             {dayItems.length === 0
-              ? "Nothing on this day"
-              : `${dayItems.length} ${dayItems.length === 1 ? "activity" : "activities"}`}
+              ? t("planner.calendar.nothing")
+              : t("planner.calendar.activities", { count: dayItems.length })}
           </Text>
           <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
             {dayItems.map((occ, index) => (
@@ -93,12 +96,12 @@ export default function PetCalendar({ visible, onClose, events, onSelectEvent }:
                 <CompleteCheck checked={occ.done} />
                 <View style={styles.itemBody}>
                   <Text style={[styles.itemTitle, occ.done && styles.muted]}>
-                    {EVENT_TYPE_LABELS[occ.event.type].singular}
+                    {t(`eventTypes.${occ.event.type}.singular`)}
                   </Text>
                   <Text style={styles.itemMeta} numberOfLines={1}>
-                    {formatTime(occ.date)}
+                    {formatTime(occ.date, lang)}
                     {occ.event.recurrence
-                      ? ` · every ${occ.event.recurrence.amount} ${occ.event.recurrence.unit}`
+                      ? ` · ${t(`recurrence.${occ.event.recurrence.unit}`, { count: occ.event.recurrence.amount })}`
                       : ""}
                     {occ.event.notes ? ` · ${occ.event.notes}` : ""}
                   </Text>

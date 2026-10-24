@@ -2,43 +2,41 @@ import { PetForm, PetFormValues } from "@/components/forms/pet-form";
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
 import { Colors } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { deletePet, getPetById, updatePet } from "@/services/pets";
+import { toYMD } from "@/utils/date";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { deleteField } from "firebase/firestore";
 import { Trash2 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
 
-function toYMD(d?: Date) {
-  if (!d) return "";
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${m}-${day}`;
-}
-
 export default function EditPet() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const t = useT();
   const [initial, setInitial] = useState<PetFormValues | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     getPetById(id).then((pet) => {
       if (!pet) {
-        Alert.alert("Error", "Pet not found", [{ text: "OK", onPress: () => router.back() }]);
+        Alert.alert(t("common.error"), t("pets.notFound"), [
+          { text: t("common.ok"), onPress: () => router.back() },
+        ]);
         return;
       }
       setInitial({
         name: pet.name,
         type: pet.type,
         gender: pet.gender,
-        birthDate: toYMD(pet.birthDate),
+        birthDate: pet.birthDate ? toYMD(pet.birthDate) : "",
         weight: pet.weight ? String(pet.weight) : "",
         castrated: pet.castrated,
         iconUrl: pet.iconUrl,
       });
     });
-  }, [id, router]);
+  }, [id, router, t]);
 
   const handleSubmit = async (values: PetFormValues) => {
     setSaving(true);
@@ -55,41 +53,37 @@ export default function EditPet() {
       });
       router.back();
     } catch {
-      Alert.alert("Error", "Could not save the pet. Please try again.");
+      Alert.alert(t("common.error"), t("pets.saveError"));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete pet",
-      "This removes the pet and all its events. This cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            await deletePet(id);
-            router.dismissTo("/pets");
-          },
+    Alert.alert(t("pets.deleteConfirm.title"), t("pets.deleteConfirm.message"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("common.delete"),
+        style: "destructive",
+        onPress: async () => {
+          await deletePet(id);
+          router.dismissTo("/pets");
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
     <Screen scroll>
-      <Header title="Edit pet" onBack={() => router.back()} />
+      <Header title={t("pets.edit.title")} onBack={() => router.back()} />
       {initial ? (
         <PetForm
           initial={initial}
-          submitLabel="Save"
+          submitLabel={t("common.save")}
           submitting={saving}
           onSubmit={handleSubmit}
           secondary={{
-            label: "Delete",
+            label: t("common.delete"),
             variant: "danger",
             icon: <Trash2 size={16} color={Colors.danger} />,
             onPress: handleDelete,

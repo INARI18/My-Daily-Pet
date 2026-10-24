@@ -5,6 +5,7 @@ import { DateField } from "@/components/ui/date-field";
 import { Input } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
 import { Colors, Radius, Shadow, Spacing } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { PawPrint, SquarePen } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -47,19 +48,6 @@ type PetFormProps = {
   };
 };
 
-const TYPE_OPTIONS = [
-  { label: "🐶 Dog", value: "dog" },
-  { label: "🐱 Cat", value: "cat" },
-] as const;
-const GENDER_OPTIONS = [
-  { label: "Female", value: "female" },
-  { label: "Male", value: "male" },
-] as const;
-const CASTRATED_OPTIONS = [
-  { label: "Yes", value: "yes" },
-  { label: "No", value: "no" },
-] as const;
-
 export function PetForm({
   initial = EMPTY_PET,
   submitLabel,
@@ -67,9 +55,23 @@ export function PetForm({
   onSubmit,
   secondary,
 }: PetFormProps) {
+  const t = useT();
   const [values, setValues] = useState<PetFormValues>(initial);
   const [errors, setErrors] = useState<Partial<Record<"name" | "weight", string>>>({});
   const [iconModal, setIconModal] = useState(false);
+
+  const typeOptions = [
+    { label: t("pets.form.dog"), value: "dog" },
+    { label: t("pets.form.cat"), value: "cat" },
+  ] as const;
+  const genderOptions = [
+    { label: t("pets.form.female"), value: "female" },
+    { label: t("pets.form.male"), value: "male" },
+  ] as const;
+  const yesNo = [
+    { label: t("pets.form.yes"), value: "yes" },
+    { label: t("pets.form.no"), value: "no" },
+  ] as const;
 
   const set = <K extends keyof PetFormValues>(key: K, value: PetFormValues[K]) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -78,9 +80,9 @@ export function PetForm({
 
   const validate = () => {
     const next: typeof errors = {};
-    if (!values.name.trim()) next.name = "Name is required";
+    if (!values.name.trim()) next.name = t("pets.form.errors.name");
     const weight = parseFloat(values.weight);
-    if (isNaN(weight) || weight <= 0) next.weight = "Weight must be a number greater than 0";
+    if (isNaN(weight) || weight <= 0) next.weight = t("pets.form.errors.weight");
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -114,32 +116,33 @@ export function PetForm({
       </Pressable>
 
       <Input
-        label="Name"
-        placeholder="Pet name"
+        label={t("pets.form.name")}
+        placeholder={t("pets.form.namePlaceholder")}
         value={values.name}
-        onChangeText={(t) => set("name", t)}
+        onChangeText={(v) => set("name", v)}
         error={errors.name}
         autoCapitalize="words"
       />
 
       <ChipGroup
-        label="Type"
-        options={TYPE_OPTIONS}
+        label={t("pets.form.type")}
+        options={typeOptions}
         value={values.type}
         onChange={(v) => set("type", v)}
         grow
       />
 
       <Segmented
-        label="Gender"
-        options={GENDER_OPTIONS}
+        label={t("pets.form.gender")}
+        options={genderOptions}
         value={values.gender}
         onChange={(v) => set("gender", v)}
       />
 
       <View style={styles.row}>
         <DateField
-          label="Birthdate"
+          label={t("pets.form.birthdate")}
+          placeholder={t("pets.form.selectDate")}
           value={values.birthDate}
           onChange={(v) => set("birthDate", v)}
           maximumDate={new Date()}
@@ -147,10 +150,10 @@ export function PetForm({
           containerStyle={styles.flex}
         />
         <Input
-          label="Weight (kg)"
+          label={t("pets.form.weight")}
           placeholder="9.5"
           value={values.weight}
-          onChangeText={(t) => set("weight", t.replace(",", "."))}
+          onChangeText={(v) => set("weight", v.replace(",", "."))}
           keyboardType="decimal-pad"
           error={errors.weight}
           containerStyle={styles.flex}
@@ -158,8 +161,8 @@ export function PetForm({
       </View>
 
       <Segmented
-        label="Castrated"
-        options={CASTRATED_OPTIONS}
+        label={t("pets.form.castrated")}
+        options={yesNo}
         value={values.castrated ? "yes" : "no"}
         onChange={(v) => set("castrated", v === "yes")}
       />

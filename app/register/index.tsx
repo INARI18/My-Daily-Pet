@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Colors } from "@/constants/theme";
 import { auth } from "@/firebase-config";
+import { useT } from "@/i18n/LanguageProvider";
 import { getFirebaseErrorMessage } from "@/services/firebaseErrorHandler";
 import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -12,6 +13,7 @@ import { Pressable, StyleSheet } from "react-native";
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const t = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,9 +34,9 @@ export default function RegisterScreen() {
   };
 
   return (
-    <AuthScreen title="Criar conta" subtitle="Junte-se a nós e cuide do seu pet" error={error}>
+    <AuthScreen title={t("auth.register.title")} subtitle={t("auth.register.subtitle")} error={error}>
       <Input
-        placeholder="Email"
+        placeholder={t("auth.email")}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -42,7 +44,7 @@ export default function RegisterScreen() {
         autoComplete="email"
       />
       <Input
-        placeholder="Senha"
+        placeholder={t("auth.password")}
         value={password}
         onChangeText={setPassword}
         secureTextEntry={!showPassword}
@@ -57,9 +59,9 @@ export default function RegisterScreen() {
           </Pressable>
         }
       />
-      <Button title="Registrar" variant="light" onPress={handleRegister} loading={loading} />
+      <Button title={t("auth.register.submit")} variant="light" onPress={handleRegister} loading={loading} />
       <Button
-        title="Já tem uma conta? Faça login"
+        title={t("auth.register.toLogin")}
         variant="ghost"
         onPress={() => router.back()}
         style={styles.ghost}

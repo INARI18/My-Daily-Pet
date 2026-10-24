@@ -4,6 +4,7 @@ import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { PETS_ILLUSTRATION } from "@/constants/events";
 import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import {
   calculateAge,
   getPetGenderSymbol,
@@ -25,11 +26,12 @@ import {
 
 function PetCard({ pet }: { pet: Pet }) {
   const router = useRouter();
+  const t = useT();
   const age = calculateAge(pet.birthDate);
   const meta = [
-    age === null ? "Age unknown" : `${age} ${age === 1 ? "year" : "years"}`,
-    `${pet.weight} kg`,
-    pet.castrated ? "Castrated" : "Not castrated",
+    age === null ? t("pets.meta.ageUnknown") : t("pets.meta.years", { count: age }),
+    t("pets.meta.kg", { weight: pet.weight }),
+    pet.castrated ? t("pets.meta.castrated") : t("pets.meta.notCastrated"),
   ].join("  ·  ");
 
   return (
@@ -46,7 +48,7 @@ function PetCard({ pet }: { pet: Pet }) {
         onPress={() => router.push(`/pets/${pet.id}/edit`)}
         style={styles.edit}
         hitSlop={8}
-        accessibilityLabel="Edit pet"
+        accessibilityLabel={t("pets.editLabel")}
       >
         <SquarePen size={18} color={Colors.primary} />
       </Pressable>
@@ -56,6 +58,7 @@ function PetCard({ pet }: { pet: Pet }) {
 
 export default function Pets() {
   const router = useRouter();
+  const t = useT();
   const [pets, setPets] = useState<Pet[] | null>(null);
 
   useFocusEffect(
@@ -71,29 +74,21 @@ export default function Pets() {
   return (
     <Screen scroll contentStyle={styles.content}>
       <Hero
-        title="My Pets"
-        subtitle={
-          pets === null
-            ? " "
-            : pets.length === 0
-              ? "No pets yet"
-              : `${pets.length} ${pets.length === 1 ? "pet" : "pets"}`
-        }
+        title={t("pets.title")}
+        subtitle={pets === null ? " " : t("pets.count", { count: pets.length })}
         image={PETS_ILLUSTRATION}
       />
       {pets === null ? (
         <ActivityIndicator color={Colors.primary} style={styles.loading} />
       ) : pets.length === 0 ? (
-        <Text style={styles.empty}>
-          No pets yet. Tap + to add your first one.
-        </Text>
+        <Text style={styles.empty}>{t("pets.empty")}</Text>
       ) : (
         pets.map((pet) => <PetCard key={pet.id} pet={pet} />)
       )}
       <Pressable
         style={styles.fab}
         onPress={() => router.push("/pets/add")}
-        accessibilityLabel="Add pet"
+        accessibilityLabel={t("pets.addLabel")}
       >
         <Plus size={28} color={Colors.onPrimary} strokeWidth={2.5} />
       </Pressable>

@@ -7,6 +7,7 @@ import {
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
 import { Colors } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { deleteEvent, getEventById, updateEvent } from "@/services/events";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Trash2 } from "lucide-react-native";
@@ -16,13 +17,16 @@ import { ActivityIndicator, Alert } from "react-native";
 export default function EditEvent() {
   const { id: petId, eventId } = useLocalSearchParams<{ id: string; eventId: string }>();
   const router = useRouter();
+  const t = useT();
   const [initial, setInitial] = useState<EventFormValues | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     getEventById(petId, eventId).then((event) => {
       if (!event) {
-        Alert.alert("Error", "Event not found", [{ text: "OK", onPress: () => router.back() }]);
+        Alert.alert(t("common.error"), t("events.notFound"), [
+          { text: t("common.ok"), onPress: () => router.back() },
+        ]);
         return;
       }
       const d = event.inicialDate;
@@ -38,7 +42,7 @@ export default function EditEvent() {
         notes: event.notes ?? "",
       });
     });
-  }, [petId, eventId, router]);
+  }, [petId, eventId, router, t]);
 
   const handleSubmit = async (values: EventFormValues) => {
     setSaving(true);
@@ -51,17 +55,17 @@ export default function EditEvent() {
       });
       router.back();
     } catch {
-      Alert.alert("Error", "Could not save the event. Please try again.");
+      Alert.alert(t("common.error"), t("events.saveError"));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = () => {
-    Alert.alert("Delete event", "This cannot be undone.", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("events.deleteConfirm.title"), t("events.deleteConfirm.message"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           await deleteEvent(petId, eventId);
@@ -73,15 +77,15 @@ export default function EditEvent() {
 
   return (
     <Screen scroll>
-      <Header title="Edit event" onBack={() => router.back()} />
+      <Header title={t("events.editTitle")} onBack={() => router.back()} />
       {initial ? (
         <EventForm
           initial={initial}
-          submitLabel="Save"
+          submitLabel={t("common.save")}
           submitting={saving}
           onSubmit={handleSubmit}
           secondary={{
-            label: "Delete",
+            label: t("common.delete"),
             variant: "danger",
             icon: <Trash2 size={16} color={Colors.danger} />,
             onPress: handleDelete,

@@ -7,6 +7,7 @@ import {
 import { Header } from "@/components/ui/header";
 import { Screen } from "@/components/ui/screen";
 import { isEventType } from "@/constants/events";
+import { useT } from "@/i18n/LanguageProvider";
 import { addEvent } from "@/services/events";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -15,6 +16,7 @@ import { Alert } from "react-native";
 export default function AddEvent() {
   const { id: petId, type } = useLocalSearchParams<{ id: string; type?: string }>();
   const router = useRouter();
+  const t = useT();
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (values: EventFormValues) => {
@@ -23,7 +25,7 @@ export default function AddEvent() {
       await addEvent(petId, toEventInput(values, petId));
       router.back();
     } catch {
-      Alert.alert("Error", "Could not save the event. Please try again.");
+      Alert.alert(t("common.error"), t("events.saveError"));
     } finally {
       setSaving(false);
     }
@@ -31,13 +33,13 @@ export default function AddEvent() {
 
   return (
     <Screen scroll>
-      <Header title="Add event" onBack={() => router.back()} />
+      <Header title={t("events.addTitle")} onBack={() => router.back()} />
       <EventForm
         initial={defaultEventValues(isEventType(type) ? type : "other")}
-        submitLabel="Save"
+        submitLabel={t("common.save")}
         submitting={saving}
         onSubmit={handleSubmit}
-        secondary={{ label: "Cancel", variant: "ghost", onPress: () => router.back() }}
+        secondary={{ label: t("common.cancel"), variant: "ghost", onPress: () => router.back() }}
       />
     </Screen>
   );

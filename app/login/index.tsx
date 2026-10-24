@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Colors } from "@/constants/theme";
 import { auth } from "@/firebase-config";
+import { useT } from "@/i18n/LanguageProvider";
 import { getFirebaseErrorMessage } from "@/services/firebaseErrorHandler";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -12,6 +13,7 @@ import { Pressable, StyleSheet } from "react-native";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const t = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,9 +34,9 @@ export default function LoginScreen() {
   };
 
   return (
-    <AuthScreen title="Bem-vindo!" subtitle="Faça login para continuar" error={error}>
+    <AuthScreen title={t("auth.login.title")} subtitle={t("auth.login.subtitle")} error={error}>
       <Input
-        placeholder="Email"
+        placeholder={t("auth.email")}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -42,7 +44,7 @@ export default function LoginScreen() {
         autoComplete="email"
       />
       <Input
-        placeholder="Senha"
+        placeholder={t("auth.password")}
         value={password}
         onChangeText={setPassword}
         secureTextEntry={!showPassword}
@@ -57,9 +59,9 @@ export default function LoginScreen() {
           </Pressable>
         }
       />
-      <Button title="Entrar" variant="light" onPress={handleLogin} loading={loading} />
+      <Button title={t("auth.login.submit")} variant="light" onPress={handleLogin} loading={loading} />
       <Button
-        title="Criar uma conta"
+        title={t("auth.login.toRegister")}
         variant="ghost"
         onPress={() => router.push("/register")}
         style={styles.ghost}

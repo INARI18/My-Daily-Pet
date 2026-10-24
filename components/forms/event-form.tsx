@@ -3,13 +3,9 @@ import { Card } from "@/components/ui/card";
 import { ChipGroup } from "@/components/ui/chip";
 import { DateField } from "@/components/ui/date-field";
 import { Input } from "@/components/ui/input";
-import {
-  EVENT_TYPE_LABELS,
-  EventType,
-  RECURRENCE_UNITS,
-  RecurrenceUnit,
-} from "@/constants/events";
+import { EventType, RECURRENCE_UNITS, RecurrenceUnit } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { EventInput } from "@/services/events";
 import { toYMD } from "@/utils/date";
 import { Bell, CalendarDays, FileText, Repeat } from "lucide-react-native";
@@ -113,8 +109,11 @@ export function EventForm({
   onSubmit,
   secondary,
 }: EventFormProps) {
+  const t = useT();
   const [values, setValues] = useState<EventFormValues>(initial);
   const [errors, setErrors] = useState<Errors>({});
+
+  const unitOptions = RECURRENCE_UNITS.map((unit) => ({ label: t(`units.${unit}`), value: unit }));
 
   const set = <K extends keyof EventFormValues>(key: K, value: EventFormValues[K]) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -123,14 +122,14 @@ export function EventForm({
 
   const validate = () => {
     const next: Errors = {};
-    if (!values.date) next.date = "Date is required";
+    if (!values.date) next.date = t("events.form.errors.date");
     const h = parseInt(values.hours);
     const m = parseInt(values.minutes);
-    if (isNaN(h) || h < 0 || h > 23) next.hours = "0 to 23";
-    if (isNaN(m) || m < 0 || m > 59) next.minutes = "0 to 59";
+    if (isNaN(h) || h < 0 || h > 23) next.hours = t("events.form.errors.hours");
+    if (isNaN(m) || m < 0 || m > 59) next.minutes = t("events.form.errors.minutes");
     if (values.hasRecurrence) {
       const amount = parseInt(values.recurrenceAmount);
-      if (isNaN(amount) || amount < 1) next.recurrenceAmount = "At least 1";
+      if (isNaN(amount) || amount < 1) next.recurrenceAmount = t("events.form.errors.amount");
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -143,10 +142,11 @@ export function EventForm({
       <Card>
         <SectionHeader
           icon={<CalendarDays size={18} color={iconColor} />}
-          title={EVENT_TYPE_LABELS[values.type].singular}
+          title={t(`eventTypes.${values.type}.singular`)}
         />
         <DateField
-          label="Date"
+          label={t("events.form.date")}
+          placeholder={t("pets.form.selectDate")}
           value={values.date}
           onChange={(v) => set("date", v)}
           minimumDate={new Date()}
@@ -154,9 +154,9 @@ export function EventForm({
         />
         <View style={styles.timeRow}>
           <Input
-            label="Hours"
+            label={t("events.form.hours")}
             value={values.hours}
-            onChangeText={(t) => set("hours", t)}
+            onChangeText={(v) => set("hours", v)}
             keyboardType="number-pad"
             maxLength={2}
             placeholder="00"
@@ -165,9 +165,9 @@ export function EventForm({
           />
           <Text style={styles.colon}>:</Text>
           <Input
-            label="Minutes"
+            label={t("events.form.minutes")}
             value={values.minutes}
-            onChangeText={(t) => set("minutes", t)}
+            onChangeText={(v) => set("minutes", v)}
             keyboardType="number-pad"
             maxLength={2}
             placeholder="00"
@@ -180,24 +180,24 @@ export function EventForm({
       <Card>
         <SectionHeader
           icon={<Repeat size={18} color={iconColor} />}
-          title="Repeat"
+          title={t("events.form.repeat")}
           switchValue={values.hasRecurrence}
           onSwitch={(v) => set("hasRecurrence", v)}
         />
         {values.hasRecurrence ? (
           <View style={styles.recurrence}>
             <Input
-              label="Every"
+              label={t("events.form.every")}
               value={values.recurrenceAmount}
-              onChangeText={(t) => set("recurrenceAmount", t.replace(/[^0-9]/g, ""))}
+              onChangeText={(v) => set("recurrenceAmount", v.replace(/[^0-9]/g, ""))}
               keyboardType="number-pad"
               maxLength={3}
               error={errors.recurrenceAmount}
               containerStyle={styles.amount}
             />
             <ChipGroup
-              label="Unit"
-              options={RECURRENCE_UNITS}
+              label={t("events.form.unit")}
+              options={unitOptions}
               value={values.recurrenceUnit}
               onChange={(v) => set("recurrenceUnit", v)}
               containerStyle={styles.flex}
@@ -209,18 +209,18 @@ export function EventForm({
       <Card>
         <SectionHeader
           icon={<Bell size={18} color={iconColor} />}
-          title="Notifications"
+          title={t("events.form.notifications")}
           switchValue={values.notificationEnabled}
           onSwitch={(v) => set("notificationEnabled", v)}
         />
       </Card>
 
       <Card>
-        <SectionHeader icon={<FileText size={18} color={iconColor} />} title="Notes" />
+        <SectionHeader icon={<FileText size={18} color={iconColor} />} title={t("events.form.notes")} />
         <Input
           value={values.notes}
-          onChangeText={(t) => set("notes", t)}
-          placeholder="Anything worth remembering..."
+          onChangeText={(v) => set("notes", v)}
+          placeholder={t("events.form.notesPlaceholder")}
           multiline
           numberOfLines={4}
         />

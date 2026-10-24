@@ -4,8 +4,9 @@ import { Card } from "@/components/ui/card";
 import { CompleteCheck } from "@/components/ui/complete-check";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
-import { EVENT_TYPE_LABELS, illustrationOfTheDay } from "@/constants/events";
+import { illustrationOfTheDay } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import {
   EventStatus,
   PetEvent,
@@ -29,24 +30,14 @@ import {
   View,
 } from "react-native";
 
-const GREETINGS = {
-  morning: "Good morning",
-  afternoon: "Good afternoon",
-  evening: "Good evening",
-} as const;
-
-function dayPeriod(): keyof typeof GREETINGS {
+function dayPeriod(): "morning" | "afternoon" | "evening" {
   const hour = new Date().getHours();
   if (hour < 12) return "morning";
   if (hour < 18) return "afternoon";
   return "evening";
 }
 
-const SECTIONS: { status: EventStatus; title: string }[] = [
-  { status: "overdue", title: "Overdue" },
-  { status: "today", title: "Today" },
-  { status: "week", title: "Next 7 days" },
-];
+const SECTIONS: EventStatus[] = ["overdue", "today", "week"];
 
 function TodayCard({
   item,
@@ -56,6 +47,8 @@ function TodayCard({
   onComplete: () => Promise<void>;
 }) {
   const router = useRouter();
+  const t = useT();
+  const [lang] = useLanguage();
   const { pet, event } = item;
   const status = getEventStatus(event);
   const date = getReferenceDate(event);
@@ -68,12 +61,14 @@ function TodayCard({
       <Avatar source={getPetIcon(pet)} size="s" tone={pet.type} />
       <View style={styles.cardBody}>
         <Text style={styles.cardTitle}>
-          {pet.name} · {EVENT_TYPE_LABELS[event.type].singular}
+          {pet.name} · {t(`eventTypes.${event.type}.singular`)}
         </Text>
         <Text style={styles.cardMeta}>
-          {status === "today" ? formatTime(date) : `${formatDate(date)} · ${formatTime(date)}`}
+          {status === "today"
+            ? formatTime(date, lang)
+            : `${formatDate(date, lang)} · ${formatTime(date, lang)}`}
         </Text>
-        {status === "overdue" ? <Badge tone="overdue" text="Overdue" /> : null}
+        {status === "overdue" ? <Badge tone="overdue" text={t("badges.overdue")} /> : null}
       </View>
       <CompleteCheck onComplete={onComplete} />
     </Card>
@@ -81,6 +76,8 @@ function TodayCard({
 }
 
 export default function Today() {
+  const t = useT();
+  const [lang] = useLanguage();
   const [items, setItems] = useState<PetEvent[] | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -100,22 +97,20 @@ export default function Today() {
       await completeEvent(item.event);
       await load();
     } catch {
-      Alert.alert("Error", "Could not complete the event.");
+      Alert.alert(t("common.error"), t("today.completeError"));
     }
   };
 
-  const grouped = SECTIONS.map((s) => ({
-    ...s,
-    items: (items ?? []).filter((i) => getEventStatus(i.event) === s.status),
+  const grouped = SECTIONS.map((status) => ({
+    status,
+    items: (items ?? []).filter((i) => getEventStatus(i.event) === status),
   })).filter((s) => s.items.length > 0);
-
-  const period = dayPeriod();
 
   return (
     <Screen>
       <Hero
-        title={GREETINGS[period]}
-        subtitle={formatLongDate(new Date())}
+        title={t(`today.greeting.${dayPeriod()}`)}
+        subtitle={formatLongDate(new Date(), lang)}
         image={illustrationOfTheDay()}
       />
       {items === null ? (
@@ -144,15 +139,13 @@ export default function Today() {
                   resizeMode="contain"
                 />
               </View>
-              <Text style={styles.emptyTitle}>Nothing for today</Text>
-              <Text style={styles.emptyText}>
-                Events due today, overdue or in the next 7 days show up here.
-              </Text>
+              <Text style={styles.emptyTitle}>{t("today.empty.title")}</Text>
+              <Text style={styles.emptyText}>{t("today.empty.text")}</Text>
             </View>
           ) : (
             grouped.map((section) => (
               <View key={section.status} style={styles.section}>
-                <Text style={styles.sectionTitle}>{section.title}</Text>
+                <Text style={styles.sectionTitle}>{t(`today.sections.${section.status}`)}</Text>
                 {section.items.map((item) => (
                   <TodayCard
                     key={item.event.id}

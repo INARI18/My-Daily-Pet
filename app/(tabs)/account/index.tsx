@@ -5,7 +5,7 @@ import { Screen } from "@/components/ui/screen";
 import { Segmented } from "@/components/ui/segmented";
 import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
 import { auth } from "@/firebase-config";
-import { useLanguage } from "@/hooks/use-preferences";
+import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import { deleteAccount, logOut, sendPasswordReset } from "@/services/account";
 import { exportDataAsJson } from "@/services/export";
 import { getFirebaseErrorMessage } from "@/services/firebaseErrorHandler";
@@ -61,6 +61,7 @@ function Row({
 }
 
 export default function Account() {
+  const t = useT();
   const [language, setLanguage] = useLanguage();
   const [loggingOut, setLoggingOut] = useState(false);
   const email = auth.currentUser?.email ?? "";
@@ -69,21 +70,21 @@ export default function Account() {
     try {
       await exportDataAsJson();
     } catch (err: any) {
-      Alert.alert("Error", err?.message ?? "Could not export your data.");
+      Alert.alert(t("common.error"), err?.message ?? t("account.exportError"));
     }
   };
 
   const handlePasswordReset = () => {
-    Alert.alert("Change password", `We will email a reset link to ${email}.`, [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("account.resetConfirm.title"), t("account.resetConfirm.message", { email }), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Send email",
+        text: t("account.resetConfirm.send"),
         onPress: async () => {
           try {
             await sendPasswordReset();
-            Alert.alert("Email sent", "Check your inbox to set a new password.");
+            Alert.alert(t("account.emailSent.title"), t("account.emailSent.message"));
           } catch (err: any) {
-            Alert.alert("Error", getFirebaseErrorMessage(err.code));
+            Alert.alert(t("common.error"), getFirebaseErrorMessage(err.code));
           }
         },
       },
@@ -91,38 +92,34 @@ export default function Account() {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      "Delete account",
-      "This permanently deletes your account, all pets and all events. This cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete everything",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteAccount();
-            } catch (err: any) {
-              Alert.alert("Error", getFirebaseErrorMessage(err.code));
-            }
-          },
+    Alert.alert(t("account.deleteConfirm.title"), t("account.deleteConfirm.message"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("account.deleteConfirm.confirm"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteAccount();
+          } catch (err: any) {
+            Alert.alert(t("common.error"), getFirebaseErrorMessage(err.code));
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleLogout = () => {
-    Alert.alert("Log out", "Are you sure you want to log out?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("account.logoutConfirm.title"), t("account.logoutConfirm.message"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Log out",
+        text: t("account.logout"),
         style: "destructive",
         onPress: async () => {
           setLoggingOut(true);
           try {
             await logOut();
           } catch {
-            Alert.alert("Error", "Could not log out. Please try again.");
+            Alert.alert(t("common.error"), t("account.logoutError"));
             setLoggingOut(false);
           }
         },
@@ -132,7 +129,7 @@ export default function Account() {
 
   return (
     <Screen scroll>
-      <Header title="Account" />
+      <Header title={t("account.title")} />
 
       <View style={styles.profile}>
         <View style={styles.avatar}>
@@ -144,35 +141,39 @@ export default function Account() {
         </View>
       </View>
 
-      <SectionTitle>Preferences</SectionTitle>
+      <SectionTitle>{t("account.preferences")}</SectionTitle>
       <Card style={styles.card}>
-        <Segmented label="Language" options={LANGUAGES} value={language} onChange={setLanguage} />
-        <Text style={styles.hint}>Texts will follow this setting once translations are in.</Text>
+        <Segmented
+          label={t("account.language")}
+          options={LANGUAGES}
+          value={language}
+          onChange={setLanguage}
+        />
       </Card>
 
-      <SectionTitle>Data</SectionTitle>
+      <SectionTitle>{t("account.data")}</SectionTitle>
       <Card style={styles.listCard}>
         <Row
           icon={<Download size={18} color={Colors.primary} />}
-          title="Export data"
-          subtitle="JSON backup of your pets and events"
+          title={t("account.export.title")}
+          subtitle={t("account.export.subtitle")}
           onPress={handleExport}
           last
         />
       </Card>
 
-      <SectionTitle>Security</SectionTitle>
+      <SectionTitle>{t("account.security")}</SectionTitle>
       <Card style={styles.listCard}>
         <Row
           icon={<KeyRound size={18} color={Colors.primary} />}
-          title="Change password"
-          subtitle="We send a reset link to your email"
+          title={t("account.changePassword.title")}
+          subtitle={t("account.changePassword.subtitle")}
           onPress={handlePasswordReset}
         />
         <Row
           icon={<Trash2 size={18} color={Colors.danger} />}
-          title="Delete account"
-          subtitle="Removes your pets and events for good"
+          title={t("account.deleteAccount.title")}
+          subtitle={t("account.deleteAccount.subtitle")}
           onPress={handleDeleteAccount}
           danger
           last
@@ -180,7 +181,7 @@ export default function Account() {
       </Card>
 
       <Button
-        title="Log out"
+        title={t("account.logout")}
         variant="ghost"
         icon={<LogOut size={16} color={Colors.textMuted} />}
         onPress={handleLogout}
@@ -222,7 +223,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   card: { marginBottom: Spacing.xl },
-  hint: { fontFamily: Fonts.body, fontSize: 12, color: Colors.textMuted, marginTop: Spacing.sm },
   listCard: { paddingVertical: 4, marginBottom: Spacing.xl },
   row: { flexDirection: "row", alignItems: "center", gap: Spacing.md, paddingVertical: Spacing.md },
   rowDivider: { borderBottomWidth: 1, borderBottomColor: Colors.border },

@@ -1,0 +1,196 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "error": "Erro",
+    "ok": "OK",
+    "back": "Voltar",
+    "close": "Fechar",
+    "markDone": "Marcar como feito",
+    "done": "Feito",
+    "clearDate": "Limpar data"
+  },
+  "tabs": {
+    "today": "Hoje",
+    "pets": "Pets",
+    "account": "Conta"
+  },
+  "eventTypes": {
+    "bath": { "singular": "Banho", "plural": "Banhos" },
+    "walk": { "singular": "Passeio", "plural": "Passeios" },
+    "medication": { "singular": "Remédio", "plural": "Remédios" },
+    "vaccination": { "singular": "Vacina", "plural": "Vacinas" },
+    "food": { "singular": "Refeição", "plural": "Alimentação" },
+    "playTime": { "singular": "Brincadeira", "plural": "Brincadeiras" },
+    "other": { "singular": "Evento", "plural": "Outros" }
+  },
+  "recurrence": {
+    "hours": { "one": "a cada hora", "other": "a cada %{count} horas" },
+    "days": { "one": "todo dia", "other": "a cada %{count} dias" },
+    "weeks": { "one": "toda semana", "other": "a cada %{count} semanas" },
+    "months": { "one": "todo mês", "other": "a cada %{count} meses" },
+    "years": { "one": "todo ano", "other": "a cada %{count} anos" }
+  },
+  "units": {
+    "hours": "Horas",
+    "days": "Dias",
+    "weeks": "Semanas",
+    "months": "Meses",
+    "years": "Anos"
+  },
+  "badges": {
+    "overdue": "Atrasado",
+    "today": "Hoje",
+    "week": "Esta semana",
+    "done": "Feito"
+  },
+  "today": {
+    "greeting": {
+      "morning": "Bom dia",
+      "afternoon": "Boa tarde",
+      "evening": "Boa noite"
+    },
+    "sections": {
+      "overdue": "Atrasados",
+      "today": "Hoje",
+      "week": "Próximos 7 dias"
+    },
+    "empty": {
+      "title": "Nada para hoje",
+      "text": "Eventos de hoje, atrasados ou dos próximos 7 dias aparecem aqui."
+    },
+    "completeError": "Não foi possível concluir o evento."
+  },
+  "pets": {
+    "title": "Meus Pets",
+    "count": { "zero": "Nenhum pet ainda", "one": "1 pet", "other": "%{count} pets" },
+    "empty": "Nenhum pet ainda. Toque em + para adicionar o primeiro.",
+    "addLabel": "Adicionar pet",
+    "editLabel": "Editar pet",
+    "meta": {
+      "ageUnknown": "Idade desconhecida",
+      "years": { "one": "1 ano", "other": "%{count} anos" },
+      "kg": "%{weight} kg",
+      "castrated": "Castrado",
+      "notCastrated": "Não castrado"
+    },
+    "add": { "title": "Novo pet" },
+    "edit": { "title": "Editar pet" },
+    "notFound": "Pet não encontrado",
+    "saveError": "Não foi possível salvar o pet. Tente de novo.",
+    "deleteConfirm": {
+      "title": "Excluir pet",
+      "message": "Isso remove o pet e todos os eventos dele. Não dá para desfazer."
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Nome do pet",
+      "type": "Tipo",
+      "dog": "🐶 Cachorro",
+      "cat": "🐱 Gato",
+      "gender": "Sexo",
+      "female": "Fêmea",
+      "male": "Macho",
+      "birthdate": "Nascimento",
+      "selectDate": "Escolher data",
+      "weight": "Peso (kg)",
+      "castrated": "Castrado",
+      "yes": "Sim",
+      "no": "Não",
+      "errors": {
+        "name": "O nome é obrigatório",
+        "weight": "O peso precisa ser um número maior que 0"
+      }
+    },
+    "iconPicker": { "title": "Escolha um ícone", "dogs": "Cachorros", "cats": "Gatos" }
+  },
+  "planner": {
+    "subtitle": "O que você quer planejar?",
+    "calendar": {
+      "title": "Calendário",
+      "open": "Calendário",
+      "close": "Fechar calendário",
+      "nothing": "Nada neste dia",
+      "activities": { "one": "1 atividade", "other": "%{count} atividades" }
+    }
+  },
+  "events": {
+    "add": "Adicionar %{type}",
+    "filters": { "active": "Ativos", "completed": "Concluídos" },
+    "summaryActive": { "one": "1 ativo", "other": "%{count} ativos" },
+    "summaryCompleted": { "one": "1 concluído", "other": "%{count} concluídos" },
+    "count": { "zero": "Nenhum evento", "one": "1 evento", "other": "%{count} eventos" },
+    "empty": {
+      "activeTitle": "Nenhum evento ainda",
+      "activeText": "Adicione o primeiro (%{type}) para começar.",
+      "completedTitle": "Nada concluído ainda",
+      "completedText": "Eventos únicos concluídos aparecem aqui."
+    },
+    "completeError": "Não foi possível concluir o evento.",
+    "addTitle": "Adicionar evento",
+    "editTitle": "Editar evento",
+    "notFound": "Evento não encontrado",
+    "saveError": "Não foi possível salvar o evento. Tente de novo.",
+    "deleteConfirm": { "title": "Excluir evento", "message": "Não dá para desfazer." },
+    "form": {
+      "date": "Data",
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "repeat": "Repetir",
+      "every": "A cada",
+      "unit": "Unidade",
+      "notifications": "Notificações",
+      "notes": "Observações",
+      "notesPlaceholder": "Algo que vale lembrar...",
+      "errors": {
+        "date": "A data é obrigatória",
+        "hours": "0 a 23",
+        "minutes": "0 a 59",
+        "amount": "Pelo menos 1"
+      }
+    }
+  },
+  "account": {
+    "title": "Conta",
+    "preferences": "Preferências",
+    "language": "Idioma",
+    "data": "Dados",
+    "export": { "title": "Exportar dados", "subtitle": "Backup em JSON dos seus pets e eventos" },
+    "exportError": "Não foi possível exportar seus dados.",
+    "exportDialogTitle": "Exportar dados do My Daily Pet",
+    "sharingUnavailable": "Compartilhar não está disponível neste aparelho",
+    "security": "Segurança",
+    "changePassword": { "title": "Trocar senha", "subtitle": "Enviamos um link de redefinição para o seu email" },
+    "resetConfirm": { "title": "Trocar senha", "message": "Vamos enviar um link de redefinição para %{email}.", "send": "Enviar email" },
+    "emailSent": { "title": "Email enviado", "message": "Confira sua caixa de entrada para definir a nova senha." },
+    "deleteAccount": { "title": "Excluir conta", "subtitle": "Remove seus pets e eventos de vez" },
+    "deleteConfirm": {
+      "title": "Excluir conta",
+      "message": "Isso apaga permanentemente sua conta, todos os pets e todos os eventos. Não dá para desfazer.",
+      "confirm": "Excluir tudo"
+    },
+    "logout": "Sair",
+    "logoutConfirm": { "title": "Sair", "message": "Tem certeza que quer sair da conta?" },
+    "logoutError": "Não foi possível sair. Tente de novo."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Senha",
+    "login": { "title": "Bem-vindo!", "subtitle": "Faça login para continuar", "submit": "Entrar", "toRegister": "Criar uma conta" },
+    "register": { "title": "Criar conta", "subtitle": "Junte-se a nós e cuide do seu pet", "submit": "Registrar", "toLogin": "Já tem uma conta? Faça login" }
+  },
+  "errors": {
+    "auth": {
+      "invalid-email": "O email informado é inválido.",
+      "user-not-found": "Usuário não encontrado. Verifique seus dados.",
+      "wrong-password": "Senha incorreta. Tente de novo.",
+      "email-already-in-use": "Este email já está em uso.",
+      "weak-password": "A senha precisa ter pelo menos 6 caracteres.",
+      "invalid-credential": "Email ou senha incorretos.",
+      "too-many-requests": "Muitas tentativas. Aguarde um pouco e tente de novo.",
+      "requires-recent-login": "Por segurança, saia e entre de novo antes de excluir a conta.",
+      "unknown": "Erro desconhecido. Tente de novo."
+    }
+  }
+}

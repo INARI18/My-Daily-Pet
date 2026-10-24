@@ -1,4 +1,5 @@
 import { Colors, Fonts, Radius, Shadow, Spacing } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { ArrowLeft } from "lucide-react-native";
 import React from "react";
 import { Image, ImageSourcePropType, Pressable, StyleSheet, Text, View } from "react-native";
@@ -15,12 +16,13 @@ type HeroProps = {
 // Lilac block with the screen title and one of the illustrations; replaces Header
 // on the main screens so every screen has a piece of the illustration set.
 export function Hero({ title, subtitle, image, imageSize = 96, onBack, right }: HeroProps) {
+  const t = useT();
   return (
     <View style={styles.wrap}>
       {onBack || right ? (
         <View style={styles.toolbar}>
           {onBack ? (
-            <Pressable onPress={onBack} style={styles.iconButton} hitSlop={8} accessibilityLabel="Back">
+            <Pressable onPress={onBack} style={styles.iconButton} hitSlop={8} accessibilityLabel={t("common.back")}>
               <ArrowLeft size={20} color={Colors.primary} />
             </Pressable>
           ) : (

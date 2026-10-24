@@ -1,4 +1,5 @@
 import { Colors, Fonts } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import iconMap from "@/constants/iconMap";
 import { Cat, Dog, X } from "lucide-react-native";
 import React, { useState } from "react";
@@ -27,6 +28,7 @@ export default function IconPickerModal({
   onClose,
   onSelect,
 }: IconPickerModalProps) {
+  const t = useT();
   const [selectedTab, setSelectedTab] = useState<"cats" | "dogs">("cats");
   const currentIcons = selectedTab === "cats" ? catIcons : dogIcons;
 
@@ -41,7 +43,7 @@ export default function IconPickerModal({
         <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Choose Pet Icon</Text>
+            <Text style={styles.title}>{t("pets.iconPicker.title")}</Text>
             <TouchableOpacity
               style={styles.closeButton}
               onPress={onClose}

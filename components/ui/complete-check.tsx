@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/theme";
+import { useT } from "@/i18n/LanguageProvider";
 import { Check } from "lucide-react-native";
 import React, { useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
@@ -10,6 +11,7 @@ type CompleteCheckProps = {
 
 // Task-list style check: empty circle that fills when tapped.
 export function CompleteCheck({ onComplete, checked = false }: CompleteCheckProps) {
+  const t = useT();
   const [pending, setPending] = useState(false);
   const filled = checked || pending;
 
@@ -30,7 +32,7 @@ export function CompleteCheck({ onComplete, checked = false }: CompleteCheckProp
       hitSlop={10}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: filled }}
-      accessibilityLabel={checked ? "Done" : "Mark as done"}
+      accessibilityLabel={checked ? t("common.done") : t("common.markDone")}
       style={({ pressed }) => [styles.circle, filled && styles.filled, pressed && styles.pressed]}
     >
       <Check

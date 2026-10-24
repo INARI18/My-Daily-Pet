@@ -1,4 +1,5 @@
 import { auth } from "@/firebase-config";
+import { i18n } from "@/i18n";
 import { File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { getAllEventsForPet } from "./events";
@@ -32,7 +33,7 @@ export const exportDataAsJson = async (): Promise<void> => {
   };
 
   if (!(await Sharing.isAvailableAsync())) {
-    throw new Error("Sharing is not available on this device");
+    throw new Error(i18n.t("account.sharingUnavailable"));
   }
 
   const stamp = data.exportedAt.slice(0, 10);
@@ -40,7 +41,7 @@ export const exportDataAsJson = async (): Promise<void> => {
   file.write(JSON.stringify(data, null, 2));
   await Sharing.shareAsync(file.uri, {
     mimeType: "application/json",
-    dialogTitle: "Export My Daily Pet data",
+    dialogTitle: i18n.t("account.exportDialogTitle"),
     UTI: "public.json",
   });
 };

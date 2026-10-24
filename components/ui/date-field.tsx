@@ -2,6 +2,7 @@ import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { useT } from "@/i18n/LanguageProvider";
 import { X } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -43,13 +44,14 @@ export function DateField({
   value,
   onChange,
   label,
-  placeholder = "Select date",
+  placeholder,
   error,
   clearable = false,
   minimumDate,
   maximumDate,
   containerStyle,
 }: DateFieldProps) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const dateValue = parseYMD(value) ?? new Date();
 
@@ -78,7 +80,7 @@ export function DateField({
           style={[fieldStyles.box, !!error && styles.boxError]}
         >
           <Text style={[styles.text, !value && styles.placeholder]}>
-            {value || placeholder}
+            {value || placeholder || t("pets.form.selectDate")}
           </Text>
         </Pressable>
         {clearable && !!value ? (
@@ -86,7 +88,7 @@ export function DateField({
             style={styles.clear}
             onPress={() => onChange("")}
             hitSlop={8}
-            accessibilityLabel="Clear date"
+            accessibilityLabel={t("common.clearDate")}
           >
             <X size={18} color={Colors.textMuted} />
           </Pressable>
@@ -104,7 +106,7 @@ export function DateField({
           <View style={styles.overlay}>
             <View style={styles.sheet}>
               <Pressable onPress={() => setOpen(false)} style={styles.done}>
-                <Text style={styles.doneText}>Done</Text>
+                <Text style={styles.doneText}>{t("common.ok")}</Text>
               </Pressable>
               {picker}
             </View>

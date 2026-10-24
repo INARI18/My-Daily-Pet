@@ -5,8 +5,9 @@ import { CompleteCheck } from "@/components/ui/complete-check";
 import { Hero } from "@/components/ui/hero";
 import { Screen } from "@/components/ui/screen";
 import { Segmented } from "@/components/ui/segmented";
-import { EVENT_TYPE_LABELS, PLANNER_ICON, isEventType } from "@/constants/events";
+import { PLANNER_ICON, isEventType } from "@/constants/events";
 import { Colors, Fonts, Spacing } from "@/constants/theme";
+import { useLanguage, useT } from "@/i18n/LanguageProvider";
 import {
   EventStatus,
   completeEvent,
@@ -30,17 +31,12 @@ import {
   View,
 } from "react-native";
 
-const BADGES: Partial<Record<EventStatus, { tone: BadgeTone; text: string }>> = {
-  overdue: { tone: "overdue", text: "Overdue" },
-  today: { tone: "today", text: "Today" },
-  week: { tone: "week", text: "This week" },
-  done: { tone: "done", text: "Done" },
+const BADGE_TONES: Partial<Record<EventStatus, BadgeTone>> = {
+  overdue: "overdue",
+  today: "today",
+  week: "week",
+  done: "done",
 };
-
-const FILTERS = [
-  { label: "Active", value: "active" },
-  { label: "Completed", value: "completed" },
-] as const;
 
 function EventCard({
   event,
@@ -51,8 +47,10 @@ function EventCard({
   onPress: () => void;
   onComplete: () => Promise<void>;
 }) {
+  const t = useT();
+  const [lang] = useLanguage();
   const status = getEventStatus(event);
-  const badge = BADGES[status];
+  const tone = BADGE_TONES[status];
   const date = getReferenceDate(event);
   const done = status === "done";
 
@@ -63,22 +61,22 @@ function EventCard({
         <View style={styles.flex}>
           <View style={styles.line}>
             <CalendarDays size={15} color={done ? Colors.textMuted : Colors.primary} />
-            <Text style={[styles.date, done && styles.muted]}>{formatDate(date)}</Text>
+            <Text style={[styles.date, done && styles.muted]}>{formatDate(date, lang)}</Text>
           </View>
           <View style={styles.line}>
             <Clock size={14} color={Colors.textMuted} />
-            <Text style={styles.time}>{formatTime(date)}</Text>
+            <Text style={styles.time}>{formatTime(date, lang)}</Text>
             {event.recurrence ? (
               <>
                 <Repeat size={13} color={Colors.textMuted} style={styles.repeatIcon} />
                 <Text style={styles.time}>
-                  every {event.recurrence.amount} {event.recurrence.unit}
+                  {t(`recurrence.${event.recurrence.unit}`, { count: event.recurrence.amount })}
                 </Text>
               </>
             ) : null}
           </View>
         </View>
-        {badge ? <Badge tone={badge.tone} text={badge.text} /> : null}
+        {tone ? <Badge tone={tone} text={t(`badges.${status}`)} /> : null}
       </View>
       {event.notes ? (
         <Text style={styles.notes} numberOfLines={2}>
@@ -92,11 +90,17 @@ function EventCard({
 export default function EventsByType() {
   const { id: petId, eventType } = useLocalSearchParams<{ id: string; eventType: string }>();
   const router = useRouter();
+  const t = useT();
   const type = isEventType(eventType) ? eventType : "other";
 
   const [events, setEvents] = useState<Event[] | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<"active" | "completed">("active");
+
+  const filters = [
+    { label: t("events.filters.active"), value: "active" },
+    { label: t("events.filters.completed"), value: "completed" },
+  ] as const;
 
   const load = useCallback(async () => {
     const all = await getAllEventsForPet(petId);
@@ -119,32 +123,32 @@ export default function EventsByType() {
       await completeEvent(event);
       await load();
     } catch {
-      Alert.alert("Error", "Could not complete the event.");
+      Alert.alert(t("common.error"), t("events.completeError"));
     }
   };
 
   const visible = events?.filter((e) => (filter === "completed") === isCompleted(e)) ?? [];
-  const labels = EVENT_TYPE_LABELS[type];
+  const singular = t(`eventTypes.${type}.singular`).toLowerCase();
 
   return (
     <Screen>
       <Hero
-        title={labels.plural}
+        title={t(`eventTypes.${type}.plural`)}
         subtitle={
           events === null
             ? " "
-            : `${events.filter((e) => !isCompleted(e)).length} active · ${events.filter(isCompleted).length} completed`
+            : `${t("events.summaryActive", { count: events.filter((e) => !isCompleted(e)).length })} · ${t("events.summaryCompleted", { count: events.filter(isCompleted).length })}`
         }
         image={PLANNER_ICON[type]}
         imageSize={96}
         onBack={() => router.back()}
       />
       <Button
-        title={`New ${labels.singular.toLowerCase()}`}
+        title={t("events.add", { type: singular })}
         onPress={() => router.push(`/pets/${petId}/events/add?type=${type}`)}
       />
       <Segmented
-        options={FILTERS}
+        options={filters}
         value={filter}
         onChange={setFilter}
         containerStyle={styles.filter}
@@ -166,21 +170,19 @@ export default function EventsByType() {
             />
           }
         >
-          <Text style={styles.count}>
-            {visible.length === 0
-              ? "No events"
-              : `${visible.length} ${visible.length === 1 ? "event" : "events"}`}
-          </Text>
+          <Text style={styles.count}>{t("events.count", { count: visible.length })}</Text>
           {visible.length === 0 ? (
             <View style={styles.empty}>
               <CalendarDays size={56} color={Colors.border} />
               <Text style={styles.emptyTitle}>
-                {filter === "completed" ? "Nothing completed yet" : "No events yet"}
+                {filter === "completed"
+                  ? t("events.empty.completedTitle")
+                  : t("events.empty.activeTitle")}
               </Text>
               <Text style={styles.emptyText}>
                 {filter === "completed"
-                  ? "Completed one-time events show up here."
-                  : `Add the first ${labels.singular.toLowerCase()} to get started.`}
+                  ? t("events.empty.completedText")
+                  : t("events.empty.activeText", { type: singular })}
               </Text>
             </View>
           ) : (

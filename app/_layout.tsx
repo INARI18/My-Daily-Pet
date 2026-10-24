@@ -23,6 +23,7 @@ import {
   Nunito_600SemiBold,
   Nunito_800ExtraBold,
 } from "@expo-google-fonts/nunito";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { auth } from "../firebase-config";
 
 export const unstable_settings = {
@@ -80,6 +81,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
+      <LanguageProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
@@ -88,6 +90,7 @@ export default function RootLayout() {
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
+      </LanguageProvider>
     </SafeAreaProvider>
   );
 }
