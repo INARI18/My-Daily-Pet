@@ -1,72 +1,22 @@
 # My Daily Pet
 
-Mobile app to plan and track the daily care of your pets: baths, walks, medication,
-vaccines, meals and play time. Built with Expo (React Native) and Firebase.
+Plan and keep track of your pets' daily care: baths, walks, medication, vaccines,
+meals and play time, with reminders so nothing slips.
 
-## Features
+## Download
 
-- Pets with icon, type, gender, birthdate, weight and weight history
-- Events per pet with recurrence, notes and local reminders (lead time per event)
-- Today tab with what is overdue, due today or due in the next 7 days
-- Calendar per pet with activities by day
-- Discover tab: veterinary news (RSS) and recent papers (PubMed)
-- English and Brazilian Portuguese, following the device language
-- JSON export, password reset, account deletion
+Android APK on the [latest release](https://github.com/INARI18/My-Daily-Pet/releases/latest).
+Install it directly (allow installs from unknown sources when asked), then create an
+account with email and password.
 
-## Stack
+## What it does
 
-Expo SDK 58, expo-router, Firebase Auth + Firestore, i18n-js, expo-notifications.
+- **Today**: what is overdue, due today or due in the next 7 days, and a calendar of all pets
+- **Pets**: one card per pet with icon, type, gender, birthdate (optional), weight and weight history
+- **Events**: recurring or one-time, with notes, "last done" date and a reminder with lead time per event
+- **Discover**: veterinary news and recent papers from PubMed
+- **Account**: language, light or dark mode, notifications, JSON export, password reset, account deletion
 
-## Running
+Available in English and Brazilian Portuguese, following the device language.
 
-```bash
-npm install
-npm start
-```
-
-Scan the QR code with Expo Go (SDK 58). Phone and computer must be on the same
-network; `npx expo start --tunnel ngrok` works across networks.
-
-Create a `.env` in the project root with your Firebase web config:
-
-```
-FIREBASE_API_KEY=
-FIREBASE_AUTH_DOMAIN=
-FIREBASE_PROJECT_ID=
-FIREBASE_STORAGE_BUCKET=
-FIREBASE_MESSAGING_SENDER_ID=
-FIREBASE_APP_ID=
-```
-
-Firestore rules live in `firestore.rules`; deploy them with
-`firebase deploy --only firestore:rules`.
-
-## Checks
-
-```bash
-npx tsc --noEmit
-npx expo lint
-```
-
-## Building an APK
-
-Builds run on EAS. The Firebase values from `.env` must exist on EAS for the
-profile you build (they are not uploaded with the code):
-
-```bash
-eas login
-eas env:push --environment preview --path .env   # once, or when the values change
-eas build -p android --profile preview            # installable APK
-```
-
-`eas build -p android --profile development` makes a development client (an
-Expo Go with this project's native modules, needed for reminders when the store
-Expo Go lags behind). Releases are tagged `vX.Y.Z` and the APK is attached to the
-GitHub release.
-
-## Project layout
-
-- `app/` routes (expo-router): `login`, `register`, `(tabs)/{today,pets,discover,account}`
-- `components/ui/` design kit, `components/forms/` pet and event forms
-- `services/` Firestore access, notifications, export, content feeds
-- `i18n/` and `locales/` translations, `constants/theme.ts` design tokens
+Built with Expo (React Native) and Firebase.
