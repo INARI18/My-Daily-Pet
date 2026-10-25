@@ -1,6 +1,6 @@
 export default ({ config }) => ({
   ...config,
-  name: "My-Daily-Pet",
+  name: "My Daily Pet",
   slug: "my-daily-pet-v2",
   owner: "biam18",
   android: {
