@@ -52,9 +52,10 @@ export default function RootLayout() {
     if (loading) return;
 
     const inAuthGroup = segments[0] === "(tabs)";
+    const inAuthScreens = segments[0] === "login" || segments[0] === "register";
 
-    if (!user && inAuthGroup) {
-      // Usuário não autenticado tentando acessar tabs
+    if (!user && !inAuthScreens) {
+      // Sem sessão fora das telas de login (inclui a rota raiz e rotas inválidas)
       router.replace("/login");
     } else if (user && !inAuthGroup) {
       // Usuário autenticado na tela de login
