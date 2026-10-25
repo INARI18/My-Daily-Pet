@@ -47,3 +47,5 @@ app-example
 
 # brainstorm mockups
 .superpowers/
+
+.vscode/
