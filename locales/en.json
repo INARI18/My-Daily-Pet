@@ -1,0 +1,247 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "error": "Error",
+    "ok": "OK",
+    "back": "Back",
+    "close": "Close",
+    "markDone": "Mark as done",
+    "done": "Done",
+    "clearDate": "Clear date"
+  },
+  "tabs": {
+    "today": "Today",
+    "pets": "Pets",
+    "discover": "Discover",
+    "account": "Account"
+  },
+  "discover": {
+    "title": "Discover",
+    "subtitle": "News and research about pet health",
+    "news": "News",
+    "articles": "Articles",
+    "open": "Read on the source",
+    "openPubMed": "Read on PubMed",
+    "error": "Could not load the content. Check your connection and try again.",
+    "retry": "Try again",
+    "empty": "Nothing here right now.",
+    "disclaimer": "Third-party content, in the language of the source. It does not replace your veterinarian."
+  },
+  "eventTypes": {
+    "bath": { "singular": "Bath", "plural": "Baths" },
+    "walk": { "singular": "Walk", "plural": "Walks" },
+    "medication": { "singular": "Medication", "plural": "Medication" },
+    "vaccination": { "singular": "Vaccine", "plural": "Vaccines" },
+    "food": { "singular": "Meal", "plural": "Food" },
+    "playTime": { "singular": "Play time", "plural": "Play time" },
+    "other": { "singular": "Event", "plural": "Other" }
+  },
+  "recurrence": {
+    "hours": { "one": "every hour", "other": "every %{count} hours" },
+    "days": { "one": "every day", "other": "every %{count} days" },
+    "weeks": { "one": "every week", "other": "every %{count} weeks" },
+    "months": { "one": "every month", "other": "every %{count} months" },
+    "years": { "one": "every year", "other": "every %{count} years" }
+  },
+  "reminders": {
+    "remindMe": "Remind me",
+    "offset": { "0": "At the time", "15": "15 min before", "60": "1 h before", "1440": "1 day before" }
+  },
+  "notifications": {
+    "channel": "Reminders",
+    "bodyToday": "Today at %{time}",
+    "bodyDate": "%{date} at %{time}",
+    "setting": "Notifications",
+    "settingHint": "Reminders for events that have notifications on.",
+    "denied": "Notifications are blocked for this app in the system settings.",
+    "unavailable": "Reminders are not available in this version of the app.",
+    "openSettings": "Open settings"
+  },
+  "units": {
+    "hours": "Hours",
+    "days": "Days",
+    "weeks": "Weeks",
+    "months": "Months",
+    "years": "Years"
+  },
+  "badges": {
+    "overdue": "Overdue",
+    "today": "Today",
+    "week": "This week",
+    "done": "Done"
+  },
+  "today": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "sections": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "week": "Next 7 days"
+    },
+    "empty": {
+      "title": "Nothing for today",
+      "text": "Events due today, overdue or in the next 7 days show up here."
+    },
+    "noPets": {
+      "title": "Welcome!",
+      "text": "Add your first pet to start planning baths, walks, meds and more."
+    },
+    "completeError": "Could not complete the event."
+  },
+  "weight": {
+    "title": "Weight",
+    "current": "Current weight",
+    "change": "%{delta} kg since %{date}",
+    "noComparison": "Log another measurement to see the change.",
+    "add": "Log weight",
+    "history": "History",
+    "saveError": "Could not save the weight.",
+    "loadError": "Could not load the weight history.",
+    "deleteConfirm": { "title": "Delete measurement", "message": "Remove this weight entry?" }
+  },
+  "pets": {
+    "title": "My Pets",
+    "count": { "zero": "No pets yet", "one": "1 pet", "other": "%{count} pets" },
+    "empty": "No pets yet. Add the first one to start planning.",
+    "addLabel": "Add pet",
+    "addButton": "Add pet",
+    "selected": { "one": "1 selected", "other": "%{count} selected" },
+    "deleteSelected": {
+      "title": "Delete pets",
+      "message": { "one": "Delete 1 pet and all its events? This cannot be undone.", "other": "Delete %{count} pets and all their events? This cannot be undone." }
+    },
+    "editLabel": "Edit pet",
+    "meta": {
+      "ageUnknown": "Age unknown",
+      "years": { "one": "1 year", "other": "%{count} years" },
+      "kg": "%{weight} kg",
+      "castrated": "Castrated",
+      "notCastrated": "Not castrated"
+    },
+    "add": { "title": "New pet" },
+    "edit": { "title": "Edit pet" },
+    "notFound": "Pet not found",
+    "saveError": "Could not save the pet. Please try again.",
+    "deleteConfirm": {
+      "title": "Delete pet",
+      "message": "This removes the pet and all its events. This cannot be undone."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Pet name",
+      "type": "Type",
+      "dog": "🐶 Dog",
+      "cat": "🐱 Cat",
+      "gender": "Gender",
+      "female": "Female",
+      "male": "Male",
+      "birthdate": "Birthdate",
+      "selectDate": "Select date",
+      "weight": "Weight (kg)",
+      "castrated": "Castrated",
+      "yes": "Yes",
+      "no": "No",
+      "errors": {
+        "name": "Name is required",
+        "weight": "Weight must be a number greater than 0"
+      }
+    },
+    "iconPicker": { "title": "Choose an icon", "dogs": "Dogs", "cats": "Cats" }
+  },
+  "planner": {
+    "subtitle": "What do you want to plan?",
+    "calendar": {
+      "title": "Calendar",
+      "open": "Calendar",
+      "close": "Close calendar",
+      "nothing": "Nothing on this day",
+      "activities": { "one": "1 activity", "other": "%{count} activities" }
+    }
+  },
+  "events": {
+    "add": "Add %{type}",
+    "filters": { "active": "Active", "completed": "Completed" },
+    "summaryActive": { "one": "1 active", "other": "%{count} active" },
+    "summaryCompleted": { "one": "1 completed", "other": "%{count} completed" },
+    "count": { "zero": "No events", "one": "1 event", "other": "%{count} events" },
+    "empty": {
+      "activeTitle": "No events yet",
+      "activeText": "Add the first %{type} to get started.",
+      "completedTitle": "Nothing completed yet",
+      "completedText": "Completed one-time events show up here."
+    },
+    "completeError": "Could not complete the event.",
+    "lastDone": "Last done %{date}",
+    "addTitle": "Add event",
+    "editTitle": "Edit event",
+    "notFound": "Event not found",
+    "saveError": "Could not save the event. Please try again.",
+    "deleteConfirm": { "title": "Delete event", "message": "This cannot be undone." },
+    "form": {
+      "date": "Date",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "repeat": "Repeat",
+      "every": "Every",
+      "unit": "Unit",
+      "notifications": "Notifications",
+      "notes": "Notes",
+      "notesPlaceholder": "Anything worth remembering...",
+      "errors": {
+        "date": "Date is required",
+        "hours": "0 to 23",
+        "minutes": "0 to 59",
+        "amount": "At least 1"
+      }
+    }
+  },
+  "account": {
+    "title": "Account",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Appearance",
+    "themeOptions": { "system": "System", "light": "Light", "dark": "Dark" },
+    "data": "Data",
+    "export": { "title": "Export data", "subtitle": "JSON backup of your pets and events" },
+    "exportError": "Could not export your data.",
+    "exportDialogTitle": "Export My Daily Pet data",
+    "sharingUnavailable": "Sharing is not available on this device",
+    "security": "Security",
+    "changePassword": { "title": "Change password", "subtitle": "We send a reset link to your email" },
+    "resetConfirm": { "title": "Change password", "message": "We will email a reset link to %{email}.", "send": "Send email" },
+    "emailSent": { "title": "Email sent", "message": "Check your inbox to set a new password." },
+    "deleteAccount": { "title": "Delete account", "subtitle": "Removes your pets and events for good" },
+    "deleteConfirm": {
+      "title": "Delete account",
+      "message": "This permanently deletes your account, all pets and all events. This cannot be undone.",
+      "confirm": "Delete everything"
+    },
+    "logout": "Log out",
+    "logoutConfirm": { "title": "Log out", "message": "Are you sure you want to log out?" },
+    "logoutError": "Could not log out. Please try again."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "login": { "title": "Welcome!", "subtitle": "Sign in to continue", "submit": "Sign in", "toRegister": "Create an account" },
+    "register": { "title": "Create account", "subtitle": "Join us and take care of your pet", "submit": "Sign up", "toLogin": "Already have an account? Sign in" }
+  },
+  "errors": {
+    "auth": {
+      "invalid-email": "The email address is invalid.",
+      "user-not-found": "User not found. Check your credentials.",
+      "wrong-password": "Wrong password. Try again.",
+      "email-already-in-use": "This email is already in use.",
+      "weak-password": "The password must have at least 6 characters.",
+      "invalid-credential": "Wrong email or password.",
+      "too-many-requests": "Too many attempts. Wait a moment and try again.",
+      "requires-recent-login": "For safety, log out and in again before deleting the account.",
+      "unknown": "Unknown error. Try again."
+    }
+  }
+}

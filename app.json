@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "my-daily-pet-v2",
+    "name": "My Daily Pet",
     "slug": "my-daily-pet-v2",
-    "version": "1.0.0",
+    "owner": "biam18",
+    "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "mydailypetv2",
+    "icon": "./assets/images/favicon.png",
+    "scheme": "my-daily-pet-v2",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -30,19 +31,39 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "image": "./assets/images/homeScreen/cat_silhouette.png",
+          "imageWidth": 260,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#5C1A5C",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#5C1A5C"
           }
+        }
+      ],
+      "@react-native-community/datetimepicker",
+      "expo-font",
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "color": "#5C1A5C"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e07ee54e-a54d-4d57-9d58-25e333443a6e"
+      }
+    },
+    "androidNavigationBar": {
+      "enforceContrast": false
     }
   }
 }

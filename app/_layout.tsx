@@ -1,24 +1,91 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { AppThemeProvider, NavigationThemeProvider } from "@/theme/ThemeProvider";
+import { useFonts } from "expo-font";
+import { Stack, useRouter, useSegments } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useState } from "react";
+import "react-native-reanimated";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { onAuthStateChanged, User } from "firebase/auth";
+
+import {
+  Baloo2_700Bold,
+  Baloo2_800ExtraBold,
+} from "@expo-google-fonts/baloo-2";
+import {
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_800ExtraBold,
+} from "@expo-google-fonts/nunito";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
+import { auth } from "../firebase-config";
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: null,
 };
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [fontsLoaded] = useFonts({
+    Baloo2_800ExtraBold,
+    Baloo2_700Bold,
+    Nunito_800ExtraBold,
+    Nunito_600SemiBold,
+    Nunito_400Regular,
+  });
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === "(tabs)";
+    const inAuthScreens = segments[0] === "login" || segments[0] === "register";
+
+    if (!user && !inAuthScreens) {
+      // Sem sessão fora das telas de login (inclui a rota raiz e rotas inválidas)
+      router.replace("/login");
+    } else if (user && !inAuthGroup) {
+      // Usuário autenticado na tela de login
+      router.replace("/today");
+    }
+  }, [user, segments, loading]);
+
+  useEffect(() => {
+    if (fontsLoaded && !loading) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, loading]);
+
+  if (loading || !fontsLoaded) {
+    return null; // Mantém a splash screen
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <AppThemeProvider>
+        <LanguageProvider>
+          <NavigationThemeProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="login" />
+              <Stack.Screen name="register" />
+            </Stack>
+          </NavigationThemeProvider>
+        </LanguageProvider>
+      </AppThemeProvider>
+    </SafeAreaProvider>
   );
 }

@@ -1,50 +1,72 @@
-# Welcome to your Expo app 👋
+# My Daily Pet
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile app to plan and track the daily care of your pets: baths, walks, medication,
+vaccines, meals and play time. Built with Expo (React Native) and Firebase.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Pets with icon, type, gender, birthdate, weight and weight history
+- Events per pet with recurrence, notes and local reminders (lead time per event)
+- Today tab with what is overdue, due today or due in the next 7 days
+- Calendar per pet with activities by day
+- Discover tab: veterinary news (RSS) and recent papers (PubMed)
+- English and Brazilian Portuguese, following the device language
+- JSON export, password reset, account deletion
 
-   ```bash
-   npm install
-   ```
+## Stack
 
-2. Start the app
+Expo SDK 58, expo-router, Firebase Auth + Firestore, i18n-js, expo-notifications.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Running
 
 ```bash
-npm run reset-project
+npm install
+npm start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan the QR code with Expo Go (SDK 58). Phone and computer must be on the same
+network; `npx expo start --tunnel ngrok` works across networks.
 
-## Learn more
+Create a `.env` in the project root with your Firebase web config:
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+FIREBASE_API_KEY=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_PROJECT_ID=
+FIREBASE_STORAGE_BUCKET=
+FIREBASE_MESSAGING_SENDER_ID=
+FIREBASE_APP_ID=
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Firestore rules live in `firestore.rules`; deploy them with
+`firebase deploy --only firestore:rules`.
 
-## Join the community
+## Checks
 
-Join our community of developers creating universal apps.
+```bash
+npx tsc --noEmit
+npx expo lint
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Building an APK
+
+Builds run on EAS. The Firebase values from `.env` must exist on EAS for the
+profile you build (they are not uploaded with the code):
+
+```bash
+eas login
+eas env:push --environment preview --path .env   # once, or when the values change
+eas build -p android --profile preview            # installable APK
+```
+
+`eas build -p android --profile development` makes a development client (an
+Expo Go with this project's native modules, needed for reminders when the store
+Expo Go lags behind). Releases are tagged `vX.Y.Z` and the APK is attached to the
+GitHub release.
+
+## Project layout
+
+- `app/` routes (expo-router): `login`, `register`, `(tabs)/{today,pets,discover,account}`
+- `components/ui/` design kit, `components/forms/` pet and event forms
+- `services/` Firestore access, notifications, export, content feeds
+- `i18n/` and `locales/` translations, `constants/theme.ts` design tokens

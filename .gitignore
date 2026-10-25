@@ -41,3 +41,9 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Ignorar arquivos de ambiente
+.env
+
+# brainstorm mockups
+.superpowers/
